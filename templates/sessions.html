@@ -19,9 +19,9 @@
         <div class="card-group">
             <div class="card bg-light-subtle mb-1 ">
                 <div class="card-body">
-                    <h5 class="card-title">Username</h5>
-                    <p class="card-text">Message</p>
-                    <p class="card-subtitle">Location: Lat , Lng</p>
+                    <h5 class="card-title">{{ session.user_name}}</h5>
+                    <p class="card-text">{{ session.message }}</p>
+                    <p class="card-subtitle">Location: {{ session.lat }} , {{ session.lng }}</p>
                     <div class="d-flex justify-content-between">
                         <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                         <div>
