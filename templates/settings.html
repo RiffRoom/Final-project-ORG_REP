@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-</head>
-<body>
+{% extends '_template.html'%}
 
-    <nav class="navbar bg-dark top position-fixed topnav">
-        <div class="navbar-brand topnav-centered">
+
+{% block body %}
+    <nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
+        <div class="navbar-brand">
             <a href="/">Settings</a>
         </div>
-
     </nav>
 
 
@@ -26,5 +20,5 @@
         <input type="file" name="profile_pic" required>
         <input type="submit" value="Upload">
     </form>
-</body>
-</html>
+
+{% endblock %}
