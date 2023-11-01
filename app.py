@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, abort
+import os
 
 app = Flask(__name__)
 
@@ -16,7 +17,19 @@ def user_prod():
 
 @app.route('/settings')
 def settings_page():
-    return None #rendertemplate('settings.html')
+    profile_pic_path = 'profile_pic.jpg'
+    if os.path.exists(profile_pic_path):
+        profile_pic_url = '/' + profile_pic_path
+    else:
+        profile_pic_url = '/static/default_pfp.jpg'
+    return render_template('settings.html',  profile_pic_url=profile_pic_url)
+
+@app.route('/upload_profile_pic', methods=['POST'])
+def upload_profile_pic():
+    file = request.files['profile_pic']
+    file.save('profile_pic.jpg')  
+    return redirect(url_for('settings_page'))
+
 
 @app.route('/upload')
 def uplaod_page():
