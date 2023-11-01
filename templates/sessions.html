@@ -2,11 +2,45 @@
 
 {% block body%}
 
-<h1> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet labore quibusdam dolor soluta accusantium laudantium, ducimus provident tenetur odit, quisquam, ad veritatis ex qui excepturi velit unde quam nesciunt ratione?</h1>
-<h1> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo tempora similique nobis ab quo. Aliquam nostrum modi quisquam quaerat at suscipit consequuntur obcaecati, libero dolorem tempore provident ipsa officia praesentium.</h1>
-<h1> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae exercitationem dolorem commodi placeat iusto est voluptas nisi, fugiat animi suscipit impedit corrupti modi. Reiciendis perspiciatis tempore, cumque porro eum at!</h1>    
-<h1>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit asperiores voluptatibus assumenda nobis enim dicta sit aperiam? Enim debitis numquam velit. Itaque, neque tempora? At vero laborum aut minima molestias.</h1>
-<h1>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Facilis eveniet ab, repellendus esse expedita magnam magni nemo commodi consectetur ea, quidem fuga fugiat exercitationem earum ad, dolor qui tempore rem?</h1>
+<nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
+        <div class="navbar-brand">
+            <a href="/" class="text-decoration-none text-white">Trending</a>
+        </div>
+        <div class="navbar-brand active">
+            <a href="" class="text-decoration-none text-white">Sessions</a>
+        </div>
+</nav>
 
+<h1 class="pt-2 mb-4 mx-4 text-white">Sessions Page</h1>
+
+<div class="d-flex flex-row h-auto w-auto mx-2"> 
+    <div class="col row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 600px; scrollbar-width: 0;">
+    {% for session in active_sessions %}
+        <div class="card-group">
+            <div class="card bg-light-subtle mb-1 ">
+                <div class="card-body">
+                    <h5 class="card-title">Username</h5>
+                    <p class="card-text">Message</p>
+                    <p class="card-subtitle">Location: Lat , Lng</p>
+                    <div class="d-flex justify-content-between">
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                        <div>
+                            <button type="submit" class="btn btn-success h-auto w-auto">Join Session</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+    <div class="d-flex flex-column mx-4 justify-content-center h-auto">
+        <div class="" id="map" name="map"></div>
+        <button type="button" id="add-session-button" class="btn btn-primary mt-2" name="add_session_button">Add Session</button>
+    </div>
+</div>
+
+<script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+    ({key: "AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo", v: "beta"});</script>
 
 {% endblock %}
