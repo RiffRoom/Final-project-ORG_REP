@@ -10,58 +10,8 @@
     <title>Document</title>
 
     <style>
-        
-    .topnav {
-    position: fixed;
-    top:0;
-    z-index: 1;
-    height: 80px;
-    padding-left: 4%;
-    width: 100%;
-    background-color: #da1616;
-    overflow: hidden;
-    }
-
-    .topnav a {
-    color: #ffffff;
-    text-align: center;
-    text-decoration: none;
-    font-size: 17px;
-    }
-
-    .topnav-centered a {
-    float: none;
-    position: absolute;
-    margin-bottom: 10%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-400%, -50%);
-    }
-
-    .topnav-centeredr a {
-    float: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(+400%, -50%);
-    }
-
-    @media screen and (max-width: 100px) {
-    .topnav a, .topnav-right {
-        float: none;
-        display: block;
-    }
-
-    .topnav-centered a {
-        position: relative;
-        top: 0;
-        left: 0;
-        transform: none;
-    }
-    }
 
     .sidenav {
-        margin-top: -8.7%;
         height: 100%;
         width: 61px;
         position: fixed;
@@ -80,16 +30,13 @@
         font-size: 25px;
         display: block;
       }
-        
-      .main {
-        margin-left: 90px; 
-        padding: 0px 10px;
-        margin-top: 130px;
+
+      .main-offset{
+        margin-left: 72px;
       }
-      </style>
+    </style>
 </head>
 <body>
-
     <div class="d-flex flex-column flex-shrink-0 bg-secondary text-white sidenav" style="width: 4.5rem;">
         <a href="/">
             <img src="{{ url_for('static', filename='images/logo.png') }}" height="80" width="71" class="mt--2">
@@ -111,7 +58,7 @@
             </a>
           </li>
           <li>
-            <a href="settings.html" class="nav-link py-3 border-bottom rounded-0" title="Orders" data-bs-toggle="tooltip" data-bs-placement="right">
+            <a href="settings" class="nav-link py-3 border-bottom rounded-0" title="Orders" data-bs-toggle="tooltip" data-bs-placement="right">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-gear" viewBox="0 0 16 16">
                     <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
                     <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
@@ -130,18 +77,9 @@
           <a href="#" class="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none" aria-expanded="false">
             <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" class="rounded-circle">
           </a>
-          <!-- <ul class="dropdown-menu text-small shadow">
-            <li><a class="dropdown-item" href="#">New project...</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
-          </ul> -->
         </div>
       </div>
-
-
-    <div class="main">
+    <div class="main-offset">
         {% block body %} {% endblock %}
     </div>
     
