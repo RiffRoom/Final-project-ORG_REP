@@ -1,15 +1,30 @@
 from flask import Flask, render_template, redirect, url_for, request, abort
+from models import db, Session
 import os
 
 app = Flask(__name__)
+app.app_context().push()
+
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    'postgresql://postgres:password@localhost:5432/sessionstest'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
 @app.route('/')
 def homepage():
     return render_template('index.html')
 
-@app.route('/sesh')
-def sesh_page():
-    return render_template('sessions.html')
+@app.get('/sessions')
+def get_sessions():
+    active_sessions = Session.query.all()
+    return render_template('sessions.html', active_sessions=active_sessions)
+
+
+@app.get('/sessions/<int:session_id>')
+def get_single_session(session_id: int):
+    session = Session.query.get(session_id)
+    return render_template('get_single_session.html', session=session)
+
 
 @app.route('/user_prof')
 def user_prod():
