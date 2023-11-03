@@ -17,7 +17,7 @@
     <div class="col row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 600px; scrollbar-width: 0;">
     {% for session in active_sessions %}
         <div class="card-group">
-            <div class="card bg-light-subtle mb-1 ">
+            <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
                 <div class="card-body">
                     <h5 class="card-title">{{ session.user_name}}</h5>
                     <p class="card-text">{{ session.message }}</p>
