@@ -11,6 +11,7 @@ let currentInfoWindow;
 // Dictionary of Session Markers
 const sessionMarkers = {};
 
+
 const addMarkerButton = document.getElementById("add_session_button");
 let markerTitleInput = document.getElementById("session_title");
 
@@ -57,10 +58,44 @@ async function initMap() {
         mapId: "DEMO_MAP_ID",
     });
 
+    google.maps.event.addListener(map, "click", function (e) {
+        let latitude = e.latLng.lat();
+        let longitude = e.latLng.lng();
 
-    for (const [key, value] of Object.entries(sessionMarkers)) {
-        console.log(`Key: ${key}, Value: (Lat: ${value.position.lat}, Lng: ${value.position.lng}), Title: ${value.title}`);
-    }
+        if(!sessionMarkerPlaced){
+            sessionMarker = new AdvancedMarkerElement({
+                map: map,
+                position: { lat: latitude, lng: longitude },
+                title: "New Session"
+            });
+            sessionMarkerPlaced = true;
+        }
+        else {
+            sessionMarker.position = {lat: latitude, lng: longitude};
+        }
+    });
+
+    // testButton.addEventListener('click', function (e) {
+    //     let markerTitleInputValue = document.getElementById("session_title").value;
+    //     if(sessionMarkerPlaced){
+    //         if(markerTitleInputValue && markerTitleInputValue != ''){
+    //             sessionMarker.title = markerTitleInputValue;
+
+    //             sessionMarkers[Object.keys(sessionMarkers).length] = new MarkerObject(
+    //                 {lat: sessionMarker.position.lat, lng: sessionMarker.position.lng},
+    //                 sessionMarker.title
+    //             );
+
+    //             sessionMarkerPlaced = false;
+    //             initMap();
+    //         }
+    //     }
+
+
+        for (const [key, value] of Object.entries(sessionMarkers)) {
+            console.log(`Key: ${key}, Value: (Lat: ${value.position.lat}, Lng: ${value.position.lng}), Title: ${value.title}`);
+        }
+    //});
 
 
     for (const [key, value] of Object.entries(sessionMarkers)) {
