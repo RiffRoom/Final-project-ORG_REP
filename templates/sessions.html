@@ -1,6 +1,9 @@
 {% extends '_template.html' %}
 
+
+
 {% block body%}
+<script type="module" src="/static/js/sessions.js"></script>
 
 <nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
         <div class="navbar-brand">
@@ -11,10 +14,10 @@
         </div>
 </nav>
 
-<h1 class="pt-2 mb-4 mx-4 text-white">Sessions Page</h1>
+<h1 class="pt-2 mb-4 mx-4 text-white text-center">Find a Session</h1>
 
-<div class="d-flex flex-row h-auto w-auto mx-2"> 
-    <div class="col row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 600px; scrollbar-width: 0;">
+<div class="d-flex flex-row h-auto w-auto mx-2 scroll-black"> 
+    <div class="col row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 600px;">
     {% for session in active_sessions %}
         <div class="card-group">
             <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
@@ -25,7 +28,7 @@
                     <div class="d-flex justify-content-between">
                         <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                         <div>
-                            <button type="submit" class="btn btn-success h-auto w-auto">Join Session</button>
+                            <button type="button" class="btn btn-success h-auto w-auto">Join Session</button>
                         </div>
                     </div>
                 </div>
@@ -36,11 +39,11 @@
 
     <div class="d-flex flex-column mx-4 justify-content-center h-auto">
         <div class="" id="map" name="map"></div>
-        <button type="button" id="add-session-button" class="btn btn-primary mt-2" name="add_session_button">Add Session</button>
+        <a href="sessions/new_session" class="btn btn-success h-auto w-auto mt-2">Create New Session</a>
     </div>
 </div>
 
 <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-    ({key: "AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo", v: "beta"});</script>
+    ({key: "", v: "beta"});</script>
 
 {% endblock %}
