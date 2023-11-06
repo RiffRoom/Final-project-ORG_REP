@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, abort
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 # Load environment variables
 
@@ -39,11 +40,24 @@ def get_single_session(session_id: int):
 
 @app.get('/sessions/new_session')
 def get_new_sessions_form_page():
-    return render_template('new_session.html')
+    current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
+    max_date = datetime(2024, 12, 31,23)
+    return render_template('new_session.html', current_date=current_date, max_date=max_date)
 
-@app.post('/sessions')
+@app.post('/sessions/new_session')
 def add_new_session():
-    pass
+    data = request.get_json()
+    print(data)
+    title = data['title']
+    message = data['message']
+    lat = data['lat']
+    lng = data['lng']
+    date = data['date']
+    s = Session(title, message, date, lat, lng, 1)
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for('get_sessions'))
+
 
 @app.route('/user_prof')
 def user_prod():
