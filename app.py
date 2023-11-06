@@ -40,6 +40,14 @@ def get_single_session(session_id: int):
     return render_template('get_single_session.html', session=session)
 
 
+@app.get('/sessions/new_session')
+def get_new_sessions_form_page():
+    return render_template('new_session.html')
+
+@app.post('/sessions')
+def add_new_session():
+    pass
+
 @app.route('/user_prof')
 def user_prod():
     return None #rendertemplate('user_profile.html')
