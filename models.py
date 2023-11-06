@@ -45,6 +45,7 @@ class Session(db.Model):
     lat = db.Column( db.Double, nullable=False)
     long = db.Column(db.Double, nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
+    host = db.relationship('UserTable')
     
     ## create instance without host_name and just id
     def __init__(self, title: str, msg: str, date: date, lat: float, long: float, h_id: int) -> None:
@@ -68,6 +69,7 @@ class Party(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     user_name = db.Column(db.String(255), nullable=False)
 
+
     def __init__(self, sesh_id: int, u_id: int) -> None:
         self.session_id = sesh_id
         self.user_id = u_id
@@ -77,17 +79,20 @@ class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(255), nullable=False)
-    message = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    ratio = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    poster_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    poster_name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
+    user_name = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, title: str, msg: str, date: date, pid: int) -> None:
+    def __init__(self, title: str, msg: str, ratio: int, date: date, pid: int) -> None:
         self.title = title
-        self.message = msg
+        self.description = msg
+        self.ratio = ratio
         self.date = date
-        self.poster_id = pid
-        self.poster_name = Session.get_user_name_id(id)
+        self.user_id = pid
+        self.user_name = Session.get_user_name_id(pid)
+
 
 class CommentSection(db.Model):
     __tablename__ = 'comment_section'
@@ -104,6 +109,7 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     commenter_name = db.Column(db.String(255), nullable=False)
     message = db.Column(db.String(255), nullable=False)
+    comments = db.relationship('CommentSection')
 
     def __init__(self, cs_id: int, cid: int, msg: str) -> None:
         self.comment_section_id = cs_id
