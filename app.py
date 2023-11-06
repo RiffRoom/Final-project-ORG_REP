@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, abort
-from models import db, Session, UserTable
+from models import db, Session, UserTable, Comment, CommentSection, Post, Party
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -14,8 +14,6 @@ DB_PASS = os.getenv('DB_PASS')
 DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
-
-
 
 app = Flask(__name__)
 app.app_context().push()
@@ -32,20 +30,6 @@ def homepage():
 @app.get('/sessions')
 def get_sessions():
     active_sessions = Session.query.all()
-
-    # us = UserTable('Nail', 'Claros', 'ncdash', 'pswd', 'nc@gmail.com', 68968942) ## id 3
-    # db.session.add(us)
-    # db.session.commit()
-
-    #base logic, id must exsist already
-    # s = Session('Sample Title-2', 'YYYYYYAAA-2', '2023-10-01', 34.121212121313, 35.21324232323232, 3)
-    # db.session.add(s)
-    # db.session.commit()
-
-    # concept for alternate session instantiation
-    # s = sessions.full('Dve Char', 'samp 2', 'smap msggg', '2023-10-01', 34.12121221212, 35,14122323221312, 5)
-    # db.session.add(s)
-    # db.session.commit()
     return render_template('sessions.html', active_sessions=active_sessions)
 
 
