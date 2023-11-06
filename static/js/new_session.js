@@ -12,37 +12,16 @@ let currentInfoWindow;
 const sessionMarkers = {};
 
 
-const addMarkerButton = document.getElementById("add_session_button");
+const addMarkerButton = document.getElementById("create_session_button");
 let markerTitleInput = document.getElementById("session_title");
+let markerMessageInput = document.getElementById("session_message");
+let markerDateInput = document.getElementById("session_date_time");
 
 function MarkerObject(position, title){
     this.position = position;
     this.title = title;
 }
 
-// Gets data from server and then parses and creates MarkerObject objects
-// fetch(`${window.origin}/static/sessions.csv`, {
-//     method: 'get',
-//     headers: {
-//         'content-type': 'text/csv;charset=UTF-8',
-//     }
-// })
-//     .then(res => res.text())
-//     .then(sessionData => Papa.parse(sessionData, {
-//         delimeter: ",",
-//         header: true,
-//         skipEmptyLines: true,
-//     }))
-//     .then(sessionData => {
-//         for(let i = 0; i < sessionData.data.length; i++) {
-//             let newMarker = new MarkerObject({lat: parseFloat(sessionData.data[i].lat), lng: parseFloat(sessionData.data[i].lng)}, sessionData.data[i].title);
-//             sessionMarkers[Object.entries(sessionMarkers).length] = newMarker;
-//         }
-
-//         for (const [key, value] of Object.entries(sessionMarkers)) {
-//             console.log(`Key: ${key}, Value: (Lat: ${value.position.lat}, Lng: ${value.position.lng}), Title: ${value.title}`);
-//         }   
-// });
 
 async function initMap() {
     
@@ -69,33 +48,44 @@ async function initMap() {
                 title: "New Session"
             });
             sessionMarkerPlaced = true;
+
         }
         else {
             sessionMarker.position = {lat: latitude, lng: longitude};
         }
     });
 
-    // testButton.addEventListener('click', function (e) {
-    //     let markerTitleInputValue = document.getElementById("session_title").value;
-    //     if(sessionMarkerPlaced){
-    //         if(markerTitleInputValue && markerTitleInputValue != ''){
-    //             sessionMarker.title = markerTitleInputValue;
 
-    //             sessionMarkers[Object.keys(sessionMarkers).length] = new MarkerObject(
-    //                 {lat: sessionMarker.position.lat, lng: sessionMarker.position.lng},
-    //                 sessionMarker.title
-    //             );
+    addMarkerButton.addEventListener('click', function (e) {
+        if(sessionMarkerPlaced){
+                sessionMarkers[Object.keys(sessionMarkers).length] = new MarkerObject(
+                    {lat: sessionMarker.position.lat, lng: sessionMarker.position.lng},
+                );
 
-    //             sessionMarkerPlaced = false;
-    //             initMap();
-    //         }
-    //     }
+                sessionMarkerPlaced = false;
 
+                let data = {
+                    title: markerTitleInput.value,
+                    message: markerMessageInput.value,
+                    lat: sessionMarker.position.lat,
+                    lng: sessionMarker.position.lng,
+                    date: markerDateInput.value
+                }
 
-        for (const [key, value] of Object.entries(sessionMarkers)) {
-            console.log(`Key: ${key}, Value: (Lat: ${value.position.lat}, Lng: ${value.position.lng}), Title: ${value.title}`);
-        }
-    //});
+                let json_data = JSON.stringify(data);
+
+                fetch(`${window.origin}/sessions/new_session`, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        'Accept': 'application/json, multipart/form-data',
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    body: json_data
+                })
+                initMap();
+            }
+        });
 
 
     for (const [key, value] of Object.entries(sessionMarkers)) {

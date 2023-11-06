@@ -22,14 +22,12 @@
         <div class="card-group">
             <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
                 <div class="card-body">
-                    <h5 class="card-title">{{session.host_name}}: {{ session.title}}</h5>
-                    <p class="card-text">{{ session.message }}</p>
-                    <p class="card-subtitle">Location: {{ session.lat }} , {{ session.long }}</p>
-                    <div class="d-flex justify-content-between">
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        <div>
-                            <button type="button" class="btn btn-success h-auto w-auto">Join Session</button>
-                        </div>
+                    <h5 class="card-title">{{ session.title}}</h5>
+                    <p class="card-subtitle text-muted">{{session.host_name}}</p>
+                    <p class="card-text mt-2">{{ session.message }}</p>
+                    <div class="d-flex justify-content-between"> 
+                        <p class="card-text"><small class="text-muted">{{session.date}}</small></p>
+                        <button type="button" class="btn btn-success h-auto w-auto">Join Session</button>
                     </div>
                 </div>
             </div>
