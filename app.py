@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 
-
-
 # Load environment variables
 
 load_dotenv()
