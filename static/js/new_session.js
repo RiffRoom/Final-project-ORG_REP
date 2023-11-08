@@ -8,19 +8,10 @@ let infoWindowOpen = false;
 let sessionMarker;
 let currentInfoWindow;
 
-// Dictionary of Session Markers
-const sessionMarkers = {};
-
-
 const addMarkerButton = document.getElementById("create_session_button");
 let markerTitleInput = document.getElementById("session_title");
 let markerMessageInput = document.getElementById("session_message");
 let markerDateInput = document.getElementById("session_date_time");
-
-function MarkerObject(position, title){
-    this.position = position;
-    this.title = title;
-}
 
 
 async function initMap() {
@@ -87,50 +78,6 @@ async function initMap() {
             }
         });
 
-
-    for (const [key, value] of Object.entries(sessionMarkers)) {
-        let marker = new AdvancedMarkerElement({
-            map: map,
-            position: value.position,
-            title: value.title,
-        });
-        
-        let infoWindow = new InfoWindow({
-            content: `
-            <h3>${marker.title}</h3>
-            <div>
-                <p>
-                    <strong>Host</strong>: Noah Eddleman
-                    <br>
-                    <strong>Extra Info</strong>: Looking for someone to jam with me. 
-                    Bring whatever you want!\n
-                </p>
-            </div>`,
-            maxWidth: 250,
-        });
-        
-        marker.addEventListener('gmp-click', () => {
-            console.log("Clicked on: " + marker.title);
-            
-            if(infoWindowOpen){
-                currentInfoWindow.close();
-                infoWindow.open({
-                    anchor: marker,
-                    map,
-                });
-                currentInfoWindow = infoWindow;
-                infoWindowOpen = true;
-            }
-            else {
-                infoWindow.open({
-                    anchor: marker,
-                    map,
-                });
-                currentInfoWindow = infoWindow;
-                infoWindowOpen = true;
-            }
-        });
-    }
 }
 
 

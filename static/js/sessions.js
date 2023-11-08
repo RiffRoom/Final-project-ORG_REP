@@ -19,19 +19,17 @@ function MarkerObject(position, title){
     this.title = title;
 }
 
-// Gets data from server and then parses and creates MarkerObject objects
-// fetch(`${window.origin}/static/sessions.csv`, {
-//     method: 'get',
-//     headers: {
-//         'content-type': 'text/csv;charset=UTF-8',
-//     }
-// })
-//     .then(res => res.text())
-//     .then(sessionData => Papa.parse(sessionData, {
-//         delimeter: ",",
-//         header: true,
-//         skipEmptyLines: true,
-//     }))
+//Gets data from server and then parses and creates MarkerObject objects
+fetch(`${window.origin}/sessions`, {
+    method: 'get',
+    headers: {
+        'content-type': 'application/json;charset=UTF-8',
+    }
+})
+    .then(res => res.json())
+    .then(sessionData => {
+        console.log(sessionData);
+    });
 //     .then(sessionData => {
 //         for(let i = 0; i < sessionData.data.length; i++) {
 //             let newMarker = new MarkerObject({lat: parseFloat(sessionData.data[i].lat), lng: parseFloat(sessionData.data[i].lng)}, sessionData.data[i].title);

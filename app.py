@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request, abort
+from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+
 
 
 # Load environment variables
@@ -30,7 +31,9 @@ def homepage():
 @app.get('/sessions')
 def get_sessions():
     active_sessions = Session.query.all()
-    return render_template('sessions.html', active_sessions=active_sessions)
+    session_data = [i.serialize for i in active_sessions]
+    return render_template('sessions.html',active_sessions=active_sessions, session_data=session_data)
+    
 
 
 @app.get('/sessions/<int:session_id>')
@@ -43,7 +46,9 @@ def get_single_session(session_id: int):
 def get_new_sessions_form_page():
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
-    return render_template('new_session.html', current_date=current_date, max_date=max_date)
+    active_sessions = Session.query.all()
+    session_data = [i.serialize for i in active_sessions]
+    return render_template('new_session.html', current_date=current_date, max_date=max_date, session_data=session_data)
 
 @app.post('/sessions/new_session')
 def add_new_session():
@@ -78,6 +83,7 @@ def upload_profile_pic():
     file = request.files['profile_pic']
     file.save('profile_pic.jpg')  
     return redirect(url_for('settings_page'))
+
 
 
 @app.route('/upload')

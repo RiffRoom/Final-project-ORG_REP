@@ -57,6 +57,18 @@ class Session(db.Model):
         self.long = long
         self.host_id = h_id
     
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'host_name': self.host_name,
+            'title': self.title,
+            'message': self.message,
+            'date': self.date,
+            'lat': self.lat,
+            'lng': self.long
+        }
+    
     def get_user_name_id(a: int):
         s = db.session()
         return s.query(UserTable).filter(UserTable.id == a).first().first_name + ' ' + s.query(UserTable).filter(UserTable.id == a).first().last_name
