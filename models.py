@@ -67,7 +67,7 @@ class UserTable(db.Model):
     email = db.Column(db.String(255), nullable=False)
     private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.Integer, nullable=False)
-    profile_pic = db.Column(db.bytyea)
+    profile_pic = db.Column(db.LargeBinary, nullable=False)
     
 
     def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
@@ -138,16 +138,17 @@ class Post(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     ratio = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     user_name = db.Column(db.String(255), nullable=False)
+    post_file = db.Column(db.LargeBinary, nullable=False)
     section = db.relationship('CommentSection', cascade='all, delete')
 
-    def __init__(self, title: str, msg: str, ratio: int, date: date, pid: int) -> None:
+    def __init__(self, title: str, msg: str, ratio: int, date: str, pid: int) -> None:
         self.title = title
         self.description = msg
         self.ratio = ratio
-        self.date = date
+        self.date_posted = date
         self.user_id = pid
         self.user_name = Session.get_user_name_id(pid)
 
