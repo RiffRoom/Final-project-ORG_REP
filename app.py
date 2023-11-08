@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, abort
+from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party
 from dotenv import load_dotenv
 import os
@@ -28,9 +28,38 @@ def homepage():
 
 @app.get('/sessions')
 def get_sessions():
+    current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
+    max_date = datetime(2024, 12, 31,23)
     active_sessions = Session.query.all()
-    return render_template('sessions.html', active_sessions=active_sessions)
+    session_data = [i.serialize for i in active_sessions]
+    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data)
 
+@app.post('/sessions')
+def add_new_session():
+    data = request.get_json()
+    title = data['title']
+
+    if title is None or title == '':
+        abort(400)
+
+    message = data['message']
+
+    lat = data['lat']
+    lng = data['lng']
+    print(lat, lng)
+
+    if lat is None or lat == '' or lng is None or lng == '':
+        abort(400)
+
+    date = data['date']
+
+    if date is None or date == '':
+        abort(400)
+
+    s = Session(title, message, date, lat, lng, 1)
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for('get_sessions'))
 
 @app.get('/sessions/<int:session_id>')
 def get_single_session(session_id: int):
@@ -38,25 +67,6 @@ def get_single_session(session_id: int):
     return render_template('get_single_session.html', session=session)
 
 
-@app.get('/sessions/new_session')
-def get_new_sessions_form_page():
-    current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
-    max_date = datetime(2024, 12, 31,23)
-    return render_template('new_session.html', current_date=current_date, max_date=max_date)
-
-@app.post('/sessions/new_session')
-def add_new_session():
-    data = request.get_json()
-    print(data)
-    title = data['title']
-    message = data['message']
-    lat = data['lat']
-    lng = data['lng']
-    date = data['date']
-    s = Session(title, message, date, lat, lng, 1)
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for('get_sessions'))
 
 
 @app.route('/user_prof')
@@ -77,6 +87,7 @@ def upload_profile_pic():
     file = request.files['profile_pic']
     file.save('profile_pic.jpg')  
     return redirect(url_for('settings_page'))
+
 
 
 @app.route('/upload')
