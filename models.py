@@ -83,6 +83,7 @@ class Session(db.Model):
             'title': self.title,
             'message': self.message,
             'date': self.date,
+            'date_posted': self.date_posted,
             'lat': self.lat,
             'lng': self.long
         }
