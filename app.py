@@ -33,13 +33,13 @@ def get_sessions():
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_sessions = Session.query.all()
-    #session_data = [i.serialize for i in active_sessions]
 
     session_data = []
 
     for i in active_sessions:
         result = i.serialize
         date_str = Session.date_str(result['date'])
+        session_data.append(result)
 
     return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str)
 
