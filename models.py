@@ -75,7 +75,7 @@ class Session(db.Model):
         self.title = title
         self.message = msg
         self.date = date
-        self.date_posted = date
+        self.date_posted = date_p
         self.lat = lat
         self.long = long
         self.host_id = h_id
