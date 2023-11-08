@@ -5,14 +5,6 @@ db = SQLAlchemy()
 def clear_bd():
     return None
 
-# class Session(db.Model):
-#     __tablename__ = 'mock_data'
-#     session_id = db.Column("id", db.Integer, primary_key=True, nullable=False)
-#     user_name = db.Column("username" ,db.String(50), unique=True, nullable=False)
-#     message = db.Column("message", db.String(50), nullable=False)
-#     date = db.Column("date", db.DateTime, nullable=False)
-#     lat = db.Column("latitude", db.Double, nullable=False)
-#     lng = db.Column("longitude", db.Double, nullable=False)
 
 class UserTable(db.Model):
     __tablename__ = 'user_table'
@@ -46,6 +38,8 @@ class Session(db.Model):
     long = db.Column(db.Double, nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     host = db.relationship('UserTable')
+
+    party = db.relationship('Party', cascade='all, delete')
     
     ## create instance without host_name and just id
     def __init__(self, title: str, msg: str, date: date, lat: float, long: float, h_id: int) -> None:

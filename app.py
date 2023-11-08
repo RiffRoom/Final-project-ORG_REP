@@ -61,6 +61,13 @@ def add_new_session():
     db.session.commit()
     return redirect(url_for('get_sessions'))
 
+@app.post('/sessions/<int:session_id>/delete')
+def delete_session(session_id: int):
+    session = Session.query.get(session_id)
+    db.session.delete(session)
+    db.session.commit()
+    return redirect(url_for('get_sessions'))
+
 @app.get('/sessions/<int:session_id>')
 def get_single_session(session_id: int):
     session = Session.query.get(session_id)
