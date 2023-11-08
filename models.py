@@ -1,11 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 import config
+from datetime import datetime
 
 def convert_To_Binary(filename): 
     with open(filename, 'rb') as file: 
         data = file.read() 
     return data 
+
 
 def Binary_To_File(BLOB, FileName, oldFileName): 
     with open(f"{FileName}", 'wb') as file: 
@@ -17,13 +19,6 @@ def insert_BLOB(user_id, FileName):
     user = UserTable.query.get(user_id)
     user.prof_pic = convert_To_Binary(FileName)
     db.session.commit()
-
-
-    # def return_img(self, oldFileName, FileName):
-    #     with open(f"{'static\images\pfp.png'}", 'wb') as file: 
-    #         file.write(self.prof_pic) 
-
-
 
 db = SQLAlchemy()
 ## USE ONLY FOR TESTS
@@ -95,6 +90,10 @@ class Session(db.Model):
     def get_user_name_id(a: int):
         s = db.session()
         return s.query(UserTable).filter(UserTable.id == a).first().first_name + ' ' + s.query(UserTable).filter(UserTable.id == a).first().last_name
+
+    def date_str(date: datetime):
+        return date.strftime('%A %b, %d  %I:%M %p')
+
 
 #class party
 class Party(db.Model):
