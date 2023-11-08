@@ -1,24 +1,65 @@
 {% extends '_template.html'%}
 
-
 {% block body %}
-    <nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
-        <div class="navbar-brand">
-            <a href="/settings" class="text-decoration-none text-white">Settings</a>
-        </div>
-    </nav>
-
-    <div class="mx-5 mt-2">
-        <h1>Settings Page</h1>
-        <p>Welcome to the settings page. More features coming soon!</p>
-        
-        <h2>Current Profile Picture</h2>
-        <img src="{{ profile_pic_url }}" alt="Profile Picture" width="150" onError="this.onerror=null;this.src='/static/default_pfp.jpg';">
-        
-        <h2>Change Profile Picture</h2>
-        <form action="/upload_profile_pic" method="post" enctype="multipart/form-data">
-            <input type="file" name="profile_pic" required>
-            <input type="submit" value="Upload">
-        </form>
+<nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
+    <div class="navbar-brand">
+        <a href="/settings" class="text-decoration-none text-white">Settings</a>
     </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="text-center">Settings Page</h1> 
+            <p style="margin-bottom: 30px;" class="text-center">Welcome to the settings page. More features coming soon!</p>
+            
+            <!-- Profile Picture -->
+            <div class="text-center mb-4">
+                <form action="/path/to/your/upload/handler" method="post" enctype="multipart/form-data">
+                    <label for="profile_pic_upload" class="profile-pic-label">
+                        <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Profile Picture" class="img-fluid profile-pic">
+                    </label>
+                    <input type="file" name="profile_pic" id="profile_pic_upload" class="d-none">
+                </form>
+            </div>
+
+            <!-- User Info -->
+            <form action="#" method="post" style="margin-top: 20px;">
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                </div>
+
+                 <!-- Bio -->
+                <div class="form-group">
+                    <label for="bio">Bio:</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio"></textarea>
+                </div>
+
+                <!-- Visibility Switch -->
+                <div class="form-group">
+                    <label class="switch" style="margin-top: 20px;">
+                        <input type="checkbox" id="profileVisibilitySwitch">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="switchCaption">Public profile</span>
+                </div>
+                <!-- Save Button -->
+                <div style="position: fixed; bottom: 10px; right: 10px;">
+                    <form action="#" method="post">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
