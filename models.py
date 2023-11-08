@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 import config
+from datetime import datetime
 
 def convert_To_Binary(filename): 
     with open(filename, 'rb') as file: 
@@ -11,36 +12,32 @@ def insert_BLOB(S_No, FileName):
     """ insert a BLOB into a table """
     conn = None
     try: 
-  
+
         # connect to the PostgreSQL server & creating a cursor object 
         conn = psycopg2.connect(**config) 
-  
+
         # Creating a cursor with name cur. 
         cur = conn.cursor() 
-  
+
         # Binary Data 
         file_data = convert_To_Binary(FileName) 
-  
+
         # BLOB DataType 
         BLOB = psycopg2.Binary(file_data) 
-  
+
         # SQL query to insert data into the database. 
         cur.execute( 
             "INSERT INTO blob_datastore(s_no,file_name,blob_data) VALUES(%s,%s,%s)", (S_No, FileName, BLOB)) 
-  
+
         # Close the connection 
         cur.close() 
-  
+
     except(Exception, psycopg2.DatabaseError) as error: 
         print(error) 
     finally: 
         if conn is not None: 
             # Commit the changes to the database 
             conn.commit() 
-
-
-
-
 
 
 db = SQLAlchemy()
@@ -111,6 +108,10 @@ class Session(db.Model):
     def get_user_name_id(a: int):
         s = db.session()
         return s.query(UserTable).filter(UserTable.id == a).first().first_name + ' ' + s.query(UserTable).filter(UserTable.id == a).first().last_name
+
+    def date_str(date: datetime):
+        return date.strftime('%A %b, %d  %I:%M %p')
+
 
 #class party
 class Party(db.Model):

@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party,convert_To_Binary, insert_BLOB
 
@@ -33,8 +32,15 @@ def get_sessions():
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_sessions = Session.query.all()
-    session_data = [i.serialize for i in active_sessions]
-    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data)
+    #session_data = [i.serialize for i in active_sessions]
+
+    session_data = []
+
+    for i in active_sessions:
+        result = i.serialize
+        date_str = Session.date_str(result['date'])
+
+    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str)
 
 @app.post('/sessions')
 def add_new_session():
@@ -75,9 +81,6 @@ def get_single_session(session_id: int):
     session = Session.query.get(session_id)
     return render_template('get_single_session.html', session=session)
 
-
-
-
 @app.route('/user_prof')
 def user_prod():
     return None #rendertemplate('user_profile.html')
@@ -96,8 +99,6 @@ def upload_profile_pic():
     file = request.files['profile_pic']
     file.save('profile_pic.jpg')  
     return redirect(url_for('settings_page'))
-
-
 
 @app.route('/upload')
 def uplaod_page():
