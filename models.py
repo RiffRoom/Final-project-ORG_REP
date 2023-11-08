@@ -65,7 +65,9 @@ class UserTable(db.Model):
     user_name = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
+    private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.Integer, nullable=False)
+    profile_pic = db.Column(db.bytyea)
     
 
     def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
