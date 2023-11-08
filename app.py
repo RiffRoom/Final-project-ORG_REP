@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
-from models import db, Session, UserTable, Comment, CommentSection, Post, Party,convert_To_Binary, insert_BLOB
+from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB
 
 from dotenv import load_dotenv
 import os
@@ -25,7 +25,8 @@ db.init_app(app)
 
 @app.route('/')
 def homepage():
-    return render_template('index.html')
+    # insert_BLOB(1, 'static\images\default.png')
+    return render_template('index.html', users=UserTable.query.all())
 
 @app.get('/sessions')
 def get_sessions():
