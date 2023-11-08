@@ -1,9 +1,52 @@
 from flask_sqlalchemy import SQLAlchemy
+import psycopg2
+import config
+
+def convert_To_Binary(filename): 
+    with open(filename, 'rb') as file: 
+        data = file.read() 
+    return data 
+
+def insert_BLOB(S_No, FileName): 
+    """ insert a BLOB into a table """
+    conn = None
+    try: 
+  
+        # connect to the PostgreSQL server & creating a cursor object 
+        conn = psycopg2.connect(**config) 
+  
+        # Creating a cursor with name cur. 
+        cur = conn.cursor() 
+  
+        # Binary Data 
+        file_data = convert_To_Binary(FileName) 
+  
+        # BLOB DataType 
+        BLOB = psycopg2.Binary(file_data) 
+  
+        # SQL query to insert data into the database. 
+        cur.execute( 
+            "INSERT INTO blob_datastore(s_no,file_name,blob_data) VALUES(%s,%s,%s)", (S_No, FileName, BLOB)) 
+  
+        # Close the connection 
+        cur.close() 
+  
+    except(Exception, psycopg2.DatabaseError) as error: 
+        print(error) 
+    finally: 
+        if conn is not None: 
+            # Commit the changes to the database 
+            conn.commit() 
+
+
+
+
+
 
 db = SQLAlchemy()
 ## USE ONLY FOR TESTS
-def clear_bd():
-    return None
+# def clear_bd():
+#     return None
 
 # class Session(db.Model):
 #     __tablename__ = 'mock_data'
@@ -23,6 +66,7 @@ class UserTable(db.Model):
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.Integer, nullable=False)
+    
 
     def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
         self.first_name = first_n
@@ -45,7 +89,7 @@ class Session(db.Model):
     lat = db.Column( db.Double, nullable=False)
     long = db.Column(db.Double, nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    host = db.relationship('UserTable')
+    party = db.relationship('Party', cascade="all, delete")
     
     ## create instance without host_name and just id
     def __init__(self, title: str, msg: str, date: date, lat: float, long: float, h_id: int) -> None:
@@ -56,6 +100,18 @@ class Session(db.Model):
         self.lat = lat
         self.long = long
         self.host_id = h_id
+    
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'host_name': self.host_name,
+            'title': self.title,
+            'message': self.message,
+            'date': self.date,
+            'lat': self.lat,
+            'lng': self.long
+        }
     
     def get_user_name_id(a: int):
         s = db.session()
@@ -68,7 +124,6 @@ class Party(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     user_name = db.Column(db.String(255), nullable=False)
-
 
     def __init__(self, sesh_id: int, u_id: int) -> None:
         self.session_id = sesh_id
@@ -84,6 +139,7 @@ class Post(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     user_name = db.Column(db.String(255), nullable=False)
+    section = db.relationship('CommentSection', cascade='all, delete')
 
     def __init__(self, title: str, msg: str, ratio: int, date: date, pid: int) -> None:
         self.title = title
@@ -98,7 +154,7 @@ class CommentSection(db.Model):
     __tablename__ = 'comment_section'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-
+    comments = db.relationship('Comment', cascade="all, delete")
     def __init__(self, post_id: int) -> None:
         self.post_id = post_id
 
@@ -109,7 +165,6 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     commenter_name = db.Column(db.String(255), nullable=False)
     message = db.Column(db.String(255), nullable=False)
-    comments = db.relationship('CommentSection')
 
     def __init__(self, cs_id: int, cid: int, msg: str) -> None:
         self.comment_section_id = cs_id
