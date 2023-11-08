@@ -7,39 +7,21 @@ def convert_To_Binary(filename):
         data = file.read() 
     return data 
 
-def insert_BLOB(S_No, FileName): 
+def Binary_To_File(BLOB, FileName, oldFileName): 
+    with open(f"{FileName}", 'wb') as file: 
+        file.write(BLOB) 
+    print(f"{oldFileName} File saved With Name name {FileName}") 
+
+def insert_BLOB(user_id, FileName): 
     """ insert a BLOB into a table """
-    conn = None
-    try: 
-  
-        # connect to the PostgreSQL server & creating a cursor object 
-        conn = psycopg2.connect(**config) 
-  
-        # Creating a cursor with name cur. 
-        cur = conn.cursor() 
-  
-        # Binary Data 
-        file_data = convert_To_Binary(FileName) 
-  
-        # BLOB DataType 
-        BLOB = psycopg2.Binary(file_data) 
-  
-        # SQL query to insert data into the database. 
-        cur.execute( 
-            "INSERT INTO blob_datastore(s_no,file_name,blob_data) VALUES(%s,%s,%s)", (S_No, FileName, BLOB)) 
-  
-        # Close the connection 
-        cur.close() 
-  
-    except(Exception, psycopg2.DatabaseError) as error: 
-        print(error) 
-    finally: 
-        if conn is not None: 
-            # Commit the changes to the database 
-            conn.commit() 
+    user = UserTable.query.get(user_id)
+    user.prof_pic = convert_To_Binary(FileName)
+    db.session.commit()
 
 
-
+    # def return_img(self, oldFileName, FileName):
+    #     with open(f"{'static\images\pfp.png'}", 'wb') as file: 
+    #         file.write(self.prof_pic) 
 
 
 
@@ -59,7 +41,7 @@ class UserTable(db.Model):
     email = db.Column(db.String(255), nullable=False)
     private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.Integer, nullable=False)
-    profile_pic = db.Column(db.LargeBinary, nullable=False)
+    prof_pic = db.Column(db.LargeBinary, nullable=False)
     
 
     def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
@@ -69,7 +51,7 @@ class UserTable(db.Model):
         self.password = pswd
         self.email = email
         self.phone = phone
-
+    
     def __repr__(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
@@ -80,6 +62,7 @@ class Session(db.Model):
     title = db.Column(db.String(255), nullable=False)
     message = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False)
     lat = db.Column( db.Double, nullable=False)
     long = db.Column(db.Double, nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
@@ -87,11 +70,12 @@ class Session(db.Model):
 
     
     ## create instance without host_name and just id
-    def __init__(self, title: str, msg: str, date: date, lat: float, long: float, h_id: int) -> None:
+    def __init__(self, title: str, msg: str, date: date, date_p: date, lat: float, long: float, h_id: int) -> None:
         self.host_name = Session.get_user_name_id(h_id)
         self.title = title
         self.message = msg
         self.date = date
+        self.date_posted = date
         self.lat = lat
         self.long = long
         self.host_id = h_id
