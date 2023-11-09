@@ -70,8 +70,6 @@ create table post(
     post_file bytea null
 );
 
-insert into post(title, description, ratio, date_posted, user_id, user_name) values ('Sample Title', 'Exaple desc', 0, '2023-11-07 13:20:34', 1, 'James Bond');
-
 drop table if exists comment_section cascade ;
 create table comment_section(
     id serial primary key,
@@ -93,6 +91,3 @@ create table comments(
     foreign key (commenter_id) references user_table(id)
 
 );
-
-insert into comments (comment_section_id, commenter_id, commenter_name, message)
-values (1, 3, 'Todd Mclovin', 'EPIC WOW');
