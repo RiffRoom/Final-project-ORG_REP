@@ -1,10 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
-from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB
-
+from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
 from dotenv import load_dotenv
 import os
+import base64
 from datetime import datetime, timedelta
-import sys
+
 
 # Load environment variables
 
@@ -26,8 +26,54 @@ db.init_app(app)
 
 @app.route('/')
 def homepage():
-    # insert_BLOB(1, 'static\images\default.png')
-    return render_template('index.html', users=UserTable.query.all())
+    return render_template('index.html', users=db.session.query(Post).all())
+
+#note binary_corrector is ONLY for profile pics and takes in
+#a authentic UserTable id!!
+@app.context_processor
+def db_image_corrector():
+    return dict(binary_corrector=return_img) 
+## using context_processor for images
+# loop example! start with a for loop in jinja
+# {% for user in users%} 
+#           then call {{binary_corrector()}} leave the user id as is
+#                                         like this  vvvv    thats it
+#         <img src="data:;base64,{{binary_corrector(user.id)}}">
+#     {% endfor %} 
+
+
+#db_media corrector is ONLY for audio and videos for posts and takes in
+# a Post Table id!!
+@app.context_processor
+def db_media_corrector():
+    return dict(media_binary_corrector=return_media)
+# example for audio!
+# {% for user in users%} 
+#     <audio controls>
+#         <source src="data:;base64,{{media_binary_corrector(2)}}" type="audio/mpeg">
+#     </audio>  
+# {% endfor %} 
+
+#FUN FACT! you can get away with saying video for audio,
+#with this you can kill 2 birds with 1 stone but must specify the type!
+# {% for user in users%} 
+#     <video controls>
+#         <source src="data:;base64,{{media_binary_corrector(user.id)}}" type="audio/mpeg">
+#     </video>  
+# {% endfor %} 
+
+
+#examples for working with post and user profile pic
+# insert_BLOB_user(2, 'static\images\logo.png')
+# insert_BLOB_user(3, 'static\images\pfp.png')
+
+# pos1 = Post('Shape of my Heart Cover', 'I made a cover of a favorite song of mine, check it out!',
+#             0, datetime.now(), 3, 'static\samplevids\Recording.mp3')
+# db.session.add(pos1)
+# db.session.commit()
+
+# insert_BLOB_post(1, 'static\samplevids\Recording.mp3')
+
 
 @app.get('/sessions')
 def get_sessions():

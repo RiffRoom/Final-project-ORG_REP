@@ -37,10 +37,11 @@ insert into sessions(host_name, title, message, date, date_posted, lat, long, ho
 -- 35.30752138310208, -80.73403424319967
 insert into sessions(host_name, title, message, date, date_posted, lat, long, host_id) values
 ('Jack Daniel', 'whats up cato', 'Crazy educational session', '2023-03-01 09:15:00', '2023-01-12 14:12:00', 35.30752138310208, -80.73403424319967, 2);-- sesh 2
+
 insert into sessions(host_name, title, message, date, date_posted, lat, long, host_id) values
-('Todd Mclovin', 'MCLOVIN', 'Come on down', '2023-04-16 17:30:00', '2023-03-01 14:12:00', 35.6756443544645, -80.2423526444635, 3); -- sesh 3
+('Todd Mclovin', 'MCLOVIN', 'Come on down', '2023-04-16 17:30:00', '2023-03-01 14:12:00', 35.30356435381034, -80.73075445239294, 3); -- sesh 3
 insert into sessions(host_name, title, message, date, date_posted, lat, long, host_id) values
-('Todd Mclovin', 'MCLOVIN PART 2', 'Come on down AGAIN', '2023-04-25 17:30:00', '2023-03-19 14:12:00', 35.6756443544645, -80.2423526444635, 3); -- sesh 3
+('Todd Mclovin', 'MCLOVIN PART 2', 'Come on down AGAIN', '2023-04-25 17:30:00', '2023-03-19 14:12:00', 35.30394085324328, -80.73147328440633, 3); -- sesh 3
 
 drop table if exists party cascade ;
 create table party(
@@ -69,8 +70,6 @@ create table post(
     post_file bytea null
 );
 
-insert into post(title, description, ratio, date_posted, user_id, user_name) values ('Sample Title', 'Exaple desc', 0, '2023-11-07 13:20:34', 1, 'James Bond');
-
 drop table if exists comment_section cascade ;
 create table comment_section(
     id serial primary key,
@@ -92,6 +91,3 @@ create table comments(
     foreign key (commenter_id) references user_table(id)
 
 );
-
-insert into comments (comment_section_id, commenter_id, commenter_name, message)
-values (1, 3, 'Todd Mclovin', 'EPIC WOW');

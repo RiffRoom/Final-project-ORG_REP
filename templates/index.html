@@ -12,8 +12,11 @@
 
 <div class="mx-5 mt-3">
     <h1>Trending!</h1>
-    {% for user in users %}
-    <h1>{{user.prof_pic}}</h1>
-    {% endfor %}
+        {% for user in users%} 
+            <video controls>
+                <source src="data:;base64,{{media_binary_corrector(user.id)}}" type="audio/mpeg">
+            </video>  
+        {% endfor %} 
+   
 </div>
 {% endblock %}
