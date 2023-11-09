@@ -23,7 +23,7 @@
                         <p class="card-subtitle text-muted">{{session.host_name}}</p>
                         <p class="card-text mt-2">{{ session.message }}</p>
                         <div class="d-flex flex-row justify-content-between align-items-center"> 
-                            <p class="card-text"><small class="text-muted">datetime</small></p>
+                            <p class="card-text"><small class="text-muted">{{session.date_posted}}</small></p>
                             <div class="d-flex flex-row">
                                 <form action="{{url_for('delete_session', session_id=session.id)}}" method="post">
                                     <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
@@ -99,6 +99,29 @@ async function initMap() {
         mapId: "DEMO_MAP_ID",
     });
 
+    const unccBoundsCoords = [
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+        { lat: 35.31481661425956, lng: -80.74069598448466 },
+        { lat: 35.312169105744914, lng: -80.73438993333288 },
+        { lat: 35.31523830140014, lng: -80.73421201724148 },
+        { lat: 35.31494221144105, lng: -80.73204780556539 },
+        { lat: 35.31235615257797, lng: -80.72855350684715 },
+        { lat: 35.31538347561351, lng: -80.72388443783808 },
+        { lat: 35.31155208430528, lng: -80.72163270254663 }, 
+        { lat: 35.30602302555555, lng: -80.72452057828536 },
+        { lat: 35.299084387414545, lng: -80.73699095079235 },
+        { lat: 35.302051098851756, lng: -80.7413328618174},
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+    ];
+
+    const unccBoundsPath = new google.maps.Polyline({
+        path: unccBoundsCoords,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+    });
 
     for (const [key, value] of Object.entries(activeSessions)) {
         let marker = new AdvancedMarkerElement({
@@ -172,7 +195,7 @@ async function initMap() {
                     message: sessionMessageInput.value,
                     lat: sessionMarker.position.lat,
                     lng: sessionMarker.position.lng,
-                    date: sessionDateInput.value
+                    date: sessionDateInput.value,
                 }
 
                 let json_data = JSON.stringify(data);
@@ -191,6 +214,8 @@ async function initMap() {
             throw 400;  
         }
     });
+
+  
 }
 
 initMap();

@@ -3,7 +3,8 @@ from models import db, Session, UserTable, Comment, CommentSection, Post, Party,
 from dotenv import load_dotenv
 import os
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 # Load environment variables
 
@@ -86,6 +87,8 @@ def get_sessions():
         result = i.serialize
         date_str = Session.date_str(result['date'])
         session_data.append(result)
+        
+        
 
     return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str)
 
@@ -101,7 +104,6 @@ def add_new_session():
 
     lat = data['lat']
     lng = data['lng']
-    print(lat, lng)
 
     if lat is None or lat == '' or lng is None or lng == '':
         abort(400)
@@ -111,7 +113,9 @@ def add_new_session():
     if date is None or date == '':
         abort(400)
 
-    s = Session(title, message, date, lat, lng, 1)
+    date_posted = datetime.now().strftime('%Y-%m-%dT%H:%M')
+
+    s = Session(title, message, date, date_posted, lat, lng, 1)
     db.session.add(s)
     db.session.commit()
     return redirect(url_for('get_sessions'))
