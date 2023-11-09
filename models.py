@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
-import config
+import base64
 from datetime import datetime
 
 def convert_To_Binary(filename): 
@@ -8,17 +7,31 @@ def convert_To_Binary(filename):
         data = file.read() 
     return data 
 
+def return_img(id):
+    some_user = UserTable.query.get(id)
+    BLOB = some_user.prof_pic
+    image = base64.b64encode(BLOB).decode('ascii')
+    return image
 
-def Binary_To_File(BLOB, FileName, oldFileName): 
-    with open(f"{FileName}", 'wb') as file: 
-        file.write(BLOB) 
-    print(f"{oldFileName} File saved With Name name {FileName}") 
-
-def insert_BLOB(user_id, FileName): 
+##update a user profile pic
+def insert_BLOB_user(user_id, FileName): 
     """ insert a BLOB into a table """
     user = UserTable.query.get(user_id)
     user.prof_pic = convert_To_Binary(FileName)
     db.session.commit()
+
+##update a post's file
+def insert_BLOB_post(user_id, FileName): 
+    """ insert a BLOB into a table """
+    user = Post.query.get(user_id)
+    user.post_file = convert_To_Binary(FileName)
+    db.session.commit()
+
+def return_media(id):
+    some_user = Post.query.get(id)
+    BLOB = some_user.post_file
+    image = base64.b64encode(BLOB).decode('ascii')
+    return image
 
 db = SQLAlchemy()
 ## USE ONLY FOR TESTS
@@ -47,6 +60,11 @@ class UserTable(db.Model):
         self.email = email
         self.phone = phone
     
+    def return_img(BLOB, file):
+        with open(f"{file}", 'wb') as file: 
+            file.write(BLOB) 
+        return file
+
     def __repr__(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
@@ -120,13 +138,14 @@ class Post(db.Model):
     post_file = db.Column(db.LargeBinary, nullable=False)
     section = db.relationship('CommentSection', cascade='all, delete')
 
-    def __init__(self, title: str, msg: str, ratio: int, date: str, pid: int) -> None:
+    def __init__(self, title: str, msg: str, ratio: int, date: datetime, pid: int, filepath: str) -> None:
         self.title = title
         self.description = msg
         self.ratio = ratio
         self.date_posted = date
         self.user_id = pid
         self.user_name = Session.get_user_name_id(pid)
+        self.post_file = convert_To_Binary(filepath)
 
 
 class CommentSection(db.Model):
