@@ -1,0 +1,14 @@
+{% extends '_template.html' %}
+
+
+{% block body %}
+<h1> Testing AWS </h1>
+
+
+{% for v in videos %}
+<div class="d-flex flex-column w-50 h-50">
+    <p>{{v}}</p>
+    <video controls src="{{v}}" type="video/mp4"></video>
+</div>
+{% endfor %}
+{% endblock %}

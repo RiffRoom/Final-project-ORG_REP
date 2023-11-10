@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 import os
 import base64
 from datetime import datetime, timedelta
+import boto3
+from botocore.exceptions import ClientError
+import logging
+import sys
 
 
 # Load environment variables
@@ -24,9 +28,36 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+session = boto3.Session(
+    aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key= os.getenv('AWS_SECRET_ACCESS_KEY'),
+)
+
 @app.route('/')
 def homepage():
     return render_template('index.html', users=db.session.query(Post).all())
+
+@app.get('/test')
+def get_test_page():
+    bucket = 'riffbucket'
+    s3_client = boto3.client('s3')
+    s3_resource = boto3.resource('s3')
+    video_bucket = s3_resource.Bucket(bucket)
+
+    videos = []
+
+    for v in video_bucket.objects.all():
+        try:
+            response = s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': bucket,
+                                                    'Key': v.key},
+                                                    ExpiresIn=3600)
+            videos.append(response)
+        except ClientError as e:
+            logging.error(e)
+            return None
+    
+    return render_template('test.html', videos=videos)
 
 #note binary_corrector is ONLY for profile pics and takes in
 #a authentic UserTable id!!
