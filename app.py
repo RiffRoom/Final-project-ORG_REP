@@ -9,6 +9,7 @@ from botocore.exceptions import ClientError
 import logging
 import sys
 
+from bucket_wrapper import BucketWrapper
 
 # Load environment variables
 
@@ -28,82 +29,37 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+
+# Create new AWS session with access keys
 session = boto3.Session(
     aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
     aws_secret_access_key= os.getenv('AWS_SECRET_ACCESS_KEY'),
 )
 
+# Create clients from session
+s3_client = session.client('s3')
+s3_resource = session.resource('s3')
+s3_distr = session.client('cloudfront')
+
+# Get CloudFront distribution
+distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
+
+# URL for distribution, append object keys to url to access 
+distribution_url = f'https://{distribution['Distribution']['DomainName']}/'
+
+# Get specific bucket from s3
+riff_bucket = s3_resource.Bucket('riffbucket')
+
+# Wrap bucket to access specific funcionality
+bucket_wrapper = BucketWrapper(riff_bucket)
+
+
 @app.route('/')
 def homepage():
-    return render_template('index.html', users=db.session.query(Post).all())
 
-@app.get('/test')
-def get_test_page():
-    bucket = 'riffbucket'
-    s3_client = boto3.client('s3')
-    s3_resource = boto3.resource('s3')
-    video_bucket = s3_resource.Bucket(bucket)
+    videos = bucket_wrapper.get_objects(s3_client)
 
-    videos = []
-
-    for v in video_bucket.objects.all():
-        try:
-            response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket,
-                                                    'Key': v.key},
-                                                    ExpiresIn=3600)
-            videos.append(response)
-        except ClientError as e:
-            logging.error(e)
-            return None
-    
-    return render_template('test.html', videos=videos)
-
-#note binary_corrector is ONLY for profile pics and takes in
-#a authentic UserTable id!!
-@app.context_processor
-def db_image_corrector():
-    return dict(binary_corrector=return_img) 
-## using context_processor for images
-# loop example! start with a for loop in jinja
-# {% for user in users%} 
-#           then call {{binary_corrector()}} leave the user id as is
-#                                         like this  vvvv    thats it
-#         <img src="data:;base64,{{binary_corrector(user.id)}}">
-#     {% endfor %} 
-
-
-#db_media corrector is ONLY for audio and videos for posts and takes in
-# a Post Table id!!
-@app.context_processor
-def db_media_corrector():
-    return dict(media_binary_corrector=return_media)
-# example for audio!
-# {% for user in users%} 
-#     <audio controls>
-#         <source src="data:;base64,{{media_binary_corrector(2)}}" type="audio/mpeg">
-#     </audio>  
-# {% endfor %} 
-
-#FUN FACT! you can get away with saying video for audio,
-#with this you can kill 2 birds with 1 stone but must specify the type!
-# {% for user in users%} 
-#     <video controls>
-#         <source src="data:;base64,{{media_binary_corrector(user.id)}}" type="audio/mpeg">
-#     </video>  
-# {% endfor %} 
-
-
-#examples for working with post and user profile pic
-# insert_BLOB_user(2, 'static\images\logo.png')
-# insert_BLOB_user(3, 'static\images\pfp.png')
-
-# pos1 = Post('Shape of my Heart Cover', 'I made a cover of a favorite song of mine, check it out!',
-#             0, datetime.now(), 3, 'static\samplevids\Recording.mp3')
-# db.session.add(pos1)
-# db.session.commit()
-
-# insert_BLOB_post(1, 'static\samplevids\Recording.mp3')
+    return render_template('index.html', videos=videos, distribution_url=distribution_url)    
 
 
 @app.get('/sessions')
@@ -119,8 +75,6 @@ def get_sessions():
         date_str = Session.date_str(result['date'])
         session_data.append(result)
         
-        
-
     return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str)
 
 @app.post('/sessions')
