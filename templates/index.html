@@ -12,7 +12,7 @@
 
 <div class="d-flex flex-column w-100 mx-5 mt-3">
     {% for video in videos %}
-        <video width="320" height="240" controls="true" autoplay="false" name="media" >
+        <video width="320" height="240" controls name="media" >
             <source src="{{distribution_url}}{{video}}" type="video/mp4">
             Your browser does not support the video tag.
         </video>

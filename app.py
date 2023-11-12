@@ -2,17 +2,15 @@ from flask import Flask, render_template, redirect, url_for, request, abort, jso
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
 from dotenv import load_dotenv
 import os
-import base64
-from datetime import datetime, timedelta
-import boto3
+from datetime import datetime
 from botocore.exceptions import ClientError
-import logging
 import sys
-
+from time import time, sleep 
+import boto3
+from boto3 import logging
 from bucket_wrapper import BucketWrapper
 
 # Load environment variables
-
 load_dotenv()
 
 DB_USER = os.getenv('DB_USER')
@@ -29,12 +27,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-
-# Create new AWS session with access keys
+# Create AWS session
 session = boto3.Session(
-    aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key= os.getenv('AWS_SECRET_ACCESS_KEY'),
-)
+                aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
+                aws_secret_access_key= os.getenv('AWS_SECRET_ACCESS_KEY'),
+            )
 
 # Create clients from session
 s3_client = session.client('s3')
@@ -53,17 +50,19 @@ riff_bucket = s3_resource.Bucket('riffbucket')
 # Wrap bucket to access specific funcionality
 bucket_wrapper = BucketWrapper(riff_bucket)
 
-
 @app.route('/')
 def homepage():
 
-    videos = bucket_wrapper.get_objects(s3_client)
+    try:
+        videos = bucket_wrapper.get_objects(s3_client)
+    except Exception:
+        abort(500)
 
     return render_template('index.html', videos=videos, distribution_url=distribution_url)    
 
-
 @app.get('/sessions')
 def get_sessions():
+    MAPS_API_KEY = os.getenv('MAPS_API_KEY') 
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_sessions = Session.query.all()
@@ -75,7 +74,7 @@ def get_sessions():
         date_str = Session.date_str(result['date'])
         session_data.append(result)
         
-    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str)
+    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
 
 @app.post('/sessions')
 def add_new_session():
