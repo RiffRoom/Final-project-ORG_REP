@@ -9,6 +9,8 @@ from time import time, sleep
 import boto3
 from boto3 import logging
 from bucket_wrapper import BucketWrapper
+from thumbnail_generator import generate_thumbnail
+from werkzeug.utils import secure_filename
 
 # Load environment variables
 load_dotenv()
@@ -21,6 +23,10 @@ DB_NAME = os.getenv('DB_NAME')
 
 app = Flask(__name__)
 app.app_context().push()
+
+app.config['MAX_CONTENT_LENGTH'] = 1_048_576 * 1_048_576
+app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3']
+app.config['UPLOAD_PATH'] = 'static//uploads'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
@@ -135,6 +141,19 @@ def upload_profile_pic():
     file.save('profile_pic.jpg')  
     return redirect(url_for('settings_page'))
 
-@app.route('/upload')
-def uplaod_page():
-    return None #rendertemplate('upload')
+@app.get('/upload')
+def get_video():
+    return render_template('upload_video.html')
+
+@app.post('/upload/new')
+def upload_video():
+    uploaded_file = request.files['file']
+    filename = secure_filename(uploaded_file.filename)
+    if filename != '':
+        file_ext = os.path.splitext(filename)[1]        
+        if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+            abort(400)
+        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
+    return redirect(url_for('get_video'))
+
