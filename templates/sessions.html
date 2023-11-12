@@ -1,46 +1,262 @@
 {% extends '_template.html' %}
 
+
+
 {% block body%}
 
 <nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
-        <div class="navbar-brand">
-            <a href="/" class="text-decoration-none text-white">Trending</a>
-        </div>
-        <div class="navbar-brand active">
-            <a href="" class="text-decoration-none text-white">Sessions</a>
-        </div>
+    <div class="navbar-brand">
+        <a href="/" class="text-decoration-none text-white">Trending</a>
+    </div>
+    <div class="navbar-brand active">
+        <a href="" class="text-decoration-none text-white">Sessions</a>
+    </div>
 </nav>
 
-<h1 class="pt-2 mb-4 mx-4 text-white">Sessions Page</h1>
-
-<div class="d-flex flex-row h-auto w-auto mx-2"> 
-    <div class="col row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 600px; scrollbar-width: 0;">
-    {% for session in active_sessions %}
-        <div class="card-group">
-            <div class="card bg-light-subtle mb-1 ">
-                <div class="card-body">
-                    <h5 class="card-title">{{ session.user_name}}</h5>
-                    <p class="card-text">{{ session.message }}</p>
-                    <p class="card-subtitle">Location: {{ session.lat }} , {{ session.lng }}</p>
-                    <div class="d-flex justify-content-between">
-                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        <div>
-                            <button type="submit" class="btn btn-success h-auto w-auto">Join Session</button>
+<div class="d-flex flex-row mt-5">
+    <div class="d-flex w-100 mx-2 scroll-black"> 
+        <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
+            {% for session in active_sessions %}
+                <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ session.title}} {{date_str}}</h5>
+                        <p class="card-subtitle text-muted">{{session.host_name}}</p>
+                        <p class="card-text mt-2">{{ session.message }}</p>
+                        <div class="d-flex flex-row justify-content-between align-items-center"> 
+                            <p class="card-text"><small class="text-muted">{{session.date_posted}}</small></p>
+                            <div class="d-flex flex-row">
+                                <form action="{{url_for('delete_session', session_id=session.id)}}" method="post">
+                                    <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
+                                </form>
+                                <button type="button" class="btn btn-success mx-2">Join</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
+    </div>
 
     <div class="d-flex flex-column mx-4 justify-content-center h-auto">
         <div class="" id="map" name="map"></div>
-        <button type="button" id="add-session-button" class="btn btn-primary mt-2" name="add_session_button">Add Session</button>
+
+        <div class="d-flex flex-column">
+            <form action="{{url_for('add_new_session')}}" method="get">
+                <div class="d-flex flex-column">
+                    <div class="form-group">
+                        <label for="session_title">Session Title</label>
+                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required>
+                    </div>
+                    <div class="form-group d-flex flex-column">
+                        <label for="session_message">Description</label>
+                        <textarea class="form-group was-validated" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session."></textarea>  
+                    </div>
+                    <div class="form-group d-flex flex-row justify-content-between align-items-center mt-2">
+                        <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
+                        <button type="submit" class="btn btn-success w-50" id="create_session_button">Create Session</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-    ({key: "AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo", v: "beta"});</script>
+
+<script>
+(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+    ({key: "AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo", v: "beta"});
+
+'use strict';
+
+let map;
+
+let sessionMarkerPlaced = false;
+let infoWindowOpen = false;
+
+let currentInfoWindow;
+
+// Dictionary of Session Markers
+const activeSessions = {{ session_data|tojson }};
+
+
+let createSessionButton = document.getElementById("create_session_button");
+let sessionTitleInput = document.getElementById("session_title");
+let sessionMessageInput = document.getElementById("session_message");
+let sessionDateInput = document.getElementById("session_date_time");
+
+createSessionButton.classList.add('disabled');
+
+const intersectionObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+        if (entry.isIntersecting) {
+        entry.target.classList.add("drop");
+        intersectionObserver.unobserve(entry.target);
+        }
+    }   
+});
+
+const parser = new DOMParser();
+
+const pinSVGString = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="red" class="bi bi-music-note" viewBox="0 0 16 16">\
+  <path d="M9 13c0 1.105-1.12 2-2.5 2S4 14.105 4 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>\
+  <path fill-rule="evenodd" d="M9 3v10H8V3h1z"/>\
+  <path d="M8 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 13 2.22V4L8 5V2.82z"/>\
+</svg>'
+
+const pinSVG = parser.parseFromString(
+    pinSVGString,
+    "image/svg+xml",
+).documentElement;
+
+async function initMap() {
+
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+    const { InfoWindow } = await google.maps.importLibrary("maps");
+
+    const position = { lat: 35.30882205337362, lng: -80.73374243196827 };
+    
+    map = new Map(document.getElementById("map"), {
+        zoom: 16,
+        center: position,
+        mapId: "DEMO_MAP_ID",
+    });
+
+    const unccBoundsCoords = [
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+        { lat: 35.31481661425956, lng: -80.74069598448466 },
+        { lat: 35.312169105744914, lng: -80.73438993333288 },
+        { lat: 35.31523830140014, lng: -80.73421201724148 },
+        { lat: 35.31494221144105, lng: -80.73204780556539 },
+        { lat: 35.31235615257797, lng: -80.72855350684715 },
+        { lat: 35.31538347561351, lng: -80.72388443783808 },
+        { lat: 35.31155208430528, lng: -80.72163270254663 }, 
+        { lat: 35.30602302555555, lng: -80.72452057828536 },
+        { lat: 35.299084387414545, lng: -80.73699095079235 },
+        { lat: 35.302051098851756, lng: -80.7413328618174},
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+    ];
+
+    const unccBoundsPath = new google.maps.Polyline({
+        path: unccBoundsCoords,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+    });
+
+    for (const [key, value] of Object.entries(activeSessions)) {
+        let marker = new AdvancedMarkerElement({
+            map: map,
+            position: { lat: value.lat, lng: value.lng },
+            title: value.title,
+        });
+
+        
+        const content = marker.content;
+
+        content.style.opacity = "0";
+        content.addEventListener("animationend", (event) => {
+        content.classList.remove("drop");
+        content.style.opacity = "1";
+        });
+
+        const time = 1 + Math.random(); 
+
+        content.style.setProperty("--delay-time", time + "s");
+        intersectionObserver.observe(content);
+        
+        let infoWindow = new InfoWindow({
+            content: `
+            <h3 style="color: black">${value.title}</h3>
+            <div style="color: black">
+                <p>
+                    <strong>Host</strong>: ${value.host_name}
+                    <br>
+                    <strong>Extra Info</strong>: ${value.message}
+                </p>
+            </div>`,
+            maxWidth: 250,
+        });
+        
+        marker.addEventListener('gmp-click', () => {
+            if(infoWindowOpen){
+                currentInfoWindow.close();
+                infoWindow.open({
+                    anchor: marker,
+                    map,
+                });
+                currentInfoWindow = infoWindow;
+                infoWindowOpen = true;
+            }
+            else {
+                infoWindow.open({
+                    anchor: marker,
+                    map,
+                });
+                currentInfoWindow = infoWindow;
+                infoWindowOpen = true;
+            }
+        });
+    }
+
+    google.maps.event.addListener(map, "click", function (e) {
+        let latitude = e.latLng.lat();
+        let longitude = e.latLng.lng();
+
+        createSessionButton.classList.remove('disabled');
+
+        if(!sessionMarkerPlaced){
+            sessionMarker = new AdvancedMarkerElement({
+                map: map,
+                position: { lat: latitude, lng: longitude },
+                title: "New Session"
+            });
+            sessionMarkerPlaced = true;
+        }
+        else {
+            sessionMarker.position = {lat: latitude, lng: longitude};
+        }
+    });
+
+
+    createSessionButton.addEventListener('click', function (e) {
+        try {
+            if(sessionMarkerPlaced){
+
+                sessionMarkerPlaced = false;
+
+                let data = {
+                    title: sessionTitleInput.value,
+                    message: sessionMessageInput.value,
+                    lat: sessionMarker.position.lat,
+                    lng: sessionMarker.position.lng,
+                    date: sessionDateInput.value,
+                }
+
+                let json_data = JSON.stringify(data);
+    
+                fetch(`${window.origin}/sessions`, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        'Accept': 'application/json, multipart/form-data',
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    body: json_data
+                }) 
+            }
+        } catch (error) {
+            throw 400;  
+        }
+    });
+
+  
+}
+
+initMap();
+
+</script>
 
 {% endblock %}
