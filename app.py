@@ -27,6 +27,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+boto3.set_stream_logger('', logging.INFO)
+logger = logging.getLogger()
+
 # Create AWS session
 session = boto3.Session(
                 aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
@@ -53,10 +56,7 @@ bucket_wrapper = BucketWrapper(riff_bucket)
 @app.route('/')
 def homepage():
 
-    try:
-        videos = bucket_wrapper.get_objects(s3_client)
-    except Exception:
-        abort(500)
+    videos = bucket_wrapper.get_objects(s3_client) 
 
     return render_template('index.html', videos=videos, distribution_url=distribution_url)    
 
@@ -73,7 +73,7 @@ def get_sessions():
         result = i.serialize
         date_str = Session.date_str(result['date'])
         session_data.append(result)
-        
+
     return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
 
 @app.post('/sessions')
