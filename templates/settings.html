@@ -15,12 +15,35 @@
             
             <!-- Profile Picture -->
             <div class="text-center mb-4">
-                <form action="/path/to/your/upload/handler" method="post" enctype="multipart/form-data">
-                    <label for="profile_pic_upload" class="profile-pic-label">
-                        <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Profile Picture" class="img-fluid profile-pic">
-                    </label>
-                    <input type="file" name="profile_pic" id="profile_pic_upload" class="d-none">
-                </form>
+                <button class="profile-pic-label btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
+                    <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Profile Picture" class="img-fluid">
+                </button>
+            </div>
+
+            <!-- default pfps -->
+            <div class="offcanvas offcanvas-top" data-bs-scroll="false" data-bs-backdrop="true" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasTopLabel">Edit Profile Picture</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                
+                <div class="offcanvas-body horizontal-scroll">
+                    <div class="d-flex flex-row">
+                        <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                            <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
+                            <input type="file" id="profile-pic-input" hidden>
+                        </button>
+                        
+                        <!--test pfp-->
+                        <button class="upload-icon-label btn" type="button">
+                            <img src="{{ url_for('static', filename='images/testpfp.png') }}" alt="Test Profile Picture">
+                        </button>
+
+                        <div class="offcanvas-content">
+                            <!--ur mom-->
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- User Info -->
@@ -46,18 +69,18 @@
 
                 <!-- Visibility Switch -->
                 <div class="form-group">
-                    <label class="switch" style="margin-top: 20px;">
+                    <label class="switch" style="margin-top: 10px;">
                         <input type="checkbox" id="profileVisibilitySwitch">
                         <span class="slider round"></span>
                     </label>
-                    <span id="switchCaption">Public profile</span>
+                    <span class="switch-caption" id="switchCaption">Public profile</span>
                 </div>
                 
                 <!-- Save Button -->
-                <div style="position: fixed; bottom: 10px; right: 10px;">
-                    <form action="#" method="post">
+                <div class="row">
+                    <div class="col text-end" style="margin-top: -20px;"> 
                         <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
+                    </div>
                 </div>
             </form>
         </div>
