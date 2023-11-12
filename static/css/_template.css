@@ -9,7 +9,7 @@
   }
 
   .scroll-black *::-webkit-scrollbar-track {
-    background: transparent;
+    background: transparent; 
   }
 
   .scroll-black *::-webkit-scrollbar-thumb {
@@ -160,6 +160,75 @@
     vertical-align: middle; 
     display: inline-block; 
   }
+
+/*Upload-icon*/
+      .upload-icon-label {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        padding: 0;
+        border: none;
+        line-height: 0;
+        width: 160px;
+        height: 160px;
+        margin-top: -25px;
+      }
+
+      .upload-icon-label img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: filter 0.3s ease-in-out;
+      }
+
+      .upload-icon-label:hover img {
+        filter: brightness(2); 
+      }
+
+      /* Offcanvas */
+      .offcanvas-body.horizontal-scroll {
+        display: flex; 
+        align-items: center; 
+        overflow-x: hidden;
+        overflow-y: hidden;
+      }
+
+      .offcanvas-body.horizontal-scroll {
+        overflow-y: hidden;
+      }
+
+
+      .d-flex.flex-row {
+        flex-wrap: nowrap; 
+        justify-content: flex-start; 
+        align-items: center; 
+      }
+
+      .offcanvas.offcanvas-top {
+        width: 100vw; 
+      }
+
+      /* Circle button styling */
+      .circle-btn {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        transition: box-shadow 0.3s ease-in-out;
+        margin-top: -30px;
+      }
+
+      .circle-btn:hover {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+      }
+
+      .circle-btn img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
   /* Map Pin Animation and Styling */
 
