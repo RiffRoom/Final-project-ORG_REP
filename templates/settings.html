@@ -38,8 +38,8 @@
                         </button>
                         
                         <!--test pfp-->
-                        <button class="upload-icon-label btn" type="button">
-                            <img src="{{ url_for('static', filename='images/testpfp.png') }}" alt="Test Profile Picture">
+                        <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic()">
+                            <img src="{{ url_for('static', filename='images/testpfp.png') }}" alt="Test Profile Picture" style="object-fit: cover;">
                         </button>
 
                         <div class="offcanvas-content">
@@ -90,3 +90,30 @@
     </div>
 </div>
 {% endblock %}
+
+
+<script>
+    function setTestProfilePic() {
+        var profilePic = document.querySelector('.profile-pic-label img');
+        if (profilePic) {
+            profilePic.src = '{{ url_for("static", filename="images/testpfp.png") }}';
+    
+            // Send AJAX request to server
+            fetch('/update-profile-picture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newPic: 'testpfp.png' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    }
+    </script>
+    

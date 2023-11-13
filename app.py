@@ -3,6 +3,7 @@ from models import db, Session, UserTable, Comment, CommentSection, Post, Party,
 from dotenv import load_dotenv
 import os
 import base64
+import shutil
 from datetime import datetime, timedelta
 
 
@@ -147,14 +148,13 @@ def settings_page():
 
 @app.route('/upload_profile_pic', methods=['POST'])
 def upload_profile_pic():
-    file = request.files['profile_pic']
-    file.save('profile_pic.jpg')  
-    return redirect(url_for('settings_page'))
-
-@app.route('/set_test_profile_pic', methods=['POST'])
-def set_test_profile_pic():
-    test_pic_web_path = '/static/images/testpfp.png'
-    return jsonify({'new_pic_path': test_pic_web_path})
+    file_name = request.form['file']
+    if file_name:
+        src = os.path.join(app.static_folder, 'images', file_name)
+        dst = os.path.join(app.static_folder, 'images', 'pfp.png')
+        shutil.copyfile(src, dst)  
+        return 'Profile picture updated successfully'
+    return 'No file name provided'
     
 @app.route('/upload')
 def uplaod_page():
