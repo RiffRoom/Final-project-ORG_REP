@@ -54,7 +54,7 @@ distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
 distribution_url = f'https://{distribution['Distribution']['DomainName']}/'
 
 # Get specific bucket from s3
-riff_bucket = s3_resource.Bucket('riffbucket')
+riff_bucket = s3_resource.Bucket('riffbucket-itsc3155')
 
 # Wrap bucket to access specific funcionality
 bucket_wrapper = BucketWrapper(riff_bucket)
