@@ -20,8 +20,10 @@
                 </button>
             </div>
 
+
             <!-- default pfps -->
             <div class="offcanvas offcanvas-top" data-bs-scroll="false" data-bs-backdrop="true" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                
                 <div class="offcanvas-header">
                     <h5 id="offcanvasTopLabel">Edit Profile Picture</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -29,6 +31,7 @@
                 
                 <div class="offcanvas-body horizontal-scroll">
                     <div class="d-flex flex-row">
+                        <!--upload-->
                         <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
                             <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
                             <input type="file" id="profile-pic-input" hidden>

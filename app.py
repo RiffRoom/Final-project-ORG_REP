@@ -151,6 +151,11 @@ def upload_profile_pic():
     file.save('profile_pic.jpg')  
     return redirect(url_for('settings_page'))
 
+@app.route('/set_test_profile_pic', methods=['POST'])
+def set_test_profile_pic():
+    test_pic_web_path = '/static/images/testpfp.png'
+    return jsonify({'new_pic_path': test_pic_web_path})
+    
 @app.route('/upload')
 def uplaod_page():
     return None #rendertemplate('upload')
