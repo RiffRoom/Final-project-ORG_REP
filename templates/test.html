@@ -1,0 +1,24 @@
+{% extends '_template.html' %}
+
+
+{% block body %}
+<h1> Testing AWS </h1>
+
+<div>
+    {{distribution}}
+</div>
+
+<div class="d-flex flex-column w-100">
+    {% for key in contents %}
+        {{url + key}}
+        <video width="320" height="240" controls="true" autoplay="false" name="media" >
+            <source src="https://{{url + key}}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    {% endfor %}
+</div>
+
+<div>
+    {{bucket}}
+</div>
+{% endblock %}
