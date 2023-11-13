@@ -3,7 +3,6 @@ from botocore.exceptions import ClientError
 from boto3 import logging
 import sys
 
-
 class BucketWrapper:
     def __init__(self, s3_bucket) -> None:
         self.bucket = s3_bucket
