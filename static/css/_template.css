@@ -78,8 +78,8 @@
   }
 
   .profile-pic-label img {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     object-fit: cover;
     transition: filter 0.3s ease-in-out;
@@ -165,8 +165,8 @@
     padding: 0;
     border: none;
     line-height: 0;
-    width: 160px;
-    height: 160px;
+    width: 220px;
+    height: 220px;
     margin-top: -25px;
   }
 
@@ -179,7 +179,7 @@
   }
 
   .upload-icon-label:hover img {
-    filter: brightness(1); 
+    filter: brightness(1.5); 
   }
 
   /* Offcanvas */
@@ -190,30 +190,21 @@
     overflow-y: hidden;
   }
 
-  .offcanvas-body.horizontal-scroll {
-    overflow-y: hidden;
-  }
-
-
   .d-flex.flex-row {
     flex-wrap: nowrap; 
     justify-content: flex-start; 
     align-items: center; 
   }
 
-  .offcanvas.offcanvas-top {
-    width: 100vw; 
-  }
-
   /* Circle button styling */
   .circle-btn {
-    width: 90px;
-    height: 90px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     transition: box-shadow 0.3s ease-in-out;
-    margin-top: 10px;
+    margin-top: -20px;
   }
 
   .circle-btn:hover {

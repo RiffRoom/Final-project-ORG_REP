@@ -2,9 +2,14 @@ from flask import Flask, render_template, redirect, url_for, request, abort, jso
 from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
 from dotenv import load_dotenv
 import os
-import base64
+from datetime import datetime
+from botocore.exceptions import ClientError
+import sys
 import shutil
-from datetime import datetime, timedelta
+from time import time, sleep 
+import boto3
+from boto3 import logging
+from bucket_wrapper import BucketWrapper
 
 
 # Load environment variables
@@ -42,7 +47,7 @@ s3_distr = session.client('cloudfront')
 distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
 
 # URL for distribution, append object keys to url to access 
-distribution_url = f'https://{distribution['Distribution']['DomainName']}/'
+distribution_url = f'https://{distribution["Distribution"]["DomainName"]}/'
 
 # Get specific bucket from s3
 riff_bucket = s3_resource.Bucket('riffbucket')
@@ -119,23 +124,31 @@ def user_prod():
 
 @app.route('/settings')
 def settings_page():
-    profile_pic_path = 'profile_pic.jpg'
-    if os.path.exists(profile_pic_path):
-        profile_pic_url = '/' + profile_pic_path
+    profile_pic_path = os.path.join('images', 'pfp.png')  
+    full_path = os.path.join(app.static_folder, profile_pic_path)
+    if os.path.exists(full_path):
+        profile_pic_url = url_for('static', filename=profile_pic_path)
     else:
-        profile_pic_url = '/static/default_pfp.jpg'
-    return render_template('settings.html',  profile_pic_url=profile_pic_url)
+        profile_pic_url = url_for('static', filename='testpfp.jpg') 
+    return render_template('settings.html', profile_pic_url=profile_pic_url)
 
-@app.route('/upload_profile_pic', methods=['POST'])
-def upload_profile_pic():
-    file_name = request.form['file']
-    if file_name:
-        src = os.path.join(app.static_folder, 'images', file_name)
-        dst = os.path.join(app.static_folder, 'images', 'pfp.png')
-        shutil.copyfile(src, dst)  
-        return 'Profile picture updated successfully'
-    return 'No file name provided'
-    
+@app.route('/update_profile_pic', methods=['POST'])
+def update_profile_pic():
+    if 'profile_pic' not in request.files:
+        return redirect(request.url)
+
+    file = request.files['profile_pic']
+
+    if file.filename == '':
+        return redirect(request.url)
+
+    if file:  
+        user_id = ...  
+        insert_BLOB_user(user_id, file)
+        return redirect(url_for('settings_page'))
+
+
+
 @app.route('/upload')
 def uplaod_page():
     return None #rendertemplate('upload')

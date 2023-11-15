@@ -31,19 +31,53 @@
                 
                 <div class="offcanvas-body horizontal-scroll">
                     <div class="d-flex flex-row">
-                        <!--upload-->
-                        <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
-                            <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
-                            <input type="file" id="profile-pic-input" hidden>
-                        </button>
-                        
-                        <!--test pfp-->
-                        <button class="upload-icon-label btn circle-btn" type="button">
-                            <img src="{{ url_for('static', filename='images/testpfp.png') }}" alt="Test Profile Picture">
-                        </button>
-
                         <div class="offcanvas-content">
-                            <!--ur mom-->
+                            
+                            <!--upload-->
+                            <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                                <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
+                                <input type="file" id="profile-pic-input" hidden>
+                            </button>
+                            
+                            <!--test pfp 1-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp.png') }}" alt="Test Profile Picture">
+                            </button>
+
+                            <!--test pfp 2-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp2.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp2.png') }}" alt="Test Profile Picture 2">
+                            </button>
+
+                            <!--test pfp 3-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp3.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp3.png') }}" alt="Test Profile Picture 3">
+                            </button>
+
+                            <!--test pfp 4-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp4.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp4.png') }}" alt="Test Profile Picture 4">
+                            </button>
+
+                            <!--test pfp 5-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp5.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp5.png') }}" alt="Test Profile Picture 5">
+                            </button>
+
+                            <!--test pfp 6-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp.png6')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp6.png') }}" alt="Test Profile Picture 6">
+                            </button>
+
+                            <!--test pfp 7-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp.png7')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp7.png') }}" alt="Test Profile Picture 7">
+                            </button>
+
+                            <!--test pfp 8-->
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp8.jpg')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp8.jpg') }}" alt="Test Profile Picture 8">
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -93,18 +127,20 @@
 
 
 <script>
-    function setTestProfilePic() {
+    function setTestProfilePic(imageFileName) {
         var profilePic = document.querySelector('.profile-pic-label img');
         if (profilePic) {
-            profilePic.src = '{{ url_for("static", filename="images/testpfp.png") }}';
-    
+            // Construct the URL in JavaScript, not using Jinja2
+            var baseUrl = "{{ url_for('static', filename='images/testpfps/') }}";
+            profilePic.src = baseUrl + imageFileName;
+
             // Send AJAX request to server
             fetch('/update-profile-picture', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ newPic: 'testpfp.png' })
+                body: JSON.stringify({ newPic: imageFileName })
             })
             .then(response => response.json())
             .then(data => {
@@ -115,5 +151,6 @@
             });
         }
     }
-    </script>
+</script>
+
     
