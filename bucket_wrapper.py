@@ -28,6 +28,14 @@ class BucketWrapper:
     def get_object(self, client, object_id):
         pass
 
-    def add_object(self, client, object_id):
-        pass
+    def add_object(self, client, file_name, object_id) -> bool:        
+        s3_client = client
+        try:
+            response = s3_client.upload_file(file_name, self.name, object_id)
+        except ClientError:
+            logging.exception('Could not upload file.')
+            return False
+        else:
+            return True
+
 

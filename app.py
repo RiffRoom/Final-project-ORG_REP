@@ -11,6 +11,8 @@ from boto3 import logging
 from bucket_wrapper import BucketWrapper
 from thumbnail_generator import generate_thumbnail
 from werkzeug.utils import secure_filename
+from tinytag import TinyTag
+import subprocess
 
 # Load environment variables
 load_dotenv()
@@ -25,7 +27,7 @@ app = Flask(__name__)
 app.app_context().push()
 
 app.config['MAX_CONTENT_LENGTH'] = 1_048_576 * 1_048_576
-app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3']
+app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3', '.png']
 app.config['UPLOAD_PATH'] = 'static//uploads'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
@@ -149,11 +151,17 @@ def get_video():
 def upload_video():
     uploaded_file = request.files['file']
     filename = secure_filename(uploaded_file.filename)
-    if filename != '':
+
+    if filename:
         file_ext = os.path.splitext(filename)[1]        
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
-    return redirect(url_for('get_video'))
+
+        #bucket_wrapper.add_object(file_name=filename, client=s3_client, object_id='NewUpload')
+        #s3_client.upload_file(f'static/uploads/{filename}', 'riffbucket-itsc3155', 'videos/img.png')
+        
+        #generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
+        msg = "File Uploaded" 
+    return redirect(url_for('get_video', msg=msg))
 
