@@ -130,7 +130,6 @@
     function setTestProfilePic(imageFileName) {
         var profilePic = document.querySelector('.profile-pic-label img');
         if (profilePic) {
-            // Construct the URL in JavaScript, not using Jinja2
             var baseUrl = "{{ url_for('static', filename='images/testpfps/') }}";
             profilePic.src = baseUrl + imageFileName;
 
