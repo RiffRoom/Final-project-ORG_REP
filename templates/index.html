@@ -20,4 +20,17 @@
         {% endfor %}
     {% endif %}
 </div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div> {{message}} </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 {% endblock %}

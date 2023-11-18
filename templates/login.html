@@ -2,25 +2,40 @@
 
 {% block body %}
 
-<h1>Sign Up</h1>
-
-<form action="/signup" method="post">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username">
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password">
-    <button type="submit">Sign Up</button>
-</form>
-
-
-<h1>Log In</h1>
-
-<form action="/login" method="post">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username">
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password">
-    <button type="submit">Log In</button>
-</form>
+<div class="d-flex flex-column m-3">
+    <h1>Sign Up</h1>
+    
+    <form action="/signup" method="post">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+    
+    
+    <h1>Log In</h1>
+    
+    <form action="/login" method="post">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Log In</button>
+    </form>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="d-flex flex-row alert alert-danger justify-content-center alert-dismissible fade show fixed-top" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div>
+                {{message}}
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 
 {% endblock %}

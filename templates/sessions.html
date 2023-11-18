@@ -25,7 +25,7 @@
                         <div class="d-flex flex-row justify-content-between align-items-center"> 
                             <p class="card-text"><small class="text-muted">{{jam_session.date_posted}}</small></p>
                             <div class="d-flex flex-row">
-                                <form action="{{url_for('delete_session', session_id=session.id)}}" method="post">
+                                <form action="{{url_for('delete_session', jam_session_id=jam_session.id)}}" method="post">
                                     <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
                                 </form>
                                 <button type="button" class="btn btn-success mx-2">Join</button>
@@ -76,7 +76,7 @@ let infoWindowOpen = false;
 let currentInfoWindow;
 
 // Dictionary of Session Markers
-const activeSessions = {{ session_data|tojson }};
+const activeSessions = {{ jam_session_data|tojson }};
 
 
 let createSessionButton = document.getElementById("create_session_button");
@@ -239,7 +239,7 @@ async function initMap() {
         }
     });
 
-  
+
 }
 
 initMap();
