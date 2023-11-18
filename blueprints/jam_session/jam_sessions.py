@@ -14,7 +14,7 @@ def get_sessions():
     if not session.get('id'):
         return redirect('/login')
 
-    MAPS_API_KEY = 'AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo'
+    MAPS_API_KEY = os.getenv('MAPS_API_KEY')
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_jam_sessions = JamSession.query.all()
