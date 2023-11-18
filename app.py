@@ -1,5 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
-from models import db, Session, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
+from flask import Flask, render_template, redirect, url_for, request, abort, jsonify, session
+from models import db, JamSession, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -11,8 +11,9 @@ from boto3 import logging
 from bucket_wrapper import BucketWrapper
 from thumbnail_generator import generate_thumbnail
 from werkzeug.utils import secure_filename
-from tinytag import TinyTag
-import subprocess
+from flask_bcrypt import Bcrypt
+from flask_session import Session
+
 
 # Load environment variables
 load_dotenv()
@@ -26,8 +27,10 @@ DB_NAME = os.getenv('DB_NAME')
 app = Flask(__name__)
 app.app_context().push()
 
+bcrypt = Bcrypt(app)
+
 app.config['MAX_CONTENT_LENGTH'] = 1_048_576 * 1_048_576
-app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3', '.png']
+app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3']
 app.config['UPLOAD_PATH'] = 'static//uploads'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
@@ -57,13 +60,15 @@ distribution_url = f'https://{distribution['Distribution']['DomainName']}/'
 
 # Get specific bucket from s3
 riff_bucket = s3_resource.Bucket('riffbucket-itsc3155')
+upload_bucket = s3_resource.Bucket('riffbucket-itsc3155-upload')
 
 # Wrap bucket to access specific funcionality
 bucket_wrapper = BucketWrapper(riff_bucket)
+upload_bucket_wrapper = BucketWrapper(upload_bucket)
+
 
 @app.route('/')
 def homepage():
-
     videos = bucket_wrapper.get_objects(s3_client) 
 
     return render_template('index.html', videos=videos, distribution_url=distribution_url)    
@@ -73,16 +78,16 @@ def get_sessions():
     MAPS_API_KEY = os.getenv('MAPS_API_KEY') 
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
-    active_sessions = Session.query.all()
+    active_jam_sessions = JamSession.query.all()
 
     session_data = []
 
-    for i in active_sessions:
+    for i in active_jam_sessions:
         result = i.serialize
-        date_str = Session.date_str(result['date'])
+        date_str = JamSession.date_str(result['date'])
         session_data.append(result)
 
-    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_sessions=active_sessions, session_data=session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
+    return render_template('sessions.html', current_date=current_date, max_date=max_date, active_jam_sessions=active_jam_sessions, session_data=session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
 
 @app.post('/sessions')
 def add_new_session():
@@ -107,21 +112,21 @@ def add_new_session():
 
     date_posted = datetime.now().strftime('%Y-%m-%dT%H:%M')
 
-    s = Session(title, message, date, date_posted, lat, lng, 1)
+    s = JamSession(title, message, date, date_posted, lat, lng, 1)
     db.session.add(s)
     db.session.commit()
     return redirect(url_for('get_sessions'))
 
 @app.post('/sessions/<int:session_id>/delete')
 def delete_session(session_id: int):
-    session = Session.query.get(session_id)
+    session = JamSession.query.get(session_id)
     db.session.delete(session)
     db.session.commit()
     return redirect(url_for('get_sessions'))
 
 @app.get('/sessions/<int:session_id>')
 def get_single_session(session_id: int):
-    session = Session.query.get(session_id)
+    session = JamSession.query.get(session_id)
     return render_template('get_single_session.html', session=session)
 
 @app.route('/user_prof')
@@ -151,17 +156,39 @@ def get_video():
 def upload_video():
     uploaded_file = request.files['file']
     filename = secure_filename(uploaded_file.filename)
-
-    if filename:
+    if filename != '':
         file_ext = os.path.splitext(filename)[1]        
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
+    return redirect(url_for('get_video'))
 
-        #bucket_wrapper.add_object(file_name=filename, client=s3_client, object_id='NewUpload')
-        #s3_client.upload_file(f'static/uploads/{filename}', 'riffbucket-itsc3155', 'videos/img.png')
-        
-        #generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
-        msg = "File Uploaded" 
-    return redirect(url_for('get_video', msg=msg))
+@app.get('/login')
+def get_login():
+    return render_template('login.html')
+
+@app.post('/login')
+def login():
+    username = request.form.get('username')
+    raw_password = request.form.get('password')
+
+    check_pass = bcrypt.check_password_hash(raw_password)
+    if not username or not raw_password:
+        abort(403)
+    if not check_pass:
+        abort(401)
+
+    return redirect(url_for(homepage))
+
+
+@app.post('/signup')
+def sign_up():
+    username = request.form.get('username')
+    raw_password = request.form.get('password')
+    hashed_password = bcrypt.generate_password_hash(raw_password, 16).decode()
+
+    print(f'{username} {raw_password} {hashed_password}', file=sys.stdout)
+    return redirect('/login')
+
 

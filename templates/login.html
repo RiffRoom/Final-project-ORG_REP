@@ -1,0 +1,26 @@
+{% extends '_template.html' %} 
+
+{% block body %}
+
+<h1>Sign Up</h1>
+
+<form action="/signup" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username">
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+    <button type="submit">Sign Up</button>
+</form>
+
+
+<h1>Log In</h1>
+
+<form action="/login" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username">
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+    <button type="submit">Log In</button>
+</form>
+
+{% endblock %}

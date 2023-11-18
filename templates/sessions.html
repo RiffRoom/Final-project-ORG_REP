@@ -16,14 +16,14 @@
 <div class="d-flex flex-row mt-5">
     <div class="d-flex w-100 mx-2 scroll-black"> 
         <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
-            {% for session in active_sessions %}
+            {% for jam_session in active_jam_sessions %}
                 <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
                     <div class="card-body">
-                        <h5 class="card-title">{{ session.title}} {{date_str}}</h5>
-                        <p class="card-subtitle text-muted">{{session.host_name}}</p>
-                        <p class="card-text mt-2">{{ session.message }}</p>
+                        <h5 class="card-title">{{ jam_session.title}} {{date_str}}</h5>
+                        <p class="card-subtitle text-muted">{{jam_session.host_name}}</p>
+                        <p class="card-text mt-2">{{ jam_session.message }}</p>
                         <div class="d-flex flex-row justify-content-between align-items-center"> 
-                            <p class="card-text"><small class="text-muted">{{session.date_posted}}</small></p>
+                            <p class="card-text"><small class="text-muted">{{jam_session.date_posted}}</small></p>
                             <div class="d-flex flex-row">
                                 <form action="{{url_for('delete_session', session_id=session.id)}}" method="post">
                                     <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
