@@ -21,16 +21,17 @@ def get_sessions():
 
     jam_session_data = []
 
-    for i in active_jam_sessions:
-        result = i.serialize
-        date_str = JamSession.date_str(result['date'])
-        jam_session_data.append(result)
+    if active_jam_sessions:
+        for i in active_jam_sessions:
+            result = i.serialize
+            date_str = JamSession.date_str(result['date'])
+            jam_session_data.append(result)
 
     return render_template('jam_sessions.html', current_date=current_date, max_date=max_date, active_jam_sessions=active_jam_sessions, jam_session_data=jam_session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
 
 
 
-@jam_sessions_bp.post('/new')
+@jam_sessions_bp.post('/')
 def add_new_session():
     data = request.get_json()
     title = data['title']
@@ -56,16 +57,16 @@ def add_new_session():
     s = JamSession(title, message, date, date_posted, lat, lng, 1)
     db.session.add(s)
     db.session.commit()
-    return redirect(url_for('get_sessions'))
+    return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
     session = JamSession.query.get(session_id)
     return render_template('get_single_session.html', session=session)
 
-@jam_sessions_bp.post('/<int:jam_session_id>/delete')
+@jam_sessions_bp.post('/<int:session_id>/delete')
 def delete_session(session_id: int):
     session = JamSession.query.get(session_id)
     db.session.delete(session)
     db.session.commit()
-    return redirect(url_for('get_sessions'))
+    return redirect(url_for('jam_sessions.get_sessions'))

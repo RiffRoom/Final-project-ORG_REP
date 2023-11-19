@@ -19,13 +19,13 @@
             {% for jam_session in active_jam_sessions %}
                 <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
                     <div class="card-body">
-                        <h5 class="card-title">{{ jam_session.title}} {{date_str}}</h5>
+                        <h5 class="card-title">{{ jam_session.title}} {% if date_str %} {{date_str}} {% endif %}</h5>
                         <p class="card-subtitle text-muted">{{jam_session.host_name}}</p>
                         <p class="card-text mt-2">{{ jam_session.message }}</p>
                         <div class="d-flex flex-row justify-content-between align-items-center"> 
                             <p class="card-text"><small class="text-muted">{{jam_session.date_posted}}</small></p>
                             <div class="d-flex flex-row">
-                                <form action="{{url_for('jam_sessions.delete_session', jam_session_id=jam_session.id)}}" method="post">
+                                <form action="{{url_for('jam_sessions.delete_session', session_id=jam_session.id)}}" method="post">
                                     <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
                                 </form>
                                 <button type="button" class="btn btn-success mx-2">Join</button>
@@ -41,7 +41,7 @@
         <div class="" id="map" name="map"></div>
 
         <div class="d-flex flex-column">
-            <form action="{{url_for('jam_sessions.add_new_session')}}" method="get">
+            <form action="{{url_for('jam_sessions.add_new_session')}}" method="">
                 <div class="d-flex flex-column">
                     <div class="form-group">
                         <label for="session_title">Session Title</label>
@@ -224,11 +224,11 @@ async function initMap() {
 
                 let json_data = JSON.stringify(data);
     
-                fetch(`${window.origin}/sessions`, {
+                fetch({{url_for('jam_sessions.add_new_session')}}, {
                     method: 'POST',
                     redirect: 'follow',
                     headers: {
-                        'Accept': 'application/json, multipart/form-data',
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json; charset=UTF-8'
                     },
                     body: json_data
