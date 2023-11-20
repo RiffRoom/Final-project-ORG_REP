@@ -52,6 +52,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+PFP_PATH = 'images/pfps/'
+
 boto3.set_stream_logger('', logging.INFO)
 logger = logging.getLogger()
 
@@ -91,9 +93,11 @@ def homepage():
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
 
 
-    videos = bucket_wrapper.get_objects(s3_client) 
+    print(distribution_url)
+    #videos = bucket_wrapper.get_objects(s3_client)
+    video = bucket_wrapper.get_object(s3_client, 'uploaded_video.mp4')
 
-    return render_template('index.html', videos=videos, distribution_url=distribution_url)    
+    return render_template('index.html', video=video, distribution_url=distribution_url)    
 
 
 @app.route('/user_prof')
@@ -105,6 +109,8 @@ def settings_page():
 
     if not session.get('id'):
         return redirect('/login')
+    
+    pfp = bucket_wrapper.get_object(s3_client, f'{PFP_PATH}testpfp.png')
 
     profile_pic_path = 'profile_pic.jpg'
     if os.path.exists(profile_pic_path):
@@ -117,7 +123,7 @@ def settings_page():
 
     else:
         profile_pic_url = url_for('static', filename='testpfp.jpg') 
-    return render_template('settings.html', profile_pic_url=profile_pic_url)
+    return render_template('settings.html', profile_pic_url=profile_pic_url, distribution_url=distribution_url, pfp=pfp)
 
 @app.route('/update_profile_pic', methods=['POST'])
 def update_profile_pic():
