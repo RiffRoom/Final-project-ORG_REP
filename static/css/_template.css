@@ -218,6 +218,11 @@
     filter: none
   }
 
+  .switch-caption {
+      margin-bottom: 10px; /* Adjust as needed to raise the caption */
+  }
+
+
   /* Map Pin Animation and Styling */
 
   @keyframes drop {
