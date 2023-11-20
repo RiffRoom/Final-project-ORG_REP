@@ -26,7 +26,15 @@ class BucketWrapper:
             return objects
         
     def get_object(self, client, object_id):
-        pass
+        response = client.list_objects_v2(Bucket=self.name)
+        objects = []
+        objects = list(o['Key'] for o in response['Contents'])
+        if object_id in objects:
+            return object_id
+        else:
+            return None
+        
+
 
     def add_object(self, client, file_name, object_id) -> bool:        
         s3_client = client

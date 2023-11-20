@@ -11,14 +11,9 @@
 </nav>
 
 <div class="d-flex flex-column w-100 mx-5 mt-3">
-    {% if videos %}
-        {% for video in videos %}
-            <video width="320" height="240" controls name="media" >
-                <source src="{{distribution_url}}{{video}}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        {% endfor %}
-    {% endif %}
+    <video>
+        <source src="{{distribution_url}}{{video}}" type="video/mp4">
+    </video>
 </div>
 
 {% with messages = get_flashed_messages() %}
