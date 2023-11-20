@@ -32,6 +32,7 @@ class BucketWrapper:
         s3_client = client
         try:
             response = s3_client.upload_file(file_name, self.name, object_id)
+            logging.log(f'Uploaded file {response}')
         except ClientError:
             logging.exception('Could not upload file.')
             return False
