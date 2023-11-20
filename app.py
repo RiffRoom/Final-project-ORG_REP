@@ -53,6 +53,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 PFP_PATH = 'images/pfps/'
+VIDEOS_PATH = 'videos/'
+
+PIPELINE_ID = '1700512479814-8qgmq1'
 
 boto3.set_stream_logger('', logging.INFO)
 logger = logging.getLogger()
@@ -67,6 +70,7 @@ aws_session = boto3.Session(
 s3_client = aws_session.client('s3')
 s3_resource = aws_session.resource('s3')
 s3_distr = aws_session.client('cloudfront')
+s3_transcoder = aws_session.client('elastictranscoder', 'us-east-1')
 
 # Get CloudFront distribution
 distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
@@ -82,7 +86,6 @@ upload_bucket = s3_resource.Bucket('riffbucket-itsc3155-upload')
 bucket_wrapper = BucketWrapper(riff_bucket)
 upload_bucket_wrapper = BucketWrapper(upload_bucket)
 
-
 @app.route('/')
 def homepage():
 
@@ -95,7 +98,7 @@ def homepage():
 
     print(distribution_url)
     #videos = bucket_wrapper.get_objects(s3_client)
-    video = bucket_wrapper.get_object(s3_client, 'uploaded_video.mp4')
+    video = bucket_wrapper.get_object(s3_client, f'{VIDEOS_PATH}uploaded_video.mp4')
 
     return render_template('index.html', video=video, distribution_url=distribution_url)    
 
@@ -154,7 +157,30 @@ def upload_video():
         file_ext = os.path.splitext(filename)[1]        
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
             abort(400)
-        #uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+
+        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        upload_bucket_wrapper.add_object(s3_client, f'{app.config["UPLOAD_PATH"]}/{filename}', filename.__str__())
+
+
+        response = s3_transcoder.create_job(
+    PipelineId=PIPELINE_ID,
+    Input={
+        'Key': filename,
+        'FrameRate': 'auto',
+        'Resolution': 'auto',
+        'AspectRatio': 'auto',
+        'Interlaced': 'auto',
+        'Container': 'auto',
+    },
+    Output={
+        'Key': 'test-output-video.mp4',
+        'ThumbnailPattern': 'uploaded-video-{count}',
+        'Rotate': 'auto',
+        'PresetId': '1351620000001-000010',
+    },
+    OutputKeyPrefix='videos/'
+)
+
         #generate_thumbnail(f'{app.config["UPLOAD_PATH"]}/{filename}', app.config['UPLOAD_PATH'])
     return redirect(url_for('get_video'))
 
