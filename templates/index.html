@@ -11,9 +11,13 @@
 </nav>
 
 <div class="d-flex flex-column w-100 mx-5 mt-3">
-    <video>
-        <source src="{{distribution_url}}{{video}}" type="video/mp4">
-    </video>
+    {% if videos %}
+        {% for v in videos %}
+            <video controls>
+                <source src="{{distribution_url}}{{v}}">
+            </video>
+        {% endfor %}
+    {% endif %}
 </div>
 
 {% with messages = get_flashed_messages() %}
