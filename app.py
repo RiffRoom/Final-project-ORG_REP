@@ -85,7 +85,7 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    print(f'Logged in as {UserTable.query.get(session.get('id')).user_name}')
+    print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
 
     videos = bucket_wrapper.get_objects(s3_client) 
 
@@ -136,7 +136,7 @@ def upload_video():
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
+        generate_thumbnail(f'{app.config["UPLOAD_PATH"]}/{filename}', app.config['UPLOAD_PATH'])
     return redirect(url_for('get_video'))
 
 @app.get('/login')
