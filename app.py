@@ -17,6 +17,9 @@ from flask_bcrypt import Bcrypt
 from flask_session import Session
 
 
+from blueprints.jam_session.jam_sessions import jam_sessions_bp
+
+
 # Load environment variables
 load_dotenv()
 
@@ -28,6 +31,9 @@ DB_NAME = os.getenv('DB_NAME')
 
 app = Flask(__name__)
 app.app_context().push()
+
+
+app.register_blueprint(jam_sessions_bp, url_prefix='/sessions')
 
 bcrypt = Bcrypt(app)
 
@@ -81,11 +87,14 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    print(f'Logged in as {UserTable.query.get(session.get('id')).user_name}')
+
+    print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
+
 
     videos = bucket_wrapper.get_objects(s3_client) 
 
     return render_template('index.html', videos=videos, distribution_url=distribution_url)    
+
 
 @app.get('/sessions')
 def get_sessions():
@@ -146,6 +155,7 @@ def get_single_session(session_id: int):
     session = JamSession.query.get(session_id)
     return render_template('get_single_session.html', session=session)
 
+
 @app.route('/user_prof')
 def user_prof():
     return None #rendertemplate('user_profile.html')
@@ -199,7 +209,7 @@ def upload_video():
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-        generate_thumbnail(f'{app.config['UPLOAD_PATH']}/{filename}', app.config['UPLOAD_PATH'])
+        generate_thumbnail(f'{app.config["UPLOAD_PATH"]}/{filename}', app.config['UPLOAD_PATH'])
     return redirect(url_for('get_video'))
 
 @app.get('/login')
