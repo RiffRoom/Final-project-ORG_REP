@@ -68,7 +68,7 @@ class UserTable(db.Model):
     def __repr__(self) -> str:
         return f'{self.first_name} {self.last_name}'
     
-class Session(db.Model):
+class JamSession(db.Model):
     __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     host_name = db.Column(db.String(255), nullable=False)
@@ -84,7 +84,7 @@ class Session(db.Model):
     
     ## create instance without host_name and just id
     def __init__(self, title: str, msg: str, date: date, date_p: date, lat: float, long: float, h_id: int) -> None:
-        self.host_name = Session.get_user_name_id(h_id)
+        self.host_name = JamSession.get_user_name_id(h_id)
         self.title = title
         self.message = msg
         self.date = date
@@ -125,7 +125,7 @@ class Party(db.Model):
     def __init__(self, sesh_id: int, u_id: int) -> None:
         self.session_id = sesh_id
         self.user_id = u_id
-        self.user_name = Session.get_user_name_id(u_id)
+        self.user_name = JamSession.get_user_name_id(u_id)
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -145,7 +145,7 @@ class Post(db.Model):
         self.ratio = ratio
         self.date_posted = date
         self.user_id = pid
-        self.user_name = Session.get_user_name_id(pid)
+        self.user_name = JamSession.get_user_name_id(pid)
         self.post_file = convert_To_Binary(filepath)
 
 
@@ -168,5 +168,5 @@ class Comment(db.Model):
     def __init__(self, cs_id: int, cid: int, msg: str) -> None:
         self.comment_section_id = cs_id
         self.commenter_id = cid
-        self.commenter_name = Session.get_user_name_id(cid)
+        self.commenter_name = JamSession.get_user_name_id(cid)
         self.message = msg
