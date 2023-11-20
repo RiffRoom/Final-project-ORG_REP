@@ -5,6 +5,7 @@ import os
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
 import sys
+import shutil
 from time import time, sleep 
 import boto3
 from boto3 import logging
@@ -14,6 +15,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import HTTPException
 from flask_bcrypt import Bcrypt
 from flask_session import Session
+
 
 # Load environment variables
 load_dotenv()
@@ -62,7 +64,7 @@ s3_distr = aws_session.client('cloudfront')
 distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
 
 # URL for distribution, append object keys to url to access 
-distribution_url = f'https://{distribution['Distribution']['DomainName']}/'
+distribution_url = f'https://{distribution["Distribution"]["DomainName"]}/'
 
 # Get specific bucket from s3
 riff_bucket = s3_resource.Bucket('riffbucket-itsc3155')
@@ -150,21 +152,39 @@ def user_prof():
 
 @app.route('/settings')
 def settings_page():
+
     if not session.get('id'):
         return redirect('/login')
 
     profile_pic_path = 'profile_pic.jpg'
     if os.path.exists(profile_pic_path):
         profile_pic_url = '/' + profile_pic_path
-    else:
-        profile_pic_url = '/static/default_pfp.jpg'
-    return render_template('settings.html',  profile_pic_url=profile_pic_url)
 
-@app.route('/upload_profile_pic', methods=['POST'])
-def upload_profile_pic():
+    profile_pic_path = os.path.join('images', 'pfp.png')  
+    full_path = os.path.join(app.static_folder, profile_pic_path)
+    if os.path.exists(full_path):
+        profile_pic_url = url_for('static', filename=profile_pic_path)
+
+    else:
+        profile_pic_url = url_for('static', filename='testpfp.jpg') 
+    return render_template('settings.html', profile_pic_url=profile_pic_url)
+
+@app.route('/update_profile_pic', methods=['POST'])
+def update_profile_pic():
+    if 'profile_pic' not in request.files:
+        return redirect(request.url)
+
     file = request.files['profile_pic']
-    file.save('profile_pic.jpg')  
-    return redirect(url_for('settings_page'))
+
+    if file.filename == '':
+        return redirect(request.url)
+
+    if file:  
+        user_id = ...  
+        insert_BLOB_user(user_id, file)
+        return redirect(url_for('settings_page'))
+
+
 
 @app.get('/upload')
 def get_video():
