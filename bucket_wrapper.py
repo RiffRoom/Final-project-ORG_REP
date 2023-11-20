@@ -13,7 +13,6 @@ class BucketWrapper:
     def get_objects(self, client):
         try:
             response = client.list_objects_v2(Bucket=self.name)
-            objects = []
             objects = list(o['Key'] for o in response['Contents'])
             logging.info('Got objects: %s', objects)
             
@@ -24,6 +23,23 @@ class BucketWrapper:
             logging.exception('Contents are empty')
         else:
             return objects
+        
+    def get_videos(self, client):
+        try:
+            response = client.list_objects_v2(Bucket=self.name, Prefix='videos/')
+            videos = list(v['Key'] for v in response['Contents'])
+            for v in videos:
+                if not v.endswith('.mp4'):
+                    videos.remove(v)
+                    
+            logging.info('Got videos %s', videos)
+        except ClientError:
+            logging.exception('Could not get objects')
+            raise
+        except  KeyError:
+            logging.exception('Contents are empty')
+        else:
+            return videos
         
     def get_object(self, client, object_id):
         response = client.list_objects_v2(Bucket=self.name)

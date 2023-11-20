@@ -44,7 +44,7 @@ Session(app)
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 app.config['MAX_CONTENT_LENGTH'] = 1_048_576 * 1_048_576
-app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3']
+app.config['UPLOAD_EXTENSIONS'] = ['.mp4', '.mov', '.mp3', '.mkv']
 app.config['UPLOAD_PATH'] = 'static//uploads'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = \
@@ -96,11 +96,12 @@ def homepage():
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
 
 
-    print(distribution_url)
-    #videos = bucket_wrapper.get_objects(s3_client)
-    video = bucket_wrapper.get_object(s3_client, f'{VIDEOS_PATH}uploaded_video.mp4')
+    videos = bucket_wrapper.get_videos(s3_client)
 
-    return render_template('index.html', video=video, distribution_url=distribution_url)    
+
+    video = bucket_wrapper.get_object(s3_client, f'{VIDEOS_PATH}test-output-video.mp4')
+
+    return render_template('index.html',videos=videos, video=video, distribution_url=distribution_url)    
 
 
 @app.route('/user_prof')
@@ -161,27 +162,25 @@ def upload_video():
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
         upload_bucket_wrapper.add_object(s3_client, f'{app.config["UPLOAD_PATH"]}/{filename}', filename.__str__())
 
-
         response = s3_transcoder.create_job(
-    PipelineId=PIPELINE_ID,
-    Input={
-        'Key': filename,
-        'FrameRate': 'auto',
-        'Resolution': 'auto',
-        'AspectRatio': 'auto',
-        'Interlaced': 'auto',
-        'Container': 'auto',
-    },
-    Output={
-        'Key': 'test-output-video.mp4',
-        'ThumbnailPattern': 'uploaded-video-{count}',
-        'Rotate': 'auto',
-        'PresetId': '1351620000001-000010',
-    },
-    OutputKeyPrefix='videos/'
-)
-
-        #generate_thumbnail(f'{app.config["UPLOAD_PATH"]}/{filename}', app.config['UPLOAD_PATH'])
+            PipelineId=PIPELINE_ID,
+            Input={
+                'Key': filename,
+                'FrameRate': 'auto',
+                'Resolution': 'auto',
+                'AspectRatio': 'auto',
+                'Interlaced': 'auto',
+                'Container': 'auto',
+            },
+            Output={
+                'Key': 'placeholder-output-video.mp4',
+                'ThumbnailPattern': 'thumbnails/uploaded-video-{count}',
+                'Rotate': 'auto',
+                'PresetId': '1351620000001-000010',
+            },
+            OutputKeyPrefix='videos/'
+        )
+        
     return redirect(url_for('get_video'))
 
 @app.get('/login')
