@@ -67,7 +67,7 @@ create table post(
     user_id int not null,
     user_name varchar(255),
     post_time timestamp null,
-    post_file bytea null
+    
 );
 
 drop table if exists comment_section cascade ;

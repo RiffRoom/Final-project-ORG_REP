@@ -4,6 +4,17 @@
 
 Create a .env file, it is already added to git ignore, then follow this layout for the declaration of your variables.
 
+-- FLASK ENVIRONMENT --
+
+'FLASK_ENV'='dev'
+or 
+'FLASK_ENV'='prod'
+
+----------------------------------
+
+
+-- POSTGRES VARIABLES --
+
 'DB_USER'=''
 'DB_PASS'=''
 'DB_HOST'=''

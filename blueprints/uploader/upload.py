@@ -7,12 +7,14 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 import boto3
 from bucket_wrapper import BucketWrapper
+from thumbnail_generator import generate_thumbnail
 from uuid import uuid4
 from time import sleep
 
 load_dotenv()
 
 upload_bp = Blueprint('upload', __name__, template_folder='templates', static_folder='static')
+
 
 aws = boto3.Session(
                 aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
@@ -43,40 +45,57 @@ def get_upload_page():
 
 @upload_bp.post('/new')
 def upload_video():
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-    if filename != '':
-        file_ext = os.path.splitext(filename)[1]        
-        if file_ext not in current_app.config['UPLOAD_EXTENSIONS']:
-            abort(400)
+    if not session.get('id'):
+        return redirect('/login')
+    
+    if current_app.config['FLASK_ENV'] == 'prod':
+        uploaded_file = request.files['file']
+        filename = secure_filename(uploaded_file.filename)
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]        
+            if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
+                abort(400)
 
-        file_key = str(uuid4())
+            file_key = str(uuid4())
 
-        uploaded_file.save(os.path.join('static/uploads', filename))
-        upload_bucket_wrapper.add_object(s3_client, f'{current_app.config["UPLOAD_PATH"]}/{filename}', filename)
+            uploaded_file.save(os.path.join('static/uploads', filename))
+            upload_bucket_wrapper.add_object(s3_client, f'{current_app.config["UPLOAD_PATH"]}/{filename}', filename)
 
-        response = s3_transcoder.create_job(
-            PipelineId = current_app.config['PIPELINE_ID'],
-            Input={
-                'Key': f'{filename}',
-                'FrameRate': 'auto',
-                'Resolution': 'auto',
-                'AspectRatio': 'auto',
-                'Interlaced': 'auto',
-                'Container': 'auto',
-            },
-            Output={
-                'Key': f'{file_key}.mp4',
-                'ThumbnailPattern': 'thumbnails/' + file_key + '-{count}',
-                'Rotate': 'auto',
-                'PresetId': '1351620000001-000010',
-            },
-            OutputKeyPrefix='videos/'
-        )
+            response = s3_transcoder.create_job(
+                PipelineId = current_app.config["PIPELINE_ID"],
+                Input={
+                    'Key': f'{filename}',
+                    'FrameRate': 'auto',
+                    'Resolution': 'auto',
+                    'AspectRatio': 'auto',
+                    'Interlaced': 'auto',
+                    'Container': 'auto',
+                },
+                Output={
+                    'Key': f'{file_key}.mp4',
+                    'ThumbnailPattern': 'thumbnails/' + file_key + '-{count}',
+                    'Rotate': 'auto',
+                    'PresetId': '1351620000001-000010',
+                },
+                OutputKeyPrefix='videos/'
+            )
 
-        remove_file(filename)
-        
-    return redirect(url_for('upload.get_upload_page'))
+            remove_file(filename)
+            
+        return redirect(url_for('upload.get_upload_page'))
+    else:
+        uploaded_file = request.files['file']
+        filename = secure_filename(uploaded_file.filename)
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]        
+            if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
+                abort(400)
+
+            file_key = str(uuid4())
+
+            uploaded_file.save(os.path.join('static/uploads', filename))
+            generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{filename}', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
+        return redirect(url_for('upload.get_upload_page'))
 
 
 def remove_file(filename):

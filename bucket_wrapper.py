@@ -50,7 +50,6 @@ class BucketWrapper:
             return None
         
 
-
     def add_object(self, client, file_name, object_id) -> bool:        
         s3_client = client
         try:

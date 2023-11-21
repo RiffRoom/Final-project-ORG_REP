@@ -3,6 +3,8 @@ import os
 
 load_dotenv()
 
+FLASK_ENV = os.getenv('FLASK_ENV')
+
 DB_USER = os.getenv('DB_USER')
 DB_PASS = os.getenv('DB_PASS')
 DB_HOST = os.getenv('DB_HOST')

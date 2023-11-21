@@ -69,13 +69,17 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
-
-    videos = bucket_wrapper.get_videos(s3_client)
-
-
-    return render_template('index.html',videos=videos, distribution_url=distribution_url)    
+    
+    if app.config['FLASK_ENV'] == 'prod':
+        videos = bucket_wrapper.get_videos(s3_client)
+        return render_template('index.html',videos=videos, distribution_url=distribution_url)    
+    else:
+        videos = []
+        for file in os.listdir(app.config['UPLOAD_PATH']):
+            if file.endswith(('.mp4', '.mkv')):
+                videos.append(file)
+        return render_template('index.html', videos=videos, distribution_url=f'{app.config["UPLOAD_PATH"]}/') 
 
 
 @app.route('/user_prof')
@@ -88,20 +92,28 @@ def settings_page():
     if not session.get('id'):
         return redirect('/login')
     
-    pfp = bucket_wrapper.get_object(s3_client, f'{app.config['PFP_PATH']}testpfp.png')
+    if app.config['FLASK_ENV'] == 'prod':
+        pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
 
-    profile_pic_path = 'profile_pic.jpg'
-    if os.path.exists(profile_pic_path):
-        profile_pic_url = '/' + profile_pic_path
+        profile_pic_path = 'profile_pic.jpg'
+        if os.path.exists(profile_pic_path):
+            profile_pic_url = '/' + profile_pic_path
 
-    profile_pic_path = os.path.join('images', 'pfp.png')  
-    full_path = os.path.join(app.static_folder, profile_pic_path)
-    if os.path.exists(full_path):
-        profile_pic_url = url_for('static', filename=profile_pic_path)
+        profile_pic_path = os.path.join('images', 'pfp.png')  
+        full_path = os.path.join(app.static_folder, profile_pic_path)
+        if os.path.exists(full_path):
+            profile_pic_url = url_for('static', filename=profile_pic_path)
 
+        else:
+            profile_pic_url = url_for('static', filename='testpfp.jpg') 
+
+        return render_template('settings.html', profile_pic_url=profile_pic_url, distribution_url=distribution_url, pfp=pfp)
     else:
-        profile_pic_url = url_for('static', filename='testpfp.jpg') 
-    return render_template('settings.html', profile_pic_url=profile_pic_url, distribution_url=distribution_url, pfp=pfp)
+        
+
+        return render_template('settings.html', profile_pic_url=None, distribution_url=None, pfp=None)
+
+
 
 @app.route('/update_profile_pic', methods=['POST'])
 def update_profile_pic():

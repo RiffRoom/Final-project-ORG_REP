@@ -13,9 +13,11 @@
 <div class="d-flex flex-column w-100 mx-5 mt-3">
     {% if videos %}
         {% for video in videos %}
+        <div class="d-block">
             <video controls>
                 <source src="{{distribution_url}}{{video}}">
             </video>
+        </div>
         {% endfor %}
     {% endif %}
 </div>
