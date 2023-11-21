@@ -28,10 +28,12 @@ class BucketWrapper:
         try:
             response = client.list_objects_v2(Bucket=self.name, Prefix='videos/')
             videos = list(v['Key'] for v in response['Contents'])
+            
             for v in videos:
-                if not v.endswith('.mp4'):
+                if not v.endswith(".mp4"):
+                    print(f'Removing {v}')
                     videos.remove(v)
-                    
+
             logging.info('Got videos %s', videos)
         except ClientError:
             logging.exception('Could not get objects')
@@ -61,5 +63,7 @@ class BucketWrapper:
             return False
         else:
             return True
+        
+
 
 
