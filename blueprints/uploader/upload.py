@@ -29,11 +29,14 @@ upload_bucket_wrapper = BucketWrapper(upload_bucket)
 
 stashed_files = []
 
-
 @upload_bp.get('/')
 def get_upload_page():
     if not session.get('id'):
         return redirect('/login')
+    
+    if stashed_files:
+        for f in stashed_files:
+            remove_file(f)
     
     return render_template('upload_video.html')
 
@@ -71,23 +74,26 @@ def upload_video():
             OutputKeyPrefix='videos/'
         )
 
-        max_remove_attempts = 5
-        attempts = 0
-        removed = False
-        while not removed or attempts > max_remove_attempts:
-            if(response['Job']['Status'] == 'Submitted'):
-                try:
-                    os.remove(f'{current_app.config["UPLOAD_PATH"]}/{filename}')
-                    removed = True
-                    print("% s removed successfully" % filename)
-                except OSError as error:
-                    print(error)
-                    print('Filepath cannot be removed.')
-            else:
-                if attempts == 5:
-                    stashed_files.append(filename)
-                print(f'Removal attempt number {attempts}')
-                attempts += 1
-                sleep(3)
+        remove_file(filename)
         
     return redirect(url_for('upload.get_upload_page'))
+
+
+def remove_file(filename):
+    max_remove_attempts = 5
+    attempts = 0
+    removed = False
+    while not removed or attempts > max_remove_attempts:
+        try:
+            os.remove(f'{current_app.config["UPLOAD_PATH"]}/{filename}')
+            removed = True
+            print("% s removed successfully" % filename)
+        except OSError as error:
+            print(error)
+            print('Filepath cannot be removed.')
+        else:
+            if attempts == 5:
+                stashed_files.append(filename)
+            print(f'Removal attempt number {attempts}')
+            attempts += 1
+            sleep(3)

@@ -20,9 +20,6 @@ from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
 
 
-
-
-
 app = Flask(__name__)
 app.app_context().push()
 
@@ -36,9 +33,6 @@ bcrypt = Bcrypt(app)
 Session(app)
 
 app.permanent_session_lifetime = timedelta(minutes=30)
-
-
-
 
 db.init_app(app)
 
@@ -79,6 +73,7 @@ def homepage():
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
 
     videos = bucket_wrapper.get_videos(s3_client)
+
 
     return render_template('index.html',videos=videos, distribution_url=distribution_url)    
 
