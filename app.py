@@ -1,9 +1,7 @@
-from flask import Flask, flash, render_template, redirect, url_for, request, abort, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user, return_media, return_img, insert_BLOB_post
-from dotenv import load_dotenv
+from flask import Flask, flash, render_template, redirect, url_for, request, session
+from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
 import os
 from datetime import datetime, timedelta
-from botocore.exceptions import ClientError
 from time import time, sleep 
 import boto3
 from boto3 import logging
@@ -13,8 +11,6 @@ from flask_session import Session
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
-
-
 
 app = Flask(__name__)
 app.app_context().push()
@@ -67,13 +63,22 @@ def homepage():
     
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
     
+    videos = []
+    posts = Post.query.all()
+
     if app.config['FLASK_ENV'] == 'prod':
-        videos = bucket_wrapper.get_videos(s3_client)
-        return render_template('index.html',videos=videos, distribution_url=distribution_url)    
+        bucket_videos = bucket_wrapper.get_videos(s3_client) 
+        for post in posts:
+            try: 
+                if f'videos/{post.id}.mp4' in bucket_videos:
+                    videos.append(f'videos/{post.id}.mp4')
+            except FileNotFoundError as e:
+                print(f'videos/{post.id}.mp4 is not in videos.')
+                
+        print(videos)
+        return render_template('index.html', videos=videos, distribution_url=distribution_url)    
     else:
-        videos = []
-        posts = Post.query.all()
-        print(posts)
+
         for post in posts:
             if f'{post.id}.mp4' in os.listdir(app.config['UPLOAD_PATH']):
                 post_index = os.listdir(app.config['UPLOAD_PATH']).index(f'{post.id}.mp4')

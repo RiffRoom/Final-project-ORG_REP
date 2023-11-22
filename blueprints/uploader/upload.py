@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, render_template, redirect, url_for, request, abort, jsonify, session
+from flask import Blueprint, flash, render_template, redirect, url_for, request, abort, session
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -48,16 +48,23 @@ def upload_video():
     if not session.get('id'):
         return redirect('/login')
     
-    if current_app.config['FLASK_ENV'] == 'prod':
-        uploaded_file = request.files['file']
-        filename = secure_filename(uploaded_file.filename)
-        if filename != '':
-            file_ext = os.path.splitext(filename)[1]        
-            if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
-                abort(400)
+    uploaded_file = request.files['file']
+    filename = secure_filename(uploaded_file.filename)
+    if filename != '':
+        file_ext = os.path.splitext(filename)[1]        
+        if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
+            abort(400)
 
-            file_key = str(uuid4())
+        title = request.form.get('title')
+        message = request.form.get('description')
 
+        current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
+
+        file_key = str(uuid4())
+
+    # Production path
+        if current_app.config['FLASK_ENV'] == 'prod':
+        
             uploaded_file.save(os.path.join('static/uploads', filename))
             upload_bucket_wrapper.add_object(s3_client, f'{current_app.config["UPLOAD_PATH"]}/{filename}', filename)
 
@@ -80,23 +87,16 @@ def upload_video():
                 OutputKeyPrefix='videos/'
             )
 
+            post = Post(id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
+            db.session.add(post)
+            db.session.commit()
+
             remove_file(filename)
             
-        return redirect(url_for('upload.get_upload_page'))
-    else:
-        uploaded_file = request.files['file']
-        filename = secure_filename(uploaded_file.filename)
-        if filename != '':
-            file_ext = os.path.splitext(filename)[1]        
-            if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
-                abort(400)
-
-            title = request.form.get('title')
-            message = request.form.get('description')
-
-            current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
-
-            file_key = str(uuid4())
+            return redirect(url_for('upload.get_upload_page'))
+    # Development Path
+        else:
+        
 
             uploaded_file.save(os.path.join('static/uploads', f'{file_key}.mp4'))
             generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
