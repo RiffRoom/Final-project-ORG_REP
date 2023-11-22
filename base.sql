@@ -59,15 +59,13 @@ insert into party(session_id, user_id, user_name) values (1, 3, 'Todd Mclovin');
 
 drop table if exists post cascade;
 create table post(
-    id serial primary key,
+    id varchar(255) primary key,
     title varchar(255) not null,
-    description varchar(255) not null,
+    msg varchar(255) null,
     ratio int not null,
     date_posted timestamp not null,
     user_id int not null,
-    user_name varchar(255),
-    post_time timestamp null,
-    
+    user_name varchar(255)    
 );
 
 drop table if exists comment_section cascade ;

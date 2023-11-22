@@ -1,23 +1,19 @@
-from flask import Flask, flash, render_template, redirect, url_for, request, abort, jsonify, session
-from models import db, JamSession, UserTable, Comment, CommentSection, Post, Party, insert_BLOB_user, return_media, return_img, insert_BLOB_post
+from flask import Flask, flash, render_template, redirect, url_for, request, abort, session
+from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user, return_media, return_img, insert_BLOB_post
 from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
-import sys
-import shutil
 from time import time, sleep 
 import boto3
 from boto3 import logging
 from bucket_wrapper import BucketWrapper
-from thumbnail_generator import generate_thumbnail
-from werkzeug.utils import secure_filename
-from werkzeug.exceptions import HTTPException
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
+
 
 
 app = Flask(__name__)
@@ -76,9 +72,13 @@ def homepage():
         return render_template('index.html',videos=videos, distribution_url=distribution_url)    
     else:
         videos = []
-        for file in os.listdir(app.config['UPLOAD_PATH']):
-            if file.endswith(('.mp4', '.mkv')):
-                videos.append(file)
+        posts = Post.query.all()
+        print(posts)
+        for post in posts:
+            if f'{post.id}.mp4' in os.listdir(app.config['UPLOAD_PATH']):
+                post_index = os.listdir(app.config['UPLOAD_PATH']).index(f'{post.id}.mp4')
+                videos.append(os.listdir(app.config['UPLOAD_PATH'])[post_index])            
+            
         return render_template('index.html', videos=videos, distribution_url=f'{app.config["UPLOAD_PATH"]}/') 
 
 
@@ -110,7 +110,6 @@ def settings_page():
         return render_template('settings.html', profile_pic_url=profile_pic_url, distribution_url=distribution_url, pfp=pfp)
     else:
         
-
         return render_template('settings.html', profile_pic_url=None, distribution_url=None, pfp=None)
 
 

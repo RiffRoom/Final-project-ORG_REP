@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 from flask import current_app
 import boto3
 from bucket_wrapper import BucketWrapper
-from thumbnail_generator import generate_thumbnail
+from blueprints.uploader.thumbnail_generator import generate_thumbnail
 from uuid import uuid4
 from time import sleep
 
@@ -91,10 +91,19 @@ def upload_video():
             if file_ext not in current_app.config["UPLOAD_EXTENSIONS"]:
                 abort(400)
 
+            title = request.form.get('title')
+            message = request.form.get('description')
+
+            current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
+
             file_key = str(uuid4())
 
-            uploaded_file.save(os.path.join('static/uploads', filename))
-            generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{filename}', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
+            uploaded_file.save(os.path.join('static/uploads', f'{file_key}.mp4'))
+            generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
+
+            post = Post(id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
+            db.session.add(post)
+            db.session.commit()
         return redirect(url_for('upload.get_upload_page'))
 
 
