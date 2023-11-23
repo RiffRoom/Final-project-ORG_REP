@@ -68,7 +68,7 @@ def homepage():
 
     # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
-        return render_template('index.html', posts=posts, distribution_url=distribution_url)    
+        return render_template('index.html', posts=posts, distribution_url=distribution_url, user_table=UserTable)    
     else:
         for post in posts:
             try:
