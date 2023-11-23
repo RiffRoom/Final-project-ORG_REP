@@ -59,7 +59,8 @@ insert into party(session_id, user_id, user_name) values (1, 3, 'Todd Mclovin');
 
 drop table if exists post cascade;
 create table post(
-    id varchar(255) primary key,
+    id serial primary key,
+    video_id varchar(255) not null,
     title varchar(255) not null,
     msg varchar(255) null,
     ratio int not null,

@@ -65,6 +65,10 @@ def upload_video():
     # Production path
         if current_app.config['FLASK_ENV'] == 'prod':
         
+            post = Post(video_id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
+
+            db.session.add(post)
+            
             uploaded_file.save(os.path.join('static/uploads', filename))
             upload_bucket_wrapper.add_object(s3_client, f'{current_app.config["UPLOAD_PATH"]}/{filename}', filename)
 
@@ -87,8 +91,7 @@ def upload_video():
                 OutputKeyPrefix='videos/'
             )
 
-            post = Post(id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
-            db.session.add(post)
+            
             db.session.commit()
 
             remove_file(filename)
@@ -96,13 +99,13 @@ def upload_video():
             return redirect(url_for('upload.get_upload_page'))
     # Development Path
         else:
+            post = Post(video_id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
+            
+            db.session.add(post)
         
-
             uploaded_file.save(os.path.join('static/uploads', f'{file_key}.mp4'))
             generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
 
-            post = Post(id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
-            db.session.add(post)
             db.session.commit()
         return redirect(url_for('upload.get_upload_page'))
 

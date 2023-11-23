@@ -70,21 +70,24 @@ def homepage():
         bucket_videos = bucket_wrapper.get_videos(s3_client) 
         for post in posts:
             try: 
-                if f'videos/{post.id}.mp4' in bucket_videos:
-                    videos.append(f'videos/{post.id}.mp4')
+                if f'videos/{post.video_id}.mp4' in bucket_videos:
+                    videos.append(f'{post.video_id}')
             except FileNotFoundError as e:
-                print(f'videos/{post.id}.mp4 is not in videos.')
-                
-        print(videos)
-        return render_template('index.html', videos=videos, distribution_url=distribution_url)    
+                print(e)
+                print(f'videos/{post.video_id}.mp4 is not in videos.')
+
+        return render_template('index.html',videos=videos, posts=posts, distribution_url=distribution_url, app=app)    
     else:
 
         for post in posts:
-            if f'{post.id}.mp4' in os.listdir(app.config['UPLOAD_PATH']):
-                post_index = os.listdir(app.config['UPLOAD_PATH']).index(f'{post.id}.mp4')
-                videos.append(os.listdir(app.config['UPLOAD_PATH'])[post_index])            
-            
-        return render_template('index.html', videos=videos, distribution_url=f'{app.config["UPLOAD_PATH"]}/') 
+            try:
+                if f'{post.video_id}.mp4' in os.listdir(app.config['UPLOAD_PATH']):
+                    post_index = os.listdir(app.config['UPLOAD_PATH']).index(f'{post.video_id}.mp4')
+                    videos.append(os.listdir(app.config['UPLOAD_PATH'])[post_index])   
+                    print(post.video_id)         
+            except FileNotFoundError as e:
+                print(f'videos/{post.video_id}.mp4 is not in videos.')
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', app=app) 
 
 
 @app.route('/user_prof')

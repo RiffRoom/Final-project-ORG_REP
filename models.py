@@ -129,17 +129,18 @@ class Party(db.Model):
 
 class Post(db.Model):
     __tablename__ = 'post'
-    id = db.Column(db.String(255), primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.String(255), nullable=False)
     title = db.Column(db.String(255), nullable=False)
-    msg = db.Column(db.String(255), nullable=False)
+    msg = db.Column(db.String(255), nullable=True)
     ratio = db.Column(db.Integer, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     user_name = db.Column(db.String(255), nullable=False) 
     section = db.relationship('CommentSection', cascade='all, delete')
 
-    def __init__(self, id:str, title: str, msg: str, ratio: int, date: datetime, user_id: int) -> None:
-        self.id = id
+    def __init__(self, video_id:str, title: str, msg: str, ratio: int, date: datetime, user_id: int) -> None:
+        self.video_id = video_id
         self.title = title
         self.msg = msg
         self.ratio = ratio
