@@ -219,7 +219,6 @@ def sign_up():
         if not phone or phone == '':
             flash('Enter a phone number')
             return redirect(url_for('get_login'))
-        else: phone = int(phone)
         
         username = request.form.get('username')
 
