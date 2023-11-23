@@ -12,33 +12,17 @@
 
 <div class="d-flex flex-column w-100 mx-5 mt-3">
     {% if posts %}
-        {% if app.config['FLASK_ENV'] == 'prod' %}
-            {% for post in posts %}
-                {% if post.video_id in videos %}
-                    <div class='d-flex flex-column'>
-                        <h3>{{post.title}}</h3>
-                        <div class="d-block">
-                            <video controls>
-                                <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
-                            </video>
-                        </div>
-                        <p>{{post.msg}}</p>
-                    </div>
-                {% endif %}
-            {% endfor %}            
-        {% else %}
-            {% for post in posts %}
+        {% for post in posts %}
                 <div class='d-flex flex-column'>
                     <h3>{{post.title}}</h3>
                     <div class="d-block">
                         <video controls>
-                            <source src="{{distribution_url}}{{post.video_id}}.mp4">
+                            <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
                         </video>
                     </div>
                     <p>{{post.msg}}</p>
                 </div>
-            {% endfor %} 
-        {% endif %} 
+        {% endfor %}            
     {% endif %}
 </div>
 

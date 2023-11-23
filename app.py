@@ -66,28 +66,19 @@ def homepage():
     videos = []
     posts = Post.query.all()
 
+    # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
-        bucket_videos = bucket_wrapper.get_videos(s3_client) 
-        for post in posts:
-            try: 
-                if f'videos/{post.video_id}.mp4' in bucket_videos:
-                    videos.append(f'{post.video_id}')
-            except FileNotFoundError as e:
-                print(e)
-                print(f'videos/{post.video_id}.mp4 is not in videos.')
-
-        return render_template('index.html',videos=videos, posts=posts, distribution_url=distribution_url, app=app)    
+        return render_template('index.html', posts=posts, distribution_url=distribution_url)    
     else:
-
         for post in posts:
             try:
-                if f'{post.video_id}.mp4' in os.listdir(app.config['UPLOAD_PATH']):
-                    post_index = os.listdir(app.config['UPLOAD_PATH']).index(f'{post.video_id}.mp4')
-                    videos.append(os.listdir(app.config['UPLOAD_PATH'])[post_index])   
+                if f'{post.video_id}.mp4' in os.listdir(f'{app.config["UPLOAD_PATH"]}/videos'):
+                    post_index = os.listdir(f'{app.config["UPLOAD_PATH"]}/videos').index(f'{post.video_id}.mp4')
+                    videos.append(os.listdir(f'{app.config["UPLOAD_PATH"]}/videos')[post_index])   
                     print(post.video_id)         
             except FileNotFoundError as e:
-                print(f'videos/{post.video_id}.mp4 is not in videos.')
-        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', app=app) 
+                print(f'{post.video_id}.mp4 is not in videos.')
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/') 
 
 
 @app.route('/user_prof')
