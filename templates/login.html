@@ -5,19 +5,36 @@
 
 <div class="d-flex flex-column m-3">
     <h1>Sign Up</h1>
-    
-    <form action="/signup" method="post">
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username" required>
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required>
-        <button type="submit">Sign Up</button>
+    <form action="{{url_for('sign_up')}}" method="POST">
+        <div class="d-flex flex-column w-50 m-1">
+            <div class="d-flex flex-row"> 
+                <label class="form-label p-1" for="first_name">First Name</label>
+                <input  type="text" name="first_name" id="first_name">
+                
+                <label class="form-label p-1" for="last_name">Last Name</label>
+                <input type="text" name="last_name" id="last_name">
+            </div>
+
+            <label class="form-label" for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+
+            <label class="form-label" for="phone">Phone</label>
+            <input type="tel" name="phone" id="phone">
+
+            <label class="form-label" for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+
+            <label class="form-label" for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+
+            <button class="btn btn-primary w-50 mt-2" type="submit">Sign Up</button>
+        </div>
     </form>
     
     
     <h1>Log In</h1>
     
-    <form action="/login" method="post">
+    <form action="{{url_for('login')}}" method="post">
         <label for="username">Username</label>
         <input type="text" name="username" id="username" required>
         <label for="password">Password</label>

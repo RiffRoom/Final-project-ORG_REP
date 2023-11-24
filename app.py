@@ -68,17 +68,18 @@ def homepage():
 
     # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
-        return render_template('index.html', posts=posts, distribution_url=distribution_url)    
+        return render_template('index.html', posts=posts, distribution_url=distribution_url, user_table=UserTable)    
     else:
         for post in posts:
             try:
                 if f'{post.video_id}.mp4' in os.listdir(f'{app.config["UPLOAD_PATH"]}/videos'):
                     post_index = os.listdir(f'{app.config["UPLOAD_PATH"]}/videos').index(f'{post.video_id}.mp4')
                     videos.append(os.listdir(f'{app.config["UPLOAD_PATH"]}/videos')[post_index])   
-                    print(post.video_id)         
+                    user_name = UserTable.query.get(post.user_id).user_name
             except FileNotFoundError as e:
+                print(e)
                 print(f'{post.video_id}.mp4 is not in videos.')
-        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/') 
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
 
 
 @app.route('/user_prof')
@@ -147,6 +148,7 @@ def get_login():
 @app.post('/login')
 def login():
         try:
+
             username = request.form.get('username')
 
             if not username or username == '':
@@ -194,6 +196,30 @@ def logout():
 def sign_up():
 
     try:
+        first_name = request.form.get('first_name')
+
+        if not first_name or first_name == '':
+            flash('Enter a first name')
+            return redirect(url_for('get_login'))
+            
+        last_name = request.form.get('last_name')
+
+        if not last_name or last_name == '':
+            flash('Enter a last name')
+            return redirect(url_for('get_login'))
+
+        email = request.form.get('email')
+
+        if not email or email == '':
+            flash('Enter an email')
+            return redirect(url_for('get_login'))
+            
+        phone = request.form.get('phone')
+
+        if not phone or phone == '':
+            flash('Enter a phone number')
+            return redirect(url_for('get_login'))
+        
         username = request.form.get('username')
 
         if not username or username == '':
@@ -208,7 +234,7 @@ def sign_up():
 
         hashed_password = bcrypt.generate_password_hash(raw_password, 16).decode()
 
-        new_user = UserTable('John', 'Doe', username, hashed_password, 'johnd@gmail.com', 111_222_3333)
+        new_user = UserTable(first_name, last_name, username, hashed_password, email, phone)
         db.session.add(new_user)
         db.session.commit()
 

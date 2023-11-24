@@ -1,15 +1,14 @@
 drop table if exists  user_table cascade ;
-
 create table user_table (
     id serial primary key,
-    first_name varchar(255) not null,
-    last_name varchar(255) not null,
+    first_name varchar(255) null,
+    last_name varchar(255) null,
     user_name varchar(255) not null,
     password varchar(255) not null,
     email varchar(255) not null,
     private boolean null default FALSE,
-    phone int not null,
-    prof_pic bytea null
+    phone varchar(20) null,
+    prof_pic varchar(255)
 );
 insert into user_table(first_name, last_name, user_name, password, email, phone) values
 ('James', 'Bond', 'usern', 'psswd', 'jb@email.com', 1234567890); -- host id 1
