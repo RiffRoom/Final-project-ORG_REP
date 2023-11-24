@@ -7,8 +7,6 @@ class BucketWrapper:
     def __init__(self, s3_bucket) -> None:
         self.bucket = s3_bucket
         self.name = s3_bucket.name
-        #self.logger = logging.getLogger()
-
 
     def get_objects(self, client):
         try:
@@ -27,19 +25,20 @@ class BucketWrapper:
     def get_videos(self, client):
         try:
             response = client.list_objects_v2(Bucket=self.name, Prefix='videos/')
-            videos = list(v['Key'] for v in response['Contents'])
-            for v in videos:
-                if not v.endswith('.mp4'):
-                    videos.remove(v)
-                    
+            
+            videos = []
+            for v in response['Contents']:
+                if v['Key'].endswith('.mp4'):
+                    videos.append(v['Key'])
+        
             logging.info('Got videos %s', videos)
-        except ClientError:
+        except ClientError as error:
             logging.exception('Could not get objects')
-            raise
-        except  KeyError:
+            logging.error(error)
+        except KeyError as error:
             logging.exception('Contents are empty')
-        else:
-            return videos
+            logging.error(error)
+        return videos
         
     def get_object(self, client, object_id):
         response = client.list_objects_v2(Bucket=self.name)
@@ -51,7 +50,6 @@ class BucketWrapper:
             return None
         
 
-
     def add_object(self, client, file_name, object_id) -> bool:        
         s3_client = client
         try:
@@ -61,5 +59,7 @@ class BucketWrapper:
             return False
         else:
             return True
+        
+
 
 

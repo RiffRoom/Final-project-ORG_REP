@@ -4,6 +4,17 @@
 
 Create a .env file, it is already added to git ignore, then follow this layout for the declaration of your variables.
 
+-- FLASK ENVIRONMENT --
+
+'FLASK_ENV'='dev'
+or 
+'FLASK_ENV'='prod'
+
+----------------------------------
+
+
+-- POSTGRES VARIABLES --
+
 'DB_USER'=''
 'DB_PASS'=''
 'DB_HOST'=''
@@ -21,3 +32,12 @@ If you lose your keys, they are gone.
 'AWS_ACCESS_KEY_ID'=''
 'AWS_SECRET_ACCESS_KEY'=''
 'AWS_SESSION_TOKEN'=''
+
+----------------------------------
+
+
+-- GOOGLE MAPS API KEY --
+
+'MAPS_API_KEY'=''
+
+----------------------------------

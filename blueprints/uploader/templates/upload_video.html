@@ -1,0 +1,22 @@
+{% extends '_template.html' %}
+
+
+{% block body%}
+
+<div class="d-flex">
+    <div class="d-flex flex-column m-5">
+        <form action="/upload/new" enctype="multipart/form-data" method="POST">
+            <input class="form-control" type="file" accept="video/*" id="file" name="file" value="file" required>
+            <label class="label" for="title">Title</label>
+            <input class="form-control" type="text" id="title" name="title" required>
+            <div class="d-flex flex-column">
+                <label class="label" for="description">Description</label>
+                <textarea name="description" id="description" cols="30" rows="10"></textarea>
+            </div>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+    {{msg}}
+</div>
+
+{% endblock %}
