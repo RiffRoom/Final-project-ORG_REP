@@ -103,8 +103,8 @@ def upload_video():
             
             db.session.add(post)
         
-            uploaded_file.save(os.path.join('static/uploads', f'{file_key}.mp4'))
-            generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
+            uploaded_file.save(os.path.join('static/uploads/videos/', f'{file_key}.mp4'))
+            generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/videos/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
 
             db.session.commit()
         return redirect(url_for('upload.get_upload_page'))

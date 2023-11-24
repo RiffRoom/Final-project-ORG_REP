@@ -42,14 +42,14 @@ db = SQLAlchemy()
 class UserTable(db.Model):
     __tablename__ = 'user_table'
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(255), nullable=False)
-    last_name = db.Column(db.String(255), nullable=False)
+    first_name = db.Column(db.String(255), nullable=True)
+    last_name = db.Column(db.String(255), nullable=True)
     user_name = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     private = db.Column(db.Boolean, nullable=True, default=False)
-    phone = db.Column(db.Integer, nullable=False)
-    prof_pic = db.Column(db.LargeBinary, nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    prof_pic = db.Column(db.String(255), nullable=True)
     
 
     def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
