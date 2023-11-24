@@ -129,24 +129,24 @@ class Party(db.Model):
 
 class Post(db.Model):
     __tablename__ = 'post'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.String(255), nullable=False)
     title = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(255), nullable=False)
+    msg = db.Column(db.String(255), nullable=True)
     ratio = db.Column(db.Integer, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    user_name = db.Column(db.String(255), nullable=False)
-    post_file = db.Column(db.LargeBinary, nullable=False)
+    user_name = db.Column(db.String(255), nullable=False) 
     section = db.relationship('CommentSection', cascade='all, delete')
 
-    def __init__(self, title: str, msg: str, ratio: int, date: datetime, pid: int, filepath: str) -> None:
+    def __init__(self, video_id:str, title: str, msg: str, ratio: int, date: datetime, user_id: int) -> None:
+        self.video_id = video_id
         self.title = title
-        self.description = msg
+        self.msg = msg
         self.ratio = ratio
         self.date_posted = date
-        self.user_id = pid
-        self.user_name = JamSession.get_user_name_id(pid)
-        self.post_file = convert_To_Binary(filepath)
+        self.user_id = user_id
+        self.user_name = JamSession.get_user_name_id(user_id)
 
 
 class CommentSection(db.Model):
