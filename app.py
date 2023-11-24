@@ -160,11 +160,33 @@ def get_single_session(session_id: int):
 def user_prof():
     return None #rendertemplate('user_profile.html')
 
+@app.context_processor
+def db_image_corrector():
+    return dict(binary_corrector=return_img) 
+## using context_processor for images
+# loop example! start with a for loop in jinja
+# {% for user in users%} 
+#           then call {{binary_corrector()}} leave the user id as is
+#                                         like this  vvvv    thats it
+#         <img src="data:;base64,{{binary_corrector(user.id)}}">
+#     {% endfor %}
+
 @app.route('/settings')
 def settings_page():
-
+        
     if not session.get('id'):
         return redirect('/login')
+
+    current_user = UserTable.query.get(session.get('id'))
+
+    if session.get('id') == current_user.id:
+        print(current_user)
+        print(current_user.id)
+
+
+    pfps = bucket_wrapper.get_objects(s3_client) 
+    print(pfps)
+    print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
 
     profile_pic_path = 'profile_pic.jpg'
     if os.path.exists(profile_pic_path):
@@ -177,7 +199,7 @@ def settings_page():
 
     else:
         profile_pic_url = url_for('static', filename='testpfp.jpg') 
-    return render_template('settings.html', profile_pic_url=profile_pic_url)
+    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url)
 
 @app.route('/update_profile_pic', methods=['POST'])
 def update_profile_pic():

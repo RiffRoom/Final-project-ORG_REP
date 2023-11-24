@@ -16,7 +16,7 @@
             <!-- Profile Picture -->
             <div class="text-center mb-4">
                 <button class="profile-pic-label btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
-                    <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Profile Picture" class="img-fluid">
+                    <img src="{{distribution_url}}{{pfp}}" alt="Profile Picture" class="img-fluid">
                 </button>
             </div>
 
@@ -130,7 +130,29 @@
         var actualProfilePic = document.querySelector('.profile-pic-label img');    
         var testProfilePicPath = '/static/images/testpfps/' + filename;
         actualProfilePic.src = testProfilePicPath;
+
+        document.cookie = "selectedProfilePic=" + filename + ";path=/;max-age=31536000"; 
     }
+
+    //Read the Cookie When the Page Loads
+     document.addEventListener('DOMContentLoaded', function() {
+     var selectedPic = getCookie('selectedProfilePic');
+     if (selectedPic) {
+         var actualProfilePic = document.querySelector('.profile-pic-label img');
+         actualProfilePic.src = '/static/images/testpfps/' + selectedPic;
+     }
+     });
+
+     function getCookie(name) {
+         var nameEQ = name + "=";
+         var ca = document.cookie.split(';');
+         for(var i=0; i < ca.length; i++) {
+             var c = ca[i];
+             while (c.charAt(0) == ' ') c = c.substring(1,c.length);
+             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+         }
+         return null;
+     }
 </script>
 
 {% endblock %}
