@@ -47,7 +47,6 @@ create table party(
     party_id serial primary key,
     session_id int not null,
     user_id int not null,
-    user_name varchar(255) not null,
     foreign key (session_id) references sessions(id),
     foreign key (user_id) references user_table(id)
 );

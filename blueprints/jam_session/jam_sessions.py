@@ -1,8 +1,8 @@
-from flask import Blueprint, flash, render_template, redirect, url_for, request, abort, jsonify, session
+from flask import Blueprint, render_template, redirect, url_for, request, abort, session
 from dotenv import load_dotenv
 import os
 from datetime import datetime
-from models import db, JamSession
+from models import UserTable, db, JamSession, Party
 
 load_dotenv()
 
@@ -27,7 +27,17 @@ def get_sessions():
             date_str = JamSession.date_str(result['date'])
             jam_session_data.append(result)
 
-    return render_template('jam_sessions.html', current_date=current_date, max_date=max_date, active_jam_sessions=active_jam_sessions, jam_session_data=jam_session_data, date_str=date_str, MAPS_API_KEY=MAPS_API_KEY)
+
+    return render_template('jam_sessions.html', 
+                        current_date=current_date, 
+                        max_date=max_date, 
+                        active_jam_sessions=active_jam_sessions,
+                        jam_session_data=jam_session_data,
+                        date_str=date_str, 
+                        MAPS_API_KEY=MAPS_API_KEY,
+                        jam_session=JamSession,
+                        party=Party,
+                        user_table=UserTable)
 
 
 
@@ -54,19 +64,33 @@ def add_new_session():
 
     date_posted = datetime.now().strftime('%Y-%m-%dT%H:%M')
 
-    s = JamSession(title, message, date, date_posted, lat, lng, 1)
+    s = JamSession(title, message, date, date_posted, lat, lng, session.get('id'))
+    
     db.session.add(s)
+    db.session.commit()
+
+    p = Party(s.id, session.get('id'))
+    db.session.add(p)
     db.session.commit()
     return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
-    session = JamSession.query.get(session_id)
-    return render_template('get_single_session.html', session=session)
+    jam_session = JamSession.query.get(session_id)
+    return render_template('single_session.html', jam_session=jam_session)
 
 @jam_sessions_bp.post('/<int:session_id>/delete')
 def delete_session(session_id: int):
     session = JamSession.query.get(session_id)
     db.session.delete(session)
+    db.session.commit()
+    return redirect(url_for('jam_sessions.get_sessions'))
+
+@jam_sessions_bp.post('<int:session_id>/join')
+def join_session(session_id: int):
+    jam_session = JamSession.query.get(session_id)
+    party = Party(jam_session.id, session.get('id'))
+    print(party.user_id)
+    db.session.add(party)
     db.session.commit()
     return redirect(url_for('jam_sessions.get_sessions'))

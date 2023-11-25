@@ -120,12 +120,10 @@ class Party(db.Model):
     party_id = db.Column(db.Integer, primary_key=True, nullable= False)
     session_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    user_name = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, sesh_id: int, u_id: int) -> None:
+    def __init__(self, sesh_id: int, user_id: int) -> None:
         self.session_id = sesh_id
-        self.user_id = u_id
-        self.user_name = JamSession.get_user_name_id(u_id)
+        self.user_id = user_id
 
 class Post(db.Model):
     __tablename__ = 'post'
