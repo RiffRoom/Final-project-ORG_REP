@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, abort, session
+from flask import Blueprint, render_template, redirect, url_for, request, abort, session, flash
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -89,10 +89,15 @@ def delete_session(session_id: int):
 @jam_sessions_bp.post('<int:session_id>/join')
 def join_session(session_id: int):
     jam_session = JamSession.query.get(session_id)
-    party = Party(jam_session.id, session.get('id'))
-    db.session.add(party)
-    db.session.commit()
-    return redirect(url_for('jam_sessions.get_sessions'))
+    if not Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first():
+        party = Party(jam_session.id, session.get('id'))
+        db.session.add(party)
+        db.session.commit()
+        flash(f'Joined {jam_session.host_name}s Session!')
+        return redirect(url_for('jam_sessions.get_sessions'))
+    else:
+        flash('You are already in this session!')
+        return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.post('<int:session_id>/leave')
 def leave_session(session_id: int):
