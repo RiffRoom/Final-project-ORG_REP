@@ -34,9 +34,15 @@
                                     <button type="submit" class="btn btn-secondary mx-2">Edit</button>
                                 </form> 
                                 {% else %}                                
-                                    <form action="{{url_for('jam_sessions.join_session', session_id=jam_session.id)}}" method="post">
-                                        <button type="submit" class="btn btn-success mx-2">Join</button>
-                                    </form> 
+                                    {% if party.query.get(jam_session.id).user_id == session.get('id')%}
+                                        <form action="{{url_for('jam_sessions.leave_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-danger mx-2">Leave</button>
+                                        </form> 
+                                    {% else %}
+                                        <form action="{{url_for('jam_sessions.join_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-success mx-2">Join</button>
+                                        </form> 
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>

@@ -90,7 +90,14 @@ def delete_session(session_id: int):
 def join_session(session_id: int):
     jam_session = JamSession.query.get(session_id)
     party = Party(jam_session.id, session.get('id'))
-    print(party.user_id)
     db.session.add(party)
+    db.session.commit()
+    return redirect(url_for('jam_sessions.get_sessions'))
+
+@jam_sessions_bp.post('<int:session_id>/leave')
+def leave_session(session_id: int):
+    jam_session = JamSession.query.get(session_id)
+    party = Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first()
+    db.session.delete(party)
     db.session.commit()
     return redirect(url_for('jam_sessions.get_sessions'))
