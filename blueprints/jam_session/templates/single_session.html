@@ -1,9 +1,15 @@
 {% extends '_template.html'%}
 
 {% block body %}
+<div class="d-flex flex-column m-5">
     <h1>{{jam_session.title}}</h1>
     <p>{{jam_session.message}}</p>
     <form action="{{url_for('jam_sessions.delete_session', session_id=jam_session.id)}}" method="post">
         <button type="submit" class="btn btn-danger mx-2">Delete</button>
     </form> 
+
+    {% for user in Party.query.filter_by(session_id=jam_session.id)%}
+        <p class="card-subtitle">{{ UserTable.query.get(user.user_id).user_name}}</p>
+    {% endfor %}
+</div>
 {% endblock %}
