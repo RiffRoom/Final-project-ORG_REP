@@ -107,3 +107,21 @@ def leave_session(session_id: int):
         return redirect(url_for('jam_sessions.get_sessions'))
     else:
         return redirect(url_for('jam_sessions.get_sessions'))
+    
+@jam_sessions_bp.post('<int:session_id>/edit')
+def edit_session(session_id: int):
+    jam_session = JamSession.query.get(session_id)
+
+    new_title = request.form.get('title')
+    new_message = request.form.get('message')
+
+    if new_title and new_title != '':
+        jam_session.title = new_title
+
+
+    if new_message and new_message != '':
+        jam_session.message = new_message
+
+    db.session.commit()
+
+    return redirect(url_for('jam_sessions.get_single_session', session_id=jam_session.id))
