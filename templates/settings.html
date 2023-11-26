@@ -84,18 +84,23 @@
             </div>
 
             <!-- User Info -->
-            <form action="#" method="post" style="margin-top: 20px;">
+            <form action="/update_credentials" method="post" style="margin-top: 20px;">
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">New Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Change password">
+                </div>
 
                 <!-- Phone Number -->
                 <div class="form-group">
                     <label for="phone">Phone Number:</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number">
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number">
                 </div>
 
                 <!-- Email -->
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Change email">
                 </div>
 
                  <!-- Bio -->
@@ -107,11 +112,12 @@
                 <!-- Visibility Switch -->
                 <div class="form-group">
                     <label class="switch" style="margin-top: 10px;">
-                        <input type="checkbox" id="profileVisibilitySwitch">
+                        <input type="checkbox" id="profileVisibilitySwitch" name="private" {{ 'checked' if private_setting else '' }}>
                         <span class="slider round"></span>
                     </label>
-                    <span class="switch-caption" id="switchCaption">Public profile</span>
+                    <span class="switch-caption" id="switchCaption">Private profile</span>
                 </div>
+
                 
                 <!-- Save Button -->
                 <div class="row">
@@ -122,6 +128,18 @@
             </form>
         </div>
     </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="d-flex flex-row alert alert-{{ 'success' if category == 'success' else 'danger' }} justify-content-center alert-dismissible fade show fixed-top" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </div>
 
 
@@ -152,7 +170,9 @@
              if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
          }
          return null;
-     }
+    }
+
+   
 </script>
 
 {% endblock %}

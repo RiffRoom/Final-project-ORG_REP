@@ -8,6 +8,7 @@ from boto3 import logging
 from bucket_wrapper import BucketWrapper
 from flask_bcrypt import Bcrypt
 from flask_session import Session
+from werkzeug.security import generate_password_hash
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
@@ -81,28 +82,16 @@ def homepage():
                 print(f'{post.video_id}.mp4 is not in videos.')
         return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
 
-
 @app.route('/user_prof')
 def user_prof():
     return None #rendertemplate('user_profile.html')
-
-@app.context_processor
-def db_image_corrector():
-    return dict(binary_corrector=return_img) 
-## using context_processor for images
-# loop example! start with a for loop in jinja
-# {% for user in users%} 
-#           then call {{binary_corrector()}} leave the user id as is
-#                                         like this  vvvv    thats it
-#         <img src="data:;base64,{{binary_corrector(user.id)}}">
-#     {% endfor %}
 
 @app.route('/settings')
 def settings_page():
         
     if not session.get('id'):
         return redirect('/login')
-    
+
     if app.config['FLASK_ENV'] == 'prod':
         pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
 
@@ -117,38 +106,7 @@ def settings_page():
     print(pfps)
     print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
 
-    profile_pic_path = 'profile_pic.jpg'
-    if os.path.exists(profile_pic_path):
-        profile_pic_url = '/' + profile_pic_path
-
-        profile_pic_path = os.path.join('images', 'pfp.png')  
-        full_path = os.path.join(app.static_folder, profile_pic_path)
-        if os.path.exists(full_path):
-            profile_pic_url = url_for('static', filename=profile_pic_path)
-
-        else:
-            profile_pic_url = url_for('static', filename='testpfp.jpg') 
-
-        return render_template('settings.html', profile_pic_url=profile_pic_url, distribution_url=distribution_url, pfp=pfp)
-    else:
-        profile_pic_url = url_for('static', filename='testpfp.jpg') 
-    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url)
-
-@app.route('/update_profile_pic', methods=['POST'])
-def update_profile_pic():
-    if 'profile_pic' not in request.files:
-        return redirect(request.url)
-
-    file = request.files['profile_pic']
-
-    if file.filename == '':
-        return redirect(request.url)
-
-    if file:  
-        user_id = ...  
-        insert_BLOB_user(user_id, file)
-        return redirect(url_for('settings_page'))
-
+    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private)
 
 @app.get('/login')
 def get_login():
@@ -170,7 +128,7 @@ def login():
         try:
 
             username = request.form.get('username')
-
+ 
             if not username or username == '':
                 flash('Enter a username')
                 return redirect(url_for('get_login'))
@@ -209,9 +167,6 @@ def logout():
         print(e)
         return redirect(url_for('homepage'))
     
-    
-
-
 @app.post('/signup')
 def sign_up():
 
@@ -265,5 +220,51 @@ def sign_up():
     except:
         flash('Unable to Sign Up\nTry Again Later.')
         return redirect(url_for('get_login'))
+    
+@app.route('/update_credentials', methods=['POST'])
+def update_credentials():
+    user_id = session.get('id')
 
+    # Fetch user from database
+    user = UserTable.query.get(user_id)
 
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login_page'))
+
+    try:
+        new_email = request.form.get('email')
+        new_phone = request.form.get('phone')
+        new_password = request.form.get('password')
+        private_setting = request.form.get('private') == 'on'
+        
+        changes_made = False
+
+        if new_email and new_email != '':
+            user.email = new_email
+            changes_made = True
+
+        if new_phone and new_phone != '':
+            user.phone = new_phone
+            changes_made = True
+
+        if new_password and new_password != '':
+            hashed_password = generate_password_hash(new_password)
+            user.password = hashed_password
+            changes_made = True
+
+        if user.private != private_setting:
+            user.private = private_setting
+            changes_made = True
+
+        if changes_made:
+            db.session.commit()
+            flash('Credentials updated successfully', 'success')
+        else:
+            flash('No changes detected', 'error')
+
+        return redirect(url_for('settings_page'))
+
+    except Exception as e:
+        flash(f'Unable to update credentials: {e}', 'error')
+        return redirect(url_for('settings_page'))
