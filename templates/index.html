@@ -10,17 +10,17 @@
     </div>
 </nav>
 
-<div class="d-flex flex-column w-100 mx-5 mt-3">
+<div class="d-flex flex-column mx-5 mt-3 w-50">
     {% if posts %}
         {% for post in posts %}
-                <div class='d-flex flex-column'>
-                    <h2>{{post.title}}</h3>
+                <div class='d-flex flex-column justify-content-center'>
+                    <div>
+                        <a class="text-decoration-none fs-1 text-reset " href="{{url_for('get_single_post', post_id=post.id)}}">{{post.title}}</a>
+                    </div>
                     <h4>{{user_table.query.get(post.user_id).user_name}}</h1>
-                    <div class="d-block">
-                        <video controls>
+                        <video class="object-fit-scale"controls>
                             <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
                         </video>
-                    </div>
                     <p>{{post.msg}}</p>
                     <p>{{post.date_posted}}</p>
                 </div>
