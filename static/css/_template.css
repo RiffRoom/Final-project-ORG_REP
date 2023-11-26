@@ -218,6 +218,11 @@
     filter: none
   }
 
+  .switch-caption {
+      margin-bottom: 10px; 
+  }
+
+
   /* Map Pin Animation and Styling */
 
   @keyframes drop {
