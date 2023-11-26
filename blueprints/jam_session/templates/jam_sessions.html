@@ -1,7 +1,5 @@
 {% extends '_template.html' %}
 
-
-
 {% block body%}
 
 <nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
@@ -19,16 +17,28 @@
             {% for jam_session in active_jam_sessions %}
                 <div class="card bg-light-subtle rounded-4 shadow mb-3 test">
                     <div class="card-body">
-                        <h5 class="card-title">{{ jam_session.title}} {% if date_str %} {{date_str}} {% endif %}</h5>
-                        <p class="card-subtitle text-muted">{{jam_session.host_name}}</p>
+                        <h5 class="card-title">{{ jam_session.title}} {{JamSession.date_str(jam_session.date)}} </h5>
+                        <p class="card-subtitle text-muted">{{ UserTable.query.get(jam_session.host_id).user_name }}</p>
                         <p class="card-text mt-2">{{ jam_session.message }}</p>
+                        <p class="card-text"> Attendee Count: {{ Party.query.filter_by(session_id=jam_session.id).count() }} </p>
                         <div class="d-flex flex-row justify-content-between align-items-center"> 
                             <p class="card-text"><small class="text-muted">{{jam_session.date_posted}}</small></p>
                             <div class="d-flex flex-row">
-                                <form action="{{url_for('jam_sessions.delete_session', session_id=jam_session.id)}}" method="post">
-                                    <button type="submit" class="btn btn-danger mx-2" name="delete">Delete</button>
-                                </form>
-                                <button type="button" class="btn btn-success mx-2">Join</button>
+                                {% if jam_session.host_id == session.get('id') %}
+                                <form action="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}" method="get">
+                                    <button type="submit" class="btn btn-secondary mx-2">Edit</button>
+                                </form> 
+                                {% else %}
+                                    {% if Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first() %}
+                                        <form action="{{url_for('jam_sessions.leave_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-danger mx-2">Leave</button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{{url_for('jam_sessions.join_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-success mx-2">Join</button>
+                                        </form> 
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -59,6 +69,17 @@
             </form>
         </div>
     </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div> {{message}} </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </div>
 
 
