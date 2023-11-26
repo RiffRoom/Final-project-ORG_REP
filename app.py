@@ -92,6 +92,7 @@ def settings_page():
     if not session.get('id'):
         return redirect('/login')
 
+
     if app.config['FLASK_ENV'] == 'prod':
         pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
 
@@ -249,7 +250,7 @@ def update_credentials():
             changes_made = True
 
         if new_password and new_password != '':
-            hashed_password = generate_password_hash(new_password)
+            hashed_password = bcrypt.generate_password_hash(new_password, 16).decode()
             user.password = hashed_password
             changes_made = True
 
