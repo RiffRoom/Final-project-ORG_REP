@@ -256,7 +256,7 @@ def update_credentials():
         if new_last_name and new_last_name != user.last_name:
             user.last_name = new_last_name
             changes_made = True
-            
+
         if new_email and new_email != '':
             user.email = new_email
             changes_made = True
@@ -270,7 +270,7 @@ def update_credentials():
             user.password = hashed_password
             changes_made = True
 
-        if new_bio != user.bio: 
+        if new_bio is not None and new_bio != user.bio: 
             user.bio = new_bio
             changes_made = True
 
