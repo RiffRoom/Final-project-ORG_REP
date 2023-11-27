@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
@@ -63,7 +63,6 @@ def homepage():
         return redirect('/login')
     
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
-    
     videos = []
     posts = Post.query.all()
 
@@ -80,7 +79,11 @@ def homepage():
             except FileNotFoundError as e:
                 print(e)
                 print(f'{post.video_id}.mp4 is not in videos.')
-        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', UserTable=UserTable) 
+
+@app.context_processor
+def comment_get():
+    return dict(get_post_comments=get_comments_of_post)
 
 
 @app.get('/<int:post_id>')

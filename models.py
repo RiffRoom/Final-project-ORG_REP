@@ -33,6 +33,12 @@ def return_media(id):
     image = base64.b64encode(BLOB).decode('ascii')
     return image
 
+
+def get_comments_of_post(id):
+    comment_section = CommentSection.query.filter_by(post_id=id).first()
+    comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
+    return comments
+
 db = SQLAlchemy()
 ## USE ONLY FOR TESTS
 # def clear_bd():
