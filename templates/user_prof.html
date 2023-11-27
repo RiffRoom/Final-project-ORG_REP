@@ -1,0 +1,21 @@
+{% extends '_template.html' %} 
+
+{% block body %}
+<nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
+    <div class="navbar-brand">
+        <a href="/user_prof" class="text-decoration-none text-white">Profile</a>
+    </div>
+</nav>
+
+
+
+<div>
+    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+    {% if user.bio %}
+        <p>{{ user.bio }}</p>
+    {% else %}
+        <p></p> 
+    {% endif %}
+</div>
+
+{% endblock %}

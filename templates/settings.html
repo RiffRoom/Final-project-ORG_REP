@@ -11,7 +11,6 @@
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <h1 class="text-center">Settings Page</h1> 
-            <p style="margin-bottom: 30px;" class="text-center">Welcome to the settings page. More features coming soon!</p>
             
             <!-- Profile Picture -->
             <div class="text-center mb-4">
@@ -85,25 +84,43 @@
 
             <!-- User Info -->
             <form action="/update_credentials" method="post" style="margin-top: 20px;">
+                
+                <div class="form-row">
+                    <!-- First Name -->
+                    <div class="form-group col-md-6">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name">
+                    </div>
+            
+                    <!-- Last Name -->
+                    <div class="form-group col-md-6">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name">
+                    </div>
+                </div>
+
+                
+                <div class="form-row">
+                    <!-- Phone Number -->
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group col-md-6">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Change email">
+                    </div>
+                </div>
+                
                 <!-- Password -->
                 <div class="form-group">
                     <label for="password">New Password:</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="Change password">
                 </div>
 
-                <!-- Phone Number -->
-                <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number">
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Change email">
-                </div>
-
-                 <!-- Bio -->
+                <!-- Bio -->
                 <div class="form-group">
                     <label for="bio">Bio:</label>
                     <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio"></textarea>

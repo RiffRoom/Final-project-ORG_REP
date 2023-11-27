@@ -8,7 +8,6 @@ from boto3 import logging
 from bucket_wrapper import BucketWrapper
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from werkzeug.security import generate_password_hash
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
@@ -84,7 +83,13 @@ def homepage():
 
 @app.route('/user_prof')
 def user_prof():
-    return None #rendertemplate('user_profile.html')
+    user_id = session.get('id')
+    user = UserTable.query.get(user_id)
+
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login_page'))
+    return render_template('user_prof.html', user=user)
 
 @app.route('/settings')
 def settings_page():
@@ -234,13 +239,24 @@ def update_credentials():
         return redirect(url_for('login_page'))
 
     try:
+        new_first_name = request.form.get('first_name')
+        new_last_name = request.form.get('last_name')
         new_email = request.form.get('email')
         new_phone = request.form.get('phone')
         new_password = request.form.get('password')
+        new_bio = request.form.get('bio')
         private_setting = request.form.get('private') == 'on'
         
         changes_made = False
 
+        if new_first_name and new_first_name != user.first_name:
+            user.first_name = new_first_name
+            changes_made = True
+
+        if new_last_name and new_last_name != user.last_name:
+            user.last_name = new_last_name
+            changes_made = True
+            
         if new_email and new_email != '':
             user.email = new_email
             changes_made = True
@@ -252,6 +268,10 @@ def update_credentials():
         if new_password and new_password != '':
             hashed_password = bcrypt.generate_password_hash(new_password, 16).decode()
             user.password = hashed_password
+            changes_made = True
+
+        if new_bio != user.bio: 
+            user.bio = new_bio
             changes_made = True
 
         if user.private != private_setting:

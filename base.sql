@@ -11,6 +11,9 @@ create table user_table (
     prof_pic varchar(255)
 );
 
+ALTER TABLE user_table
+ADD COLUMN bio TEXT;
+
 drop table if exists sessions cascade ;
 create table sessions (
     id serial primary key,
