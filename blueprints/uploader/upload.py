@@ -2,7 +2,7 @@ from flask import Blueprint, flash, render_template, redirect, url_for, request,
 from dotenv import load_dotenv
 import os
 from datetime import datetime
-from models import db, Post
+from models import db, Post, CommentSection
 from werkzeug.utils import secure_filename
 from flask import current_app
 import boto3
@@ -91,10 +91,15 @@ def upload_video():
                 OutputKeyPrefix='videos/'
             )
 
-            
-            db.session.commit()
-
             remove_file(filename)
+
+            db.session.commit() 
+
+            comment_section = CommentSection(post.id)
+
+            db.session.add(comment_section)
+
+            db.session.commit()
             
             return redirect(url_for('upload.get_upload_page'))
     # Development Path
@@ -107,6 +112,13 @@ def upload_video():
             generate_thumbnail(f'{current_app.config["UPLOAD_PATH"]}/videos/{file_key}.mp4', f'{current_app.config["UPLOAD_PATH"]}/thumbnails/')
 
             db.session.commit()
+
+            comment_section = CommentSection(post.id)
+
+            db.session.add(comment_section)
+
+            db.session.commit()
+            
         return redirect(url_for('upload.get_upload_page'))
 
 

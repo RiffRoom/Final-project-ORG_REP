@@ -134,7 +134,6 @@ class Post(db.Model):
     ratio = db.Column(db.Integer, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    user_name = db.Column(db.String(255), nullable=False) 
     section = db.relationship('CommentSection', cascade='all, delete')
 
     def __init__(self, video_id:str, title: str, msg: str, ratio: int, date: datetime, user_id: int) -> None:
@@ -144,7 +143,6 @@ class Post(db.Model):
         self.ratio = ratio
         self.date_posted = date
         self.user_id = user_id
-        self.user_name = JamSession.get_user_name_id(user_id)
 
 
 class CommentSection(db.Model):
@@ -156,15 +154,13 @@ class CommentSection(db.Model):
         self.post_id = post_id
 
 class Comment(db.Model):
-    __tablename__ = 'comments'
+    __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     comment_section_id = db.Column(db.Integer, db.ForeignKey('comment_section.id'), nullable=False)
-    commenter_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    commenter_name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, cs_id: int, cid: int, msg: str) -> None:
+    def __init__(self, cs_id: int, user_id: int, msg: str) -> None:
         self.comment_section_id = cs_id
-        self.commenter_id = cid
-        self.commenter_name = JamSession.get_user_name_id(cid)
+        self.user_id = user_id
         self.message = msg

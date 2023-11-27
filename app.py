@@ -82,6 +82,30 @@ def homepage():
                 print(f'{post.video_id}.mp4 is not in videos.')
         return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
 
+
+@app.get('/<int:post_id>')
+def get_single_post(post_id: int):
+    post = Post.query.get(post_id)
+
+    comment_section = CommentSection.query.filter_by(post_id=post.id).first()
+    comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
+    
+    if app.config['FLASK_ENV'] == 'prod':
+        return render_template('single_post.html', post=post, distribution_url=distribution_url, comment_section=comment_section, comments=comments, UserTable=UserTable)
+    else:
+        return render_template('single_post.html', post=post, distribution_url=f'{app.config["UPLOAD_PATH"]}/', comment_section=comment_section, comments=comments, UserTable=UserTable)
+
+@app.post('/<int:post_id>')
+def post_comment(post_id: int):
+    post = Post.query.get(post_id)
+    message = request.form.get('comment')
+    cs = CommentSection.query.filter_by(post_id=post.id).first()
+    print(cs)
+    comment = Comment(cs.id, session.get('id'), message)
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('get_single_post', post_id=post.id))
+
 @app.route('/user_prof')
 def user_prof():
     return None #rendertemplate('user_profile.html')
@@ -121,7 +145,6 @@ def get_login():
     except Exception as e:
         print(e)
 
-
     return render_template('login.html')
 
 @app.post('/login')
@@ -129,7 +152,7 @@ def login():
         try:
 
             username = request.form.get('username')
- 
+
             if not username or username == '':
                 flash('Enter a username')
                 return redirect(url_for('get_login'))
