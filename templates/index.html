@@ -10,23 +10,33 @@
     </div>
 </nav>
 
-<div class="d-flex flex-column mx-5 mt-3 w-50">
-    {% if posts %}
-        {% for post in posts %}
-                <div class='d-flex flex-column justify-content-center'>
-                    <div>
-                        <a class="text-decoration-none fs-1 text-reset " href="{{url_for('get_single_post', post_id=post.id)}}">{{post.title}}</a>
-                    </div>
-                    <h4>{{user_table.query.get(post.user_id).user_name}}</h1>
-                        <video class="object-fit-scale"controls>
-                            <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
-                        </video>
-                    <p>{{post.msg}}</p>
-                    <p>{{post.date_posted}}</p>
-                </div>
-        {% endfor %}            
+{% if posts %}
+{% for post in posts %}
+<div class="d-flex flex-row mx-5 mt-3">
+
+    
+    <div class="d-flex flex-column w-50">
+        <div class='d-flex flex-column justify-content-center'>
+            <div>
+                <a class="text-decoration-none fs-1 text-reset " href="{{url_for('get_single_post', post_id=post.id)}}">{{post.title}}</a>
+            </div>
+            <h4>{{user_table.query.get(post.user_id).user_name}}</h1>
+                <video class="object-fit-scale"controls>
+                    <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
+                </video>
+                <p>{{post.msg}}</p>
+                <p>{{post.date_posted}}</p>
+            </div>
+        </div>
+        <div class="d-flex flex-column w-100">
+            <div class="comment-hide" id="comment-input">
+                <textarea cols="30" rows="4" ></textarea>
+            </div>
+            <button class="btn btn-light" type="button" id="comment-button-toggle">Comment</button>
+        </div>
+    </div>
+    {% endfor %}            
     {% endif %}
-</div>
 
 
 
@@ -43,5 +53,37 @@
     {% endif %}
 {% endwith %}
 
+<script defer>
+    
+    'use strict';
+
+    const commentButtons = document.querySelectorAll("#comment-button-toggle");
+    const commentInputs = document.querySelectorAll("#comment-input");
+
+    for (let i = 0; i < commentButtons.length; i++) {
+        const button = commentButtons[i];
+
+        button.addEventListener('click', ()=>{
+            showCommentBox(commentInputs[i]);
+        })
+    }
+
+function showCommentBox(textArea){
+    if(textArea.classList.contains("comment-hide")){
+                textArea.classList.remove("comment-hide");
+                textArea.classList.add("comment-show");
+            }
+            else {
+                textArea.classList.remove("comment-show");
+                textArea.classList.add("comment-hide");
+            }
+}
+
+
+
+
+
+
+</script>
 
 {% endblock %}
