@@ -18,7 +18,7 @@ def get_sessions():
     max_date = datetime(2024, 12, 31,23)
     active_jam_sessions = JamSession.query.all()
 
-    # Used for Google Map
+    # Used for Google Map pins
     jam_session_data = []
 
     if active_jam_sessions:
@@ -65,8 +65,10 @@ def add_new_session():
     db.session.commit()
 
     p = Party(s.id, session.get('id'))
+
     db.session.add(p)
     db.session.commit()
+
     return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.get('/<int:session_id>')
@@ -116,7 +118,6 @@ def edit_session(session_id: int):
 
     if new_title and new_title != '':
         jam_session.title = new_title
-
 
     if new_message and new_message != '':
         jam_session.message = new_message
