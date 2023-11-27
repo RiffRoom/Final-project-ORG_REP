@@ -88,11 +88,12 @@ def get_single_post(post_id: int):
     post = Post.query.get(post_id)
 
     comment_section = CommentSection.query.filter_by(post_id=post.id).first()
+    comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
     
     if app.config['FLASK_ENV'] == 'prod':
-        return render_template('single_post.html', post=post, distribution_url=distribution_url, comment_section=comment_section, Comment=Comment, UserTable=UserTable)
+        return render_template('single_post.html', post=post, distribution_url=distribution_url, comment_section=comment_section, comments=comments, UserTable=UserTable)
     else:
-        return render_template('single_post.html', post=post, distribution_url=f'{app.config["UPLOAD_PATH"]}/', comment_section=comment_section, Comment=Comment, UserTable=UserTable)
+        return render_template('single_post.html', post=post, distribution_url=f'{app.config["UPLOAD_PATH"]}/', comment_section=comment_section, comments=comments, UserTable=UserTable)
 
 @app.post('/<int:post_id>')
 def post_comment(post_id: int):

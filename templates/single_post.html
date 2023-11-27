@@ -13,7 +13,7 @@
         <div class="d-flex flex-column mx-5 mt-3 w-50">
             <h1 class="align-content-start">Comments</h1>
             <div class="d-flex flex-column mt-2">
-                {% for comment in Comment.query.filter_by(comment_section_id=comment_section.id).all() %}
+                {% for comment in comments %}
                     <p>{{UserTable.query.get(comment.user_id).user_name}}: {{comment.message}}</p>
                 {% endfor %}
             </div>
