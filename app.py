@@ -86,6 +86,8 @@ def comment_get():
     return dict(get_post_comments=get_comments_of_post)
 
 
+
+
 @app.get('/<int:post_id>')
 def get_single_post(post_id: int):
     post = Post.query.get(post_id)
@@ -107,7 +109,7 @@ def post_comment(post_id: int):
     comment = Comment(cs.id, session.get('id'), message)
     db.session.add(comment)
     db.session.commit()
-    return redirect(url_for('get_single_post', post_id=post.id))
+    return redirect(url_for('homepage', post_id=post.id))
 
 @app.route('/user_prof')
 def user_prof():

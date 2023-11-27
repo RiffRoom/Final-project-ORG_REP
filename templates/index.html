@@ -15,7 +15,7 @@
 {% for post in posts %}
   <div class="container mx-3 row mt-2 h-75">
     <div class="card col-sm">
-        <h1>{{post.title}}</h1>
+      <a class="text-decoration-none fs-1 text-reset " href="{{url_for('get_single_post', post_id=post.id)}}"><h1>{{post.title}}</h1></a>
         <h5>{{UserTable.query.get(post.user_id).user_name}}</h5> 
         <video class="mb-2" width="590" height="300" controls>
             <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
@@ -36,37 +36,20 @@
       </div>
     <div class="card col-sm" style="max-height: 550px; position: relative;">
       <h1 class="text-center" style="position:sticky;">Comments</h1>
-        <div class="scroll-black overflow-y-scroll" >  
-              <div class="container row" style="height: 450px; z-index: 1;">  
+        <div class="scroll-black overflow-y-scroll"  style="height: 450px;">  
+              <div class="container row">
                 {% for comm in get_post_comments(post.id) %}          
                   <div class="card-text">{{UserTable.query.get(comm.user_id).user_name}}: {{comm.message}}</div>                
                 {% endfor %}
                 
               </div>
-
-            <!-- <div class="dropdown">
-              <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
-                  <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                </svg>
-              </button>
-              <ul class="dropdown-menu">
-                <li><textarea type="email" class="form-control" id="exampleFormControlInput1" placeholder="place your epic comment here" style="max-width: 100%;"></textarea></li>
-                <li><button type="button" class="btn btn-success" style="width: 100%;">Success</button</li>
-              </ul>
-            </div> -->
-
-            
-                  
-
         </div>
 
-                       
-        <div class="d-flex flex-column w-100 justify-content-end " style="position: relative; z-index: 0;" >
-          <div class="comment-hide" id="comment-input" style="position: absolute;">
-              <textarea cols="30" rows="4" placeholder="Insert comment here"></textarea>
-          </div>
-
+       <form class="d-flex flex-column w-100 justify-content-end " style="position: relative; z-index: 0;" method="post" action="{{url_for('post_comment', post_id=post.id )}}">              
+              <div class="comment-hide" id="comment-input" style="position: absolute;">
+                <textarea cols="30" rows="4" placeholder="Insert comment here" id="comment" name="comment" required></textarea>
+              </div>
+            
           <div class="d-inline-flex w-100 justify-content-center">
               <div id="comment-button-toggle" class="button-expand">
                   <button class="btn btn-primary" style="width: 100%;" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
@@ -74,15 +57,14 @@
                   </svg></button>
               </div> 
               <div class="button-hide" id="button-send">
-                <button class="btn btn-success" style="width: 100%;" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
-                  </svg>
-                </button>
+                  <button class="btn btn-success btn-primary" style="width: 100%;" type="submit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
+                      </svg>
+                    </button>
               </div>
           </div>         
-        </div>
-
+      </form>  
 
 
       </div>  
