@@ -253,3 +253,33 @@
   .drop {
     animation: drop 0.3s linear forwards var(--delay-time);
   }
+
+  /* Comment Input Styling */
+
+  #comment-button-toggle {
+    position: relative;
+    align-self: center;
+    width: 75%;
+
+    height: 50px;
+  }
+
+  #comment-input > textarea {
+    width: 100%;
+    resize: none;
+    border-radius: 10px;
+  }
+
+  .comment-hide {
+    opacity: 0;
+    transform: translateY(0);
+    z-index: -1;
+    transition: .5s all ease-in-out;
+  }
+
+  .comment-show {
+    opacity: 1;
+    transform: translateY(-5%);
+    z-index: 0;
+    transition: .5s all ease-in-out;
+  }
