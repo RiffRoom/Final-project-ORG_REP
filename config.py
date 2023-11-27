@@ -15,7 +15,7 @@ SESSION_PERMANENT = False
 SESSION_TYPE = 'filesystem'
 
 MAX_CONTENT_LENGTH = 1_048_576 * 1_048_576
-UPLOAD_EXTENSIONS = ['.mp4', '.mov', '.mp3', '.mkv']
+UPLOAD_EXTENSIONS = ['.mp4', '.mov', '.mp3', '.mkv', '.webm']
 UPLOAD_PATH = 'static//uploads'
 
 SQLALCHEMY_DATABASE_URI = \
