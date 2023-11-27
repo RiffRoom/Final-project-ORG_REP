@@ -36,8 +36,6 @@ def get_sessions():
                         Party=Party,
                         UserTable=UserTable)
 
-
-
 @jam_sessions_bp.post('/')
 def add_new_session():
     data = request.get_json()
@@ -74,6 +72,7 @@ def add_new_session():
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
     jam_session = JamSession.query.get(session_id)
+    JamSession.get_num_attendees(session_id)
     return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable)
 
 @jam_sessions_bp.post('/<int:session_id>/delete')
@@ -91,7 +90,7 @@ def join_session(session_id: int):
         party = Party(jam_session.id, session.get('id'))
         db.session.add(party)
         db.session.commit()
-        flash(f"Joined {UserTable.query.get(party.user_id).user_name}'s Session!")
+        flash(f"Joined {UserTable.query.get(jam_session.host_id).user_name}'s Session!")
         return redirect(url_for('jam_sessions.get_sessions'))
     else:
         flash('You are already in this session!')

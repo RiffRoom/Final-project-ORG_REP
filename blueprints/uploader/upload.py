@@ -126,7 +126,7 @@ def remove_file(filename):
     max_remove_attempts = 5
     attempts = 0
     removed = False
-    while not removed or attempts > max_remove_attempts:
+    while not removed or attempts < max_remove_attempts:
         try:
             os.remove(f'{current_app.config["UPLOAD_PATH"]}/{filename}')
             removed = True
