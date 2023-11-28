@@ -19,6 +19,11 @@
                 </button>
             </div>
 
+            <!-- Profile Picture Upload Form (Hidden) -->
+            <form id="upload-form" action="{{ url_for('upload.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="profile-pic-input" name="file" onchange="document.getElementById('upload-form').submit();">
+            </form>
+            
 
             <!-- default pfps -->
             <div class="offcanvas offcanvas-top" data-bs-scroll="false" data-bs-backdrop="true" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
@@ -35,7 +40,6 @@
                             <!--upload-->
                             <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
                                 <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
-                                <input type="file" id="profile-pic-input" hidden>
                             </button>
                             
                             <!--test pfp 1-->

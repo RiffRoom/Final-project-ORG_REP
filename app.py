@@ -163,7 +163,6 @@ def login():
             flash('Incorrect Username or Password')
             return redirect(url_for('get_login'))
         
-
 @app.post('/logout')
 def logout():
     try:
