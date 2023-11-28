@@ -3,22 +3,43 @@
 {% block body %}
 <nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
     <div class="navbar-brand">
-        <a href="/user_prof" class="text-decoration-none text-white">Profile</a>
+        <a href="/user_prof" class="text-decoration-none text-white" >Profile</a>
     </div>
 </nav>
 
 
 
-<div class="container">
+<div class="container mt-4">
+    <!-- User Profile Section -->
     <div class="row justify-content-center">
         <div class="col-md-8 text-center">
-            <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+            <h1 class="display-4">{{ user.first_name }} {{ user.last_name }}</h1>
             {% if user.bio %}
-                <p>{{ user.bio }}</p>
+                <h2 class="display-6 mt-3">{{ user.bio }}</h2>
             {% else %}
                 <p></p>
             {% endif %}
         </div>
+    </div>
+
+    <!-- User Posts Section -->
+    <div class="row mt-4">
+        {% if user_posts %}
+            {% for post in user_posts %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <video class="card-img-top" controls>
+                            <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
+                        </video>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.msg }}</p>
+                            <p class="text-muted">{{ post.date_posted }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 

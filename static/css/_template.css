@@ -223,6 +223,46 @@
   }
 
 
+  /* Hide pw icon */
+  .form-group .form-control {
+    padding-right: 2.5em;
+  }
+
+  .form-group i.bi {
+      font-size: 1.25rem;
+      color: #495057;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-60%);
+      cursor: pointer;
+      z-index: 10;
+  }
+
+  .form-group i.bi {
+      line-height: 0;
+  }
+
+  .modal-title {
+    color: black; 
+  }
+
+
+  body, html {
+    height: 100%;
+    margin: 0;
+  }
+
+  .card-img-top {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1; 
+    object-fit: cover;  
+  }
+
+  
+
+
   /* Map Pin Animation and Styling */
 
   @keyframes drop {
@@ -250,6 +290,7 @@
       opacity: 1;
     }
   }
+
   .drop {
     animation: drop 0.3s linear forwards var(--delay-time);
   }

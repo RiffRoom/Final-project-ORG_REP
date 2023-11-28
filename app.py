@@ -89,11 +89,16 @@ def user_prof():
     if not user:
         flash('User not found.', 'error')
         return redirect(url_for('login_page'))
-    return render_template('user_prof.html', user=user)
+    
+
+    user_posts = Post.query.filter_by(user_id = user.id).all()
+    return render_template('user_prof.html', user=user, user_posts = user_posts, user_table = UserTable, distribution_url=f'{app.config["UPLOAD_PATH"]}/')
 
 @app.route('/settings')
 def settings_page():
-        
+    user_id = session.get('id')
+    user = UserTable.query.get(user_id)
+
     if not session.get('id'):
         return redirect('/login')
 
@@ -103,16 +108,11 @@ def settings_page():
 
     current_user = UserTable.query.get(session.get('id'))
 
-    if session.get('id') == current_user.id:
-        print(current_user)
-        print(current_user.id)
-
-
     pfps = bucket_wrapper.get_objects(s3_client) 
     print(pfps)
     print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
 
-    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private)
+    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private, user=user)
 
 @app.get('/login')
 def get_login():
@@ -243,7 +243,6 @@ def update_credentials():
         new_last_name = request.form.get('last_name')
         new_email = request.form.get('email')
         new_phone = request.form.get('phone')
-        new_password = request.form.get('password')
         new_bio = request.form.get('bio')
         private_setting = request.form.get('private') == 'on'
         
@@ -265,14 +264,10 @@ def update_credentials():
             user.phone = new_phone
             changes_made = True
 
-        if new_password and new_password != '':
-            hashed_password = bcrypt.generate_password_hash(new_password, 16).decode()
-            user.password = hashed_password
-            changes_made = True
-
-        if new_bio is not None and new_bio != user.bio: 
+        if new_bio is not None:
             user.bio = new_bio
-            changes_made = True
+        else:
+            user.bio = ''
 
         if user.private != private_setting:
             user.private = private_setting
@@ -288,4 +283,34 @@ def update_credentials():
 
     except Exception as e:
         flash(f'Unable to update credentials: {e}', 'error')
+        return redirect(url_for('settings_page'))
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    user_id = session.get('id')
+    user = UserTable.query.get(user_id)
+
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login_page'))
+
+    try:
+        current_password = request.form.get('currentPassword')
+        new_password = request.form.get('newPassword')
+
+        if current_password and new_password:
+            if bcrypt.check_password_hash(user.password, current_password):
+                hashed_password = bcrypt.generate_password_hash(new_password, 16).decode('utf-8')
+                user.password = hashed_password
+                db.session.commit()
+                flash('Password updated successfully.', 'success')
+            else:
+                flash('Current password is incorrect.', 'error')
+        else:
+            flash('Please provide both current and new password.', 'error')
+
+        return redirect(url_for('settings_page'))
+
+    except Exception as e:
+        flash(f'Error changing password: {e}', 'error')
         return redirect(url_for('settings_page'))

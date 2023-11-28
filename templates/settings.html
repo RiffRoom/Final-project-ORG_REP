@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            <h1 class="text-center">Settings Page</h1> 
+            <h1 class="text-center" style="margin-top: 20px;">Settings Page</h1> 
             
             <!-- Profile Picture -->
             <div class="text-center mb-4">
@@ -85,45 +85,44 @@
             <!-- User Info -->
             <form action="/update_credentials" method="post" style="margin-top: 20px;">
                 
-                <div class="form-row">
+                <div class="d-flex flex-row">
                     <!-- First Name -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-5">
                         <label for="first_name">First Name:</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name">
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
                     </div>
+
+                    <div class="form-group col-md-2"></div>
             
                     <!-- Last Name -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-5">
                         <label for="last_name">Last Name:</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name">
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
                     </div>
                 </div>
 
-                
-                <div class="form-row">
+
+                <div class="d-flex flex-row">
                     <!-- Phone Number -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-5">
                         <label for="phone">Phone Number:</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number">
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number" value="{{ user.phone }}">
                     </div>
+
+                    <div class="form-group col-md-2"></div>
 
                     <!-- Email -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-5">
                         <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Change email">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Change email" value="{{ user.email }}">
                     </div>
                 </div>
                 
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="password">New Password:</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Change password">
-                </div>
 
                 <!-- Bio -->
                 <div class="form-group">
                     <label for="bio">Bio:</label>
-                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio"></textarea>
+                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
                 </div>
 
                 <!-- Visibility Switch -->
@@ -135,14 +134,58 @@
                     <span class="switch-caption" id="switchCaption">Private profile</span>
                 </div>
 
-                
-                <!-- Save Button -->
-                <div class="row">
-                    <div class="col text-end" style="margin-top: -30px;"> 
-                        <button type="submit" class="btn btn-primary">Save</button>
+                <!-- Buttons Row -->
+                <div class="row" style="margin-top: -35px;">
+                    <div class="col-md-12">
+                        <div class="row justify-content-end">
+                            <!-- Change Password Button -->
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    Change Password
+                                </button>
+                            </div>
+
+                            <!-- Save Button -->
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
+
+
+            <!-- Change Password Modal -->
+            <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="changePasswordLabel">Change Password</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="changePasswordForm" method="post" action="{{ url_for('change_password') }}">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password:</label>
+                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
+                                </div>
+                                <div class="form-group position-relative">
+                                    <label for="newPassword">New Password:</label>
+                                    <input type="password" class="form-control pr-5" id="newPassword" name="newPassword" placeholder="Enter new password" required>
+                                    <i id="toggleNewPassword" class="bi bi-eye-slash position-absolute" style="top: 50%; transform: translateY(20%); right: 10px; cursor: pointer;"></i>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <!-- Update this button to submit the form -->
+                            <button type="submit" form="changePasswordForm" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -178,18 +221,31 @@
      }
      });
 
-     function getCookie(name) {
-         var nameEQ = name + "=";
-         var ca = document.cookie.split(';');
-         for(var i=0; i < ca.length; i++) {
-             var c = ca[i];
-             while (c.charAt(0) == ' ') c = c.substring(1,c.length);
-             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-         }
-         return null;
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
     }
 
-   
+    $(document).ready(function(){
+        $('#toggleNewPassword').click(function(){
+            $(this).toggleClass('bi-eye bi-eye-slash');
+            var input = $('#newPassword');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+            } else {
+                input.attr('type', 'password');
+            }
+        });
+    });
+
+
+
 </script>
 
 {% endblock %}
