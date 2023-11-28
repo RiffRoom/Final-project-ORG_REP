@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
+from blueprints.profile.profile import profile_bp
 
 app = Flask(__name__)
 app.app_context().push()
@@ -20,6 +21,7 @@ app.config.from_pyfile('config.py')
 
 app.register_blueprint(jam_sessions_bp, url_prefix='/sessions')
 app.register_blueprint(upload_bp, url_prefix='/upload')
+app.register_blueprint(profile_bp, url_prefix='/profile')
 
 bcrypt = Bcrypt(app)
 
@@ -67,6 +69,8 @@ def homepage():
     videos = []
     posts = Post.query.all()
 
+    user_posts = Post.query.filter_by(user_id=session.get('id'))
+
     # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
         return render_template('index.html', posts=posts, distribution_url=distribution_url, user_table=UserTable)    
@@ -105,33 +109,6 @@ def post_comment(post_id: int):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('get_single_post', post_id=post.id))
-
-@app.route('/user_prof')
-def user_prof():
-    return None #rendertemplate('user_profile.html')
-
-@app.route('/settings')
-def settings_page():
-        
-    if not session.get('id'):
-        return redirect('/login')
-
-
-    if app.config['FLASK_ENV'] == 'prod':
-        pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
-
-    current_user = UserTable.query.get(session.get('id'))
-
-    if session.get('id') == current_user.id:
-        print(current_user)
-        print(current_user.id)
-
-
-    pfps = bucket_wrapper.get_objects(s3_client) 
-    print(pfps)
-    print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
-
-    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private)
 
 @app.get('/login')
 def get_login():
@@ -245,50 +222,3 @@ def sign_up():
         flash('Unable to Sign Up\nTry Again Later.')
         return redirect(url_for('get_login'))
     
-@app.route('/update_credentials', methods=['POST'])
-def update_credentials():
-    user_id = session.get('id')
-
-    # Fetch user from database
-    user = UserTable.query.get(user_id)
-
-    if not user:
-        flash('User not found.', 'error')
-        return redirect(url_for('login_page'))
-
-    try:
-        new_email = request.form.get('email')
-        new_phone = request.form.get('phone')
-        new_password = request.form.get('password')
-        private_setting = request.form.get('private') == 'on'
-        
-        changes_made = False
-
-        if new_email and new_email != '':
-            user.email = new_email
-            changes_made = True
-
-        if new_phone and new_phone != '':
-            user.phone = new_phone
-            changes_made = True
-
-        if new_password and new_password != '':
-            hashed_password = bcrypt.generate_password_hash(new_password, 16).decode()
-            user.password = hashed_password
-            changes_made = True
-
-        if user.private != private_setting:
-            user.private = private_setting
-            changes_made = True
-
-        if changes_made:
-            db.session.commit()
-            flash('Credentials updated successfully', 'success')
-        else:
-            flash('No changes detected', 'error')
-
-        return redirect(url_for('settings_page'))
-
-    except Exception as e:
-        flash(f'Unable to update credentials: {e}', 'error')
-        return redirect(url_for('settings_page'))
