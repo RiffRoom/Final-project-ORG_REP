@@ -135,7 +135,7 @@ def upload_profile_photo():
 
         # Prod path
         if current_app.config['FLASK_ENV'] == 'prod':
-            # Code for production file handling
+            # idk how to do this lol
             pass  
 
         # Dev path
