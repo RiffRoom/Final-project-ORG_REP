@@ -17,26 +17,6 @@
     border-radius: 10px;
   }
 
-  /* End Scroll Bar Styling */
-  .sidenav {
-    height: 100%;
-    width: 61px;
-    position: fixed;
-    z-index: 1;
-
-    top: 1;
-    left: 0;
-    background-color: #000000;
-    overflow-x: hidden;
-    padding-top: -2px;
-  }
-  
-  .sidenav a {
-    padding: 6px 5px 10px 1px;
-    margin-top: -6px;
-    font-size: 25px;
-    display: block;
-  }
 
   #map {
     height: 350px;
@@ -44,9 +24,6 @@
     border-radius: 20px; 
   }
 
-  .main-offset{
-    margin-left: 72px;
-  }
   
   /* Profile Pic Styles  */
   .profile-pic-label {
