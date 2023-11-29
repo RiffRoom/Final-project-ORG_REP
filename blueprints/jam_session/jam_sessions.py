@@ -18,7 +18,7 @@ def get_sessions():
     max_date = datetime(2024, 12, 31,23)
     active_jam_sessions = JamSession.query.all()
 
-    # Used for Google Map
+    # Used for Google Map pins
     jam_session_data = []
 
     if active_jam_sessions:
@@ -35,8 +35,6 @@ def get_sessions():
                         JamSession=JamSession,
                         Party=Party,
                         UserTable=UserTable)
-
-
 
 @jam_sessions_bp.post('/')
 def add_new_session():
@@ -67,13 +65,16 @@ def add_new_session():
     db.session.commit()
 
     p = Party(s.id, session.get('id'))
+
     db.session.add(p)
     db.session.commit()
+
     return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
     jam_session = JamSession.query.get(session_id)
+    JamSession.get_num_attendees(session_id)
     return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable)
 
 @jam_sessions_bp.post('/<int:session_id>/delete')
@@ -91,7 +92,7 @@ def join_session(session_id: int):
         party = Party(jam_session.id, session.get('id'))
         db.session.add(party)
         db.session.commit()
-        flash(f"Joined {UserTable.query.get(party.user_id).user_name}'s Session!")
+        flash(f"Joined {UserTable.query.get(jam_session.host_id).user_name}'s Session!")
         return redirect(url_for('jam_sessions.get_sessions'))
     else:
         flash('You are already in this session!')
@@ -117,7 +118,6 @@ def edit_session(session_id: int):
 
     if new_title and new_title != '':
         jam_session.title = new_title
-
 
     if new_message and new_message != '':
         jam_session.message = new_message

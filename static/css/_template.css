@@ -258,11 +258,9 @@
 
   #comment-button-toggle {
     height: 50px;
-
     z-index: 1;
     justify-content: end;
   }
-
 
   #comment-input > textarea {
     width: 100%;
