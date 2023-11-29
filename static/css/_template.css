@@ -41,7 +41,7 @@
   #map {
     height: 350px;
     width: 800px;
-    border-radius: 20px; 
+    border-radius: 0; 
   }
 
   .main-offset{

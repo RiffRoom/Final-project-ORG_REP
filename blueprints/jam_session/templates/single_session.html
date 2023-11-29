@@ -31,9 +31,8 @@
             <p class="card-subtitle">{{ UserTable.query.get(user.user_id).user_name}}</p>
         {% endfor %}
     </div>
-
     <div id="map">
-        <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=16&size=400x400&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
+        <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=17&markers=color:blue%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=400x400&&maptype=satellite&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
     </div>
 </div>
 {% endblock %}
