@@ -112,47 +112,6 @@ def upload_video():
         return redirect(url_for('upload.get_upload_page'))
 
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@upload_bp.route('/profile/upload', methods=['POST'])
-def upload_profile_photo():
-    if not session.get('id'):
-        return redirect('/login')
-
-    uploaded_file = request.files['file']
-    if uploaded_file.filename == '' or not allowed_file(uploaded_file.filename):
-        flash('Invalid file type or no file selected', 'error')
-        return redirect(url_for('settings_page'))
-
-    if uploaded_file:
-        filename = secure_filename(uploaded_file.filename)
-        user_id = session.get('id')
-
-        # Prod path
-        if current_app.config['FLASK_ENV'] == 'prod':
-            # idk how to do this lol
-            pass  
-
-        # Dev path
-        else:
-            file_path = os.path.join('static/uploads/pfps/', f'{user_id}.jpg')
-            uploaded_file.save(file_path)
-
-            user = UserTable.query.get(user_id)
-            user.profile_photo_path = file_path
-            db.session.commit()
-
-            flash('Profile photo uploaded successfully', 'success')
-
-    return redirect(url_for('settings_page'))
-
-
-
 def remove_file(filename):
     max_remove_attempts = 5
     attempts = 0

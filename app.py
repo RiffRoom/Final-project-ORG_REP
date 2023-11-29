@@ -11,6 +11,8 @@ from flask_session import Session
 
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
+from blueprints.profile.profile import profile_bp
+
 
 app = Flask(__name__)
 app.app_context().push()
@@ -19,6 +21,9 @@ app.config.from_pyfile('config.py')
 
 app.register_blueprint(jam_sessions_bp, url_prefix='/sessions')
 app.register_blueprint(upload_bp, url_prefix='/upload')
+app.register_blueprint(profile_bp, url_prefix='/profile')
+
+
 
 bcrypt = Bcrypt(app)
 
@@ -80,39 +85,6 @@ def homepage():
                 print(e)
                 print(f'{post.video_id}.mp4 is not in videos.')
         return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
-
-@app.route('/user_prof')
-def user_prof():
-    user_id = session.get('id')
-    user = UserTable.query.get(user_id)
-
-    if not user:
-        flash('User not found.', 'error')
-        return redirect(url_for('login_page'))
-    
-
-    user_posts = Post.query.filter_by(user_id = user.id).all()
-    return render_template('user_prof.html', user=user, user_posts = user_posts, user_table = UserTable, distribution_url=f'{app.config["UPLOAD_PATH"]}/')
-
-@app.route('/settings')
-def settings_page():
-    user_id = session.get('id')
-    user = UserTable.query.get(user_id)
-
-    if not session.get('id'):
-        return redirect('/login')
-
-
-    if app.config['FLASK_ENV'] == 'prod':
-        pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
-
-    current_user = UserTable.query.get(session.get('id'))
-
-    pfps = bucket_wrapper.get_objects(s3_client) 
-    print(pfps)
-    print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
-
-    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private, user=user)
 
 @app.get('/login')
 def get_login():
@@ -226,90 +198,3 @@ def sign_up():
         flash('Unable to Sign Up\nTry Again Later.')
         return redirect(url_for('get_login'))
     
-@app.route('/update_credentials', methods=['POST'])
-def update_credentials():
-    user_id = session.get('id')
-
-    # Fetch user from database
-    user = UserTable.query.get(user_id)
-
-    if not user:
-        flash('User not found.', 'error')
-        return redirect(url_for('login_page'))
-
-    try:
-        new_first_name = request.form.get('first_name')
-        new_last_name = request.form.get('last_name')
-        new_email = request.form.get('email')
-        new_phone = request.form.get('phone')
-        new_bio = request.form.get('bio')
-        private_setting = request.form.get('private') == 'on'
-        
-        changes_made = False
-
-        if new_first_name and new_first_name != user.first_name:
-            user.first_name = new_first_name
-            changes_made = True
-
-        if new_last_name and new_last_name != user.last_name:
-            user.last_name = new_last_name
-            changes_made = True
-
-        if new_email and new_email != '':
-            user.email = new_email
-            changes_made = True
-
-        if new_phone and new_phone != '':
-            user.phone = new_phone
-            changes_made = True
-
-        if new_bio is not None:
-            user.bio = new_bio
-        else:
-            user.bio = ''
-
-        if user.private != private_setting:
-            user.private = private_setting
-            changes_made = True
-
-        if changes_made:
-            db.session.commit()
-            flash('Credentials updated successfully', 'success')
-        else:
-            flash('No changes detected', 'error')
-
-        return redirect(url_for('settings_page'))
-
-    except Exception as e:
-        flash(f'Unable to update credentials: {e}', 'error')
-        return redirect(url_for('settings_page'))
-
-@app.route('/change_password', methods=['POST'])
-def change_password():
-    user_id = session.get('id')
-    user = UserTable.query.get(user_id)
-
-    if not user:
-        flash('User not found.', 'error')
-        return redirect(url_for('login_page'))
-
-    try:
-        current_password = request.form.get('currentPassword')
-        new_password = request.form.get('newPassword')
-
-        if current_password and new_password:
-            if bcrypt.check_password_hash(user.password, current_password):
-                hashed_password = bcrypt.generate_password_hash(new_password, 16).decode('utf-8')
-                user.password = hashed_password
-                db.session.commit()
-                flash('Password updated successfully.', 'success')
-            else:
-                flash('Current password is incorrect.', 'error')
-        else:
-            flash('Please provide both current and new password.', 'error')
-
-        return redirect(url_for('settings_page'))
-
-    except Exception as e:
-        flash(f'Error changing password: {e}', 'error')
-        return redirect(url_for('settings_page'))

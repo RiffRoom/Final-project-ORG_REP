@@ -20,7 +20,7 @@
             </div>
 
             <!-- Profile Picture Upload Form (Hidden) -->
-            <form id="upload-form" action="{{ url_for('upload.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
+            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
                 <input type="file" id="profile-pic-input" name="file" onchange="document.getElementById('upload-form').submit();">
             </form>
             
@@ -170,7 +170,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="changePasswordForm" method="post" action="{{ url_for('change_password') }}">
+                            <form id="changePasswordForm" method="post" action="{{ url_for('profiles.change_password') }}">
                                 <div class="form-group">
                                     <label for="currentPassword">Current Password:</label>
                                     <input type="password" class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
