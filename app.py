@@ -111,6 +111,17 @@ def post_comment(post_id: int):
     db.session.commit()
     return redirect(url_for('homepage', post_id=post.id))
 
+@app.post('/<int:post_id>/iso')
+def post_comment_iso(post_id: int):
+    post = Post.query.get(post_id)
+    message = request.form.get('comment')
+    cs = CommentSection.query.filter_by(post_id=post.id).first()
+    print(cs)
+    comment = Comment(cs.id, session.get('id'), message)
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('get_single_post', post_id=post.id))
+
 @app.route('/user_prof')
 def user_prof():
     return None #rendertemplate('user_profile.html')
