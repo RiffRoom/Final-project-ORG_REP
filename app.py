@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
@@ -65,7 +65,6 @@ def homepage():
         return redirect('/login')
     
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
-    
     videos = []
     posts = Post.query.all()
 
@@ -84,7 +83,13 @@ def homepage():
             except FileNotFoundError as e:
                 print(e)
                 print(f'{post.video_id}.mp4 is not in videos.')
-        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', UserTable=UserTable) 
+
+@app.context_processor
+def comment_get():
+    return dict(get_post_comments=get_comments_of_post)
+
+
 
 
 @app.get('/<int:post_id>')
@@ -101,6 +106,17 @@ def get_single_post(post_id: int):
 
 @app.post('/<int:post_id>')
 def post_comment(post_id: int):
+    post = Post.query.get(post_id)
+    message = request.form.get('comment')
+    cs = CommentSection.query.filter_by(post_id=post.id).first()
+    print(cs)
+    comment = Comment(cs.id, session.get('id'), message)
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('homepage', post_id=post.id))
+
+@app.post('/<int:post_id>/iso')
+def post_comment_iso(post_id: int):
     post = Post.query.get(post_id)
     message = request.form.get('comment')
     cs = CommentSection.query.filter_by(post_id=post.id).first()
