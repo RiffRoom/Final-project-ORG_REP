@@ -1,0 +1,180 @@
+{% extends '_template.html'%}
+
+{% block body %}
+<nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
+    <div class="navbar-brand">
+        <a href="/settings" class="text-decoration-none text-white">Settings</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="text-center">Settings Page</h1> 
+            <p style="margin-bottom: 30px;" class="text-center">Welcome to the settings page. More features coming soon!</p>
+            
+            <!-- Profile Picture -->
+            <div class="text-center mb-4">
+                <button class="profile-pic-label btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
+                    <img src="{{distribution_url}}{{pfp}}" alt="Profile Picture" class="img-fluid">
+                </button>
+            </div>
+
+
+            <!-- default pfps -->
+            <div class="offcanvas offcanvas-top" data-bs-scroll="false" data-bs-backdrop="true" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasTopLabel">Edit Profile Picture</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                
+                <div class="offcanvas-body horizontal-scroll">
+                    <div class="d-flex flex-row">
+                        <div class="offcanvas-content">
+                            
+                            <!--upload-->
+                            <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                                <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
+                                <input type="file" id="profile-pic-input" hidden>
+                            </button>
+                            
+                            <!--test pfp 1-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp.png') }}" alt="Test Profile Picture">
+                            </button>
+
+                            <!--test pfp 2-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp2.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp2.png') }}" alt="Test Profile Picture 2">
+                            </button>
+
+                            <!--test pfp 3-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp3.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp3.png') }}" alt="Test Profile Picture 3">
+                            </button>
+
+                            <!--test pfp 4-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp4.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp4.png') }}" alt="Test Profile Picture 4">
+                            </button>
+
+                            <!--test pfp 5-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp5.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp5.png') }}" alt="Test Profile Picture 5">
+                            </button>
+
+                            <!--test pfp 6-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp6.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp6.png') }}" alt="Test Profile Picture 6">
+                            </button>
+
+                            <!--test pfp 7-->
+                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp7.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp7.png') }}" alt="Test Profile Picture 7">
+                            </button>
+
+                            <!--test pfp 8-->
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp8.png')">
+                                <img src="{{ url_for('static', filename='images/testpfps/testpfp8.png') }}" alt="Test Profile Picture 8">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Info -->
+            <form action="/update_credentials" method="post" style="margin-top: 20px;">
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">New Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Change password">
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Change email">
+                </div>
+
+                 <!-- Bio -->
+                <div class="form-group">
+                    <label for="bio">Bio:</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio"></textarea>
+                </div>
+
+                <!-- Visibility Switch -->
+                <div class="form-group">
+                    <label class="switch" style="margin-top: 10px;">
+                        <input type="checkbox" id="profileVisibilitySwitch" name="private" {{ 'checked' if private_setting else '' }}>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="switch-caption" id="switchCaption">Private profile</span>
+                </div>
+
+                
+                <!-- Save Button -->
+                <div class="row">
+                    <div class="col text-end" style="margin-top: -30px;"> 
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="d-flex flex-row alert alert-{{ 'success' if category == 'success' else 'danger' }} justify-content-center alert-dismissible fade show fixed-top" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+<script>
+    function setTestProfilePic(filename) {
+        var actualProfilePic = document.querySelector('.profile-pic-label img');    
+        var testProfilePicPath = '/static/images/testpfps/' + filename;
+        actualProfilePic.src = testProfilePicPath;
+
+        document.cookie = "selectedProfilePic=" + filename + ";path=/;max-age=31536000"; 
+    }
+
+    //Read the Cookie When the Page Loads
+     document.addEventListener('DOMContentLoaded', function() {
+     var selectedPic = getCookie('selectedProfilePic');
+     if (selectedPic) {
+         var actualProfilePic = document.querySelector('.profile-pic-label img');
+         actualProfilePic.src = '/static/images/testpfps/' + selectedPic;
+     }
+     });
+
+     function getCookie(name) {
+         var nameEQ = name + "=";
+         var ca = document.cookie.split(';');
+         for(var i=0; i < ca.length; i++) {
+             var c = ca[i];
+             while (c.charAt(0) == ' ') c = c.substring(1,c.length);
+             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+         }
+         return null;
+    }
+
+   
+</script>
+
+{% endblock %}
+
+    

@@ -1,0 +1,271 @@
+{% extends '_template.html' %}
+
+{% block body%}
+
+<nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
+    <div class="navbar-brand">
+        <a href="/" class="text-decoration-none text-white">Trending</a>
+    </div>
+    <div class="navbar-brand active">
+        <a href="" class="text-decoration-none text-white">Sessions</a>
+    </div>
+</nav>
+
+<div class="d-flex flex-row mt-5">
+    <div class="d-flex w-100 mx-2 scroll-black"> 
+        <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
+            {% for jam_session in active_jam_sessions %}
+                <div class="card bg-light-subtle mb-2 test" style="border-radius: 0px;">
+                    <div class="card-body">
+                        <div class="d-flex flex-row justify-content-between">
+                            <a class="text-decoration-none fs-5 fw-medium text-reset mb-2 monospace" href="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}"> {{ jam_session.title}} </a>
+                            <p class="card-subtitle text-muted">{{ UserTable.query.get(jam_session.host_id).user_name }}</p>
+                        </div>
+                        <h6> {{JamSession.date_str(jam_session.date)}} </h6>
+                        <p class="card-text lh-1">{{ jam_session.message }}</p>
+                        <p class="card-subtitle"> Attendee Count: {{ JamSession.get_num_attendees(jam_session.id) }} </p>
+                        <div class="d-flex flex-row justify-content-between"> 
+                            <p class="card-subtitle text-muted align-self-end"><small>{{jam_session.date_posted}}</small></p>
+                                {% if jam_session.host_id == session.get('id') %}
+                                <form action="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}" method="get">
+                                    <button type="submit" class="btn btn-secondary mx-2">Edit</button>
+                                </form> 
+                                {% else %}
+                                    {% if Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first() %}
+                                        <form action="{{url_for('jam_sessions.leave_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-danger mx-2">Leave</button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{{url_for('jam_sessions.join_session', session_id=jam_session.id)}}" method="post">
+                                            <button type="submit" class="btn btn-success mx-2">Join</button>
+                                        </form> 
+                                    {% endif %}
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="d-flex flex-column mx-4 justify-content-center h-auto">
+        <div class="" id="map" name="map"></div>
+
+        <div class="d-flex flex-column">
+            <form action="{{url_for('jam_sessions.add_new_session')}}">
+                <div class="d-flex flex-column">
+                    <div class="form-group">
+                        <label for="session_title">Session Title</label>
+                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required>
+                    </div>
+                    <div class="form-group d-flex flex-column">
+                        <label for="session_message">Description</label>
+                        <textarea class="form-group was-validated rounded-2" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session." style="resize: none;"></textarea>  
+                    </div>
+                    <div class="form-group d-flex flex-row justify-content-between align-items-center mt-2">
+                        <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
+                        <button type="submit" class="btn btn-success w-50" id="create_session_button">Create Session</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div> {{message}} </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+<script>
+(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+    ({key: "{{MAPS_API_KEY}}", v: "beta"});
+
+'use strict';
+
+let map;
+
+let sessionMarkerPlaced = false;
+let infoWindowOpen = false;
+
+let currentInfoWindow;
+
+// Dictionary of Session Markers
+const activeSessions = {{ jam_session_data|tojson }};
+
+
+let createSessionButton = document.getElementById("create_session_button");
+let sessionTitleInput = document.getElementById("session_title");
+let sessionMessageInput = document.getElementById("session_message");
+let sessionDateInput = document.getElementById("session_date_time");
+
+createSessionButton.classList.add('disabled');
+
+const intersectionObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+        if (entry.isIntersecting) {
+        entry.target.classList.add("drop");
+        intersectionObserver.unobserve(entry.target);
+        }
+    }   
+});
+
+async function initMap() {
+
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+    const { InfoWindow } = await google.maps.importLibrary("maps");
+
+    const position = { lat: 35.30882205337362, lng: -80.73374243196827 };
+    
+    map = new Map(document.getElementById("map"), {
+        zoom: 16,
+        center: position,
+        mapId: "DEMO_MAP_ID",
+    });
+
+    const unccBoundsCoords = [
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+        { lat: 35.31481661425956, lng: -80.74069598448466 },
+        { lat: 35.312169105744914, lng: -80.73438993333288 },
+        { lat: 35.31523830140014, lng: -80.73421201724148 },
+        { lat: 35.31494221144105, lng: -80.73204780556539 },
+        { lat: 35.31235615257797, lng: -80.72855350684715 },
+        { lat: 35.31538347561351, lng: -80.72388443783808 },
+        { lat: 35.31155208430528, lng: -80.72163270254663 }, 
+        { lat: 35.30602302555555, lng: -80.72452057828536 },
+        { lat: 35.299084387414545, lng: -80.73699095079235 },
+        { lat: 35.302051098851756, lng: -80.7413328618174},
+        { lat: 35.31123611507404, lng: -80.744310661925 },
+    ];
+
+    const unccBoundsPath = new google.maps.Polyline({
+        path: unccBoundsCoords,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+    });
+
+    for (const [key, value] of Object.entries(activeSessions)) {
+        let marker = new AdvancedMarkerElement({
+            map: map,
+            position: { lat: value.lat, lng: value.lng },
+            title: value.title,
+        });
+
+        
+        const content = marker.content;
+
+        content.style.opacity = "0";
+        content.addEventListener("animationend", (event) => {
+        content.classList.remove("drop");
+        content.style.opacity = "1";
+        });
+
+        const time = 1 + Math.random(); 
+
+        content.style.setProperty("--delay-time", time + "s");
+        intersectionObserver.observe(content);
+        
+        let infoWindow = new InfoWindow({
+            content: `
+            <h3 style="color: black">${value.title}</h3>
+            <div style="color: black">
+                <p>
+                    <strong>Host</strong>: ${value.host_name}
+                    <br>
+                    <strong>Extra Info</strong>: ${value.message}
+                </p>
+            </div>`,
+            maxWidth: 250,
+        });
+        
+        marker.addEventListener('gmp-click', () => {
+            if(infoWindowOpen){
+                currentInfoWindow.close();
+                infoWindow.open({
+                    anchor: marker,
+                    map,
+                });
+                currentInfoWindow = infoWindow;
+                infoWindowOpen = true;
+            }
+            else {
+                infoWindow.open({
+                    anchor: marker,
+                    map,
+                });
+                currentInfoWindow = infoWindow;
+                infoWindowOpen = true;
+            }
+        });
+    }
+
+    google.maps.event.addListener(map, "click", function (e) {
+        let latitude = e.latLng.lat();
+        let longitude = e.latLng.lng();
+
+        createSessionButton.classList.remove('disabled');
+
+        if(!sessionMarkerPlaced){
+            sessionMarker = new AdvancedMarkerElement({
+                map: map,
+                position: { lat: latitude, lng: longitude },
+                title: "New Session"
+            });
+            sessionMarkerPlaced = true;
+        }
+        else {
+            sessionMarker.position = {lat: latitude, lng: longitude};
+        }
+    });
+
+
+    createSessionButton.addEventListener('click', function (e) {
+        try {
+            if(sessionMarkerPlaced){
+
+                sessionMarkerPlaced = false;
+
+                let data = {
+                    title: sessionTitleInput.value,
+                    message: sessionMessageInput.value,
+                    lat: sessionMarker.position.lat,
+                    lng: sessionMarker.position.lng,
+                    date: sessionDateInput.value,
+                }
+
+                let json_data = JSON.stringify(data);
+    
+                fetch({{url_for('jam_sessions.add_new_session')}}, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    body: json_data
+                }) 
+            }
+        } catch (error) {
+            throw 400;  
+        }
+    });
+
+
+}
+
+initMap();
+
+</script>
+
+{% endblock %}
