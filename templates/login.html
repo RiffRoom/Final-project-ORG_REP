@@ -17,35 +17,46 @@
     transform: translateX(-450px);
     width: 500px;
 
+    z-index: 0;
+
     transition: 1s transform ease, 1s width ease;
 }
 
 .show-login {
     transform: translateX(0px);
 
+    z-index: 1;
+
     transition: 1s transform ease, 1s width ease;
 }
 
+#signup-form {
+    position: absolute;
+
+}
+
 .hide-signup {
-
     opacity: 0;
+    filter: blur(5px);
 
-    display: none;
+    z-index: -1;
 
     top: -100%;
     right: -10%;
 
-    transition: .25s opacity ease, 1.25s top ease;
+    transition: .25s opacity ease, 1.25s top ease, 1s filter ease-in-out;
 }
 
 .show-signup {
-
     opacity: 1;
+    filter: blur(0px);
+
+    z-index: 1;
 
     top: -7%;
     right: -10%;
 
-    transition: 1s opacity ease, 1.5s top ease;
+    transition: 1s opacity ease, 1.5s top ease, 1s filter ease-in-out;
 }
 
 .form-control {
@@ -83,7 +94,6 @@ button {
 </style>
 
 <body>
-    <div class="main">
         <div class="container mt-5" id="login-form">
             <div class="row mt-5">
                 <div class="col-lg-8 offset-md-2 mt-5">
@@ -121,32 +131,49 @@ button {
                 <div class="col-lg-8 offset-md-2 mt-5">
                     <div class="card shadow rounded-0">
                         <div class="card-body">
-                            <h1 class="text-center">Riff Room</h1>
-                            <form action="{{url_for('login')}}" method="post">
-                                <div class="d-flex flex-column align-items-center mt-5">
-                                    <h4 class="text-start text-muted">Login</h4>
+                            <form action="{{url_for('sign_up')}}" method="post">
+                                <h4 class="text-start text-muted text-center">Sign Up</h4>
+                                <div class="d-flex flex-row w-100 justify-content-center"> 
+                                    <div class="d-flex flex-column w-25 h-50 mt-1 mx-1">
+                                        <label class="card-subtitle p-1" for="first_name"><small class="text-muted">First</small></label>
+                                        <input class="form-control rounded-0"  type="text" name="first_name" id="first_name">
+                                    </div>
+                                    
+                                    <div class="d-flex flex-column w-25 h-50 mt-1 mx-1">
+                                        <label class="card-subtitle p-1" for="last_name"><small class="text-muted">Last</small></label>
+                                        <input class="form-control rounded-0" type="text" name="last_name" id="last_name">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-column align-items-center">
                                     <div class="d-flex flex-column w-50 h-50 mt-3">
-                                        <label for="username" class="card-subtitle"><small class="text-muted">Username</small></label>
-                                        <input type="text" class="form-control rounded-0 h-50" id="username" name="username" required>
+                                        <label class="card-subtitle" for="email"><small class="text-muted">Email</small></label>
+                                        <input class="form-control rounded-0" type="email" name="email" id="email" required>
                                     </div>
-                                </div>
-                                <div class="d-flex flex-column align-items-center mt-5">
-                                    <div class="d-flex flex-column w-50 h-50">
-                                        <label for="password" class="card-subtitle"><small class="text-muted">Password</small></label>
-                                        <input type="password" class="form-control rounded-0 h-50" id="password" name="password" required>
-                                        <p class="align-self-end"><small class="card-subtitle text-muted">Forgot Password?</small></p>
+                                    <div class="d-flex flex-column w-50 h-50 mt-3">
+                                        <label class="card-subtitle" for="phone"><small class="text-muted">Phone</small></label>
+                                        <input class="form-control rounded-0" type="tel" name="phone" id="phone">
                                     </div>
-                                </div>
-                                <div class="d-flex flex-column mt-5 align-items-center">
-                                    <button type="submit" class="rounded-5 w-25">Login</button>
-                                    <p class="card-subtitle mt-4"><small class="text-muted">New to RiffRoom? <a href="#" class="text-decoration-none">Create an Account</a></small></p>
+                        
+                                    <div class="d-flex flex-column w-50 h-50 mt-3">
+                                        <label class="card-subtitle" for="username"><small class="text-muted">Username</small></label>
+                                        <input class="form-control rounded-0" type="text" name="username" id="username" required>
+                                    </div>
+
+                                    <div class="d-flex flex-column w-50 h-50 mt-3">
+                                        <label class="card-subtitle" for="password"><small class="text-muted">Password</small></label>
+                                        <input class="form-control rounded-0" type="password" name="password" id="password" required>
+                                    </div>
+
+                                    <div class="d-flex flex-column mt-5 align-items-center w-50">
+                                        <button type="submit" class="rounded-5 w-50">Sign Up</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
         </div>
-    </div>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
