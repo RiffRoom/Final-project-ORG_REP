@@ -12,6 +12,42 @@
 
 <style>
 
+
+.hide-login {
+    transform: translateX(-450px);
+    width: 500px;
+
+    transition: 1s transform ease, 1s width ease;
+}
+
+.show-login {
+    transform: translateX(0px);
+
+    transition: 1s transform ease, 1s width ease;
+}
+
+.hide-signup {
+
+    opacity: 0;
+
+    display: none;
+
+    top: -100%;
+    right: -10%;
+
+    transition: .25s opacity ease, 1.25s top ease;
+}
+
+.show-signup {
+
+    opacity: 1;
+
+    top: -7%;
+    right: -10%;
+
+    transition: 1s opacity ease, 1.5s top ease;
+}
+
 .form-control {
     border: none;
     border-bottom: solid 1px black;
@@ -48,7 +84,7 @@ button {
 
 <body>
     <div class="main">
-        <div class="container mt-5">
+        <div class="container mt-5" id="login-form">
             <div class="row mt-5">
                 <div class="col-lg-8 offset-md-2 mt-5">
                     <div class="card shadow rounded-0">
@@ -71,13 +107,44 @@ button {
                                 </div>
                                 <div class="d-flex flex-column mt-5 align-items-center">
                                     <button type="submit" class="rounded-5 w-25">Login</button>
-                                    <p class="card-subtitle mt-4"><small class="text-muted">New to RiffRoom? <a href="{{url_for('get_sign_up')}}" class="text-decoration-none">Create an Account</a></small></p>
+                                    <p class="card-subtitle mt-4" id="signup-anchor"><small class="text-muted">New to RiffRoom? <a href="#" class="text-decoration-none">Create an Account</a></small></p>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="container mt-5 hide-signup" id="signup-form">
+            <div class="row mt-5">
+                <div class="col-lg-8 offset-md-2 mt-5">
+                    <div class="card shadow rounded-0">
+                        <div class="card-body">
+                            <h1 class="text-center">Riff Room</h1>
+                            <form action="{{url_for('login')}}" method="post">
+                                <div class="d-flex flex-column align-items-center mt-5">
+                                    <h4 class="text-start text-muted">Login</h4>
+                                    <div class="d-flex flex-column w-50 h-50 mt-3">
+                                        <label for="username" class="card-subtitle"><small class="text-muted">Username</small></label>
+                                        <input type="text" class="form-control rounded-0 h-50" id="username" name="username" required>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column align-items-center mt-5">
+                                    <div class="d-flex flex-column w-50 h-50">
+                                        <label for="password" class="card-subtitle"><small class="text-muted">Password</small></label>
+                                        <input type="password" class="form-control rounded-0 h-50" id="password" name="password" required>
+                                        <p class="align-self-end"><small class="card-subtitle text-muted">Forgot Password?</small></p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column mt-5 align-items-center">
+                                    <button type="submit" class="rounded-5 w-25">Login</button>
+                                    <p class="card-subtitle mt-4"><small class="text-muted">New to RiffRoom? <a href="#" class="text-decoration-none">Create an Account</a></small></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 
@@ -97,4 +164,34 @@ button {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 
+<script>
+    'use strict';
+
+    const loginForm = document.querySelector('#login-form');
+    const signupForm = document.querySelector('#signup-form');
+
+    const signupAnchor = document.querySelector('#signup-anchor')
+
+
+    signupAnchor.addEventListener('click', getSignupForm)
+
+
+    function getSignupForm(){
+        if(signupForm.classList.contains('hide-signup')) {
+            signupForm.classList.remove('hide-signup');
+            signupForm.classList.add('show-signup');
+            loginForm.classList.remove('show-login');
+            loginForm.classList.add('hide-login');
+        }
+        else {
+            signupForm.classList.remove('show-signup');
+            signupForm.classList.add('hide-signup');
+            loginForm.classList.remove('hide-login');
+            loginForm.classList.add('show-login');
+        }
+    }
+
+
+
+</script>
 
