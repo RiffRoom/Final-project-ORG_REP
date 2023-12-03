@@ -60,11 +60,17 @@ def get_settings():
     if not session.get('id'):
         return redirect('/login')
 
+    current_user = UserTable.query.get(session.get('id'))
+    if not current_user:
+        flash('User not found.', 'error')
+        return redirect('/login')
 
     if current_app.config['FLASK_ENV'] == 'prod':
         pfp = bucket_wrapper.get_object(s3_client, f'{current_app.config["PFP_PATH"]}testpfp.png')
 
     current_user = UserTable.query.get(session.get('id'))
+
+    private_setting = current_user.private
 
     if session.get('id') == current_user.id:
         print(current_user)
@@ -75,7 +81,7 @@ def get_settings():
     print(pfps)
     print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
 
-    return render_template('settings.html',user=current_user)
+    return render_template('settings.html',user=current_user, private_setting=private_setting)
 
 # To view another users profile
 @profile_bp.get('/<int:user_id>')
@@ -149,7 +155,7 @@ def update_credentials():
         else:
             flash('No changes detected', 'error')
 
-        return redirect(url_for('profiles.get_settings'))
+        return redirect(url_for('profiles.get_settings', private_setting=user.private))
 
 
     except Exception as e:
