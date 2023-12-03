@@ -52,7 +52,8 @@ def get_profile():
         return redirect(url_for('login'))
 
     user_posts = Post.query.filter_by(user_id = user.id).all()
-    return render_template('user_prof.html', user=user, user_posts=user_posts, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/') 
+    
+    return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/') 
     
 
 @profile_bp.get('/settings')
@@ -67,15 +68,10 @@ def get_settings():
 
     if current_app.config['FLASK_ENV'] == 'prod':
         pfp = bucket_wrapper.get_object(s3_client, f'{current_app.config["PFP_PATH"]}testpfp.png')
-
+    
     current_user = UserTable.query.get(session.get('id'))
 
     private_setting = current_user.private
-
-    if session.get('id') == current_user.id:
-        print(current_user)
-        print(current_user.id)
-
 
     pfps = bucket_wrapper.get_objects(s3_client) 
     print(pfps)
@@ -203,6 +199,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @profile_bp.route('/upload', methods=['POST'])
 def upload_profile_photo():
     if not session.get('id'):
@@ -232,6 +235,8 @@ def upload_profile_photo():
             user.profile_photo_path = file_path
             db.session.commit()
 
+            print("Uploaded file received:", uploaded_file.filename)
+            print("Is file allowed:", allowed_file(uploaded_file.filename))
             flash('Profile photo uploaded successfully', 'success')
 
     return redirect(url_for('profiles.get_settings'))

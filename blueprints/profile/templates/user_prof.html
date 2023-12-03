@@ -41,13 +41,15 @@
             {% endif %}
 
             {% if is_own_profile %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 d-flex justify-content-center align-items-center">
-                        <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
-                            <div class="display-1">+</div>
-                        </a>
+                {% if can_edit %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 d-flex justify-content-center align-items-center">
+                            <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
+                                <div class="display-1">+</div>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
         </div>
     {% else %}

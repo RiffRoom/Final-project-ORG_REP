@@ -14,78 +14,20 @@
             
             <!-- Profile Picture -->
             <div class="text-center mb-4">
-                <button class="profile-pic-label btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
-                    <img src="{{distribution_url}}{{pfp}}" alt="Profile Picture" class="img-fluid">
+                <button class="profile-pic-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                    {% if user.profile_photo_path %}
+                        <img id="profilePic" src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img id="profilePic" src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
                 </button>
             </div>
 
-            <!-- Profile Picture Upload Form (Hidden) -->
+            <!-- Profile Picture Upload Form -->
             <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
-                <input type="file" id="profile-pic-input" name="file" onchange="document.getElementById('upload-form').submit();">
+                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event);">
             </form>
             
-
-            <!-- default pfps -->
-            <div class="offcanvas offcanvas-top" data-bs-scroll="false" data-bs-backdrop="true" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
-                
-                <div class="offcanvas-header">
-                    <h5 id="offcanvasTopLabel">Edit Profile Picture</h5>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                
-                <div class="offcanvas-body horizontal-scroll">
-                    <div class="d-flex flex-row">
-                        <div class="offcanvas-content">
-                            
-                            <!--upload-->
-                            <button class="upload-icon-label btn " type="button" onclick="document.getElementById('profile-pic-input').click()">
-                                <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
-                            </button>
-                            
-                            <!--test pfp 1-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp.png') }}" alt="Test Profile Picture">
-                            </button>
-
-                            <!--test pfp 2-->
-                            <button class="upload-icon-label btn circle-btn"  type="button" onclick="setTestProfilePic('testpfp2.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp2.png') }}" alt="Test Profile Picture 2">
-                            </button>
-
-                            <!--test pfp 3-->
-                            <button class="upload-icon-label btn circle-btn"  type="button" onclick="setTestProfilePic('testpfp3.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp3.png') }}" alt="Test Profile Picture 3">
-                            </button>
-
-                            <!--test pfp 4-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp4.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp4.png') }}" alt="Test Profile Picture 4">
-                            </button>
-
-                            <!--test pfp 5-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp5.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp5.png') }}" alt="Test Profile Picture 5">
-                            </button>
-
-                            <!--test pfp 6-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp6.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp6.png') }}" alt="Test Profile Picture 6">
-                            </button>
-
-                            <!--test pfp 7-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp7.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp7.png') }}" alt="Test Profile Picture 7">
-                            </button>
-
-                            <!--test pfp 8-->
-                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp8.png')">
-                                <img src="{{ url_for('static', filename='images/testpfps/testpfp8.png') }}" alt="Test Profile Picture 8">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- User Info -->
             <form action="{{url_for('profiles.update_credentials')}}" method="post" style="margin-top: 40px;">
                 
@@ -207,34 +149,6 @@
 
 
 <script>
-    function setTestProfilePic(filename) {
-        var actualProfilePic = document.querySelector('.profile-pic-label img');    
-        var testProfilePicPath = '/static/images/testpfps/' + filename;
-        actualProfilePic.src = testProfilePicPath;
-
-        document.cookie = "selectedProfilePic=" + filename + ";path=/;max-age=31536000"; 
-    }
-
-    //Read the Cookie When the Page Loads
-     document.addEventListener('DOMContentLoaded', function() {
-     var selectedPic = getCookie('selectedProfilePic');
-     if (selectedPic) {
-         var actualProfilePic = document.querySelector('.profile-pic-label img');
-         actualProfilePic.src = '/static/images/testpfps/' + selectedPic;
-     }
-     });
-
-    function getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
-    }
-
     $(document).ready(function(){
         $('#toggleNewPassword').click(function(){
             $(this).toggleClass('bi-eye bi-eye-slash');
