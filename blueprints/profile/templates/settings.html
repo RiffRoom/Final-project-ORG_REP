@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            <h1 class="text-center" style="margin-top: 20px;">Settings Page</h1> 
+            <h1 class="text-center" style="margin-top: 20px; margin-bottom: 40px;">Settings Page</h1> 
             
             <!-- Profile Picture -->
             <div class="text-center mb-4">
@@ -38,42 +38,42 @@
                         <div class="offcanvas-content">
                             
                             <!--upload-->
-                            <button class="upload-icon-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                            <button class="upload-icon-label btn " type="button" onclick="document.getElementById('profile-pic-input').click()">
                                 <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Profile Picture">
                             </button>
                             
                             <!--test pfp 1-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp.png')">
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp.png') }}" alt="Test Profile Picture">
                             </button>
 
                             <!--test pfp 2-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp2.png')">
+                            <button class="upload-icon-label btn circle-btn"  type="button" onclick="setTestProfilePic('testpfp2.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp2.png') }}" alt="Test Profile Picture 2">
                             </button>
 
                             <!--test pfp 3-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp3.png')">
+                            <button class="upload-icon-label btn circle-btn"  type="button" onclick="setTestProfilePic('testpfp3.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp3.png') }}" alt="Test Profile Picture 3">
                             </button>
 
                             <!--test pfp 4-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp4.png')">
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp4.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp4.png') }}" alt="Test Profile Picture 4">
                             </button>
 
                             <!--test pfp 5-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp5.png')">
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp5.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp5.png') }}" alt="Test Profile Picture 5">
                             </button>
 
                             <!--test pfp 6-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp6.png')">
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp6.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp6.png') }}" alt="Test Profile Picture 6">
                             </button>
 
                             <!--test pfp 7-->
-                            <button class="upload-icon-label btn circle-btn" style="margin-right: 40px" type="button" onclick="setTestProfilePic('testpfp7.png')">
+                            <button class="upload-icon-label btn circle-btn" type="button" onclick="setTestProfilePic('testpfp7.png')">
                                 <img src="{{ url_for('static', filename='images/testpfps/testpfp7.png') }}" alt="Test Profile Picture 7">
                             </button>
 
@@ -87,33 +87,29 @@
             </div>
 
             <!-- User Info -->
-            <form action="/update_credentials" method="post" style="margin-top: 20px;">
+            <form action="/update_credentials" method="post" style="margin-top: 40px;">
                 
-                <div class="d-flex flex-row">
+                <div class="row">
                     <!-- First Name -->
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         <label for="first_name">First Name:</label>
                         <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
                     </div>
-
-                    <div class="form-group col-md-2"></div>
-            
+                
                     <!-- Last Name -->
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         <label for="last_name">Last Name:</label>
                         <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
                     </div>
                 </div>
 
-
-                <div class="d-flex flex-row">
+                <div class="row">
                     <!-- Phone Number -->
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-6">
                         <label for="phone">Phone Number:</label>
                         <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number" value="{{ user.phone }}">
                     </div>
 
-                    <div class="form-group col-md-1"></div>
 
                     <!-- Email -->
                     <div class="form-group col-md-6">
@@ -124,22 +120,26 @@
                 
 
                 <!-- Bio -->
-                <div class="form-group">
-                    <label for="bio">Bio:</label>
-                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="bio">Bio:</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
+                    </div>
                 </div>
 
                 <!-- Visibility Switch -->
-                <div class="form-group">
-                    <label class="switch" style="margin-top: 10px;">
-                        <input type="checkbox" id="profileVisibilitySwitch" name="private" {{ 'checked' if private_setting else '' }}>
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="switch-caption" id="switchCaption">Private profile</span>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="form-group col-md-12 d-flex align-items-center">
+                        <label class="switch" style="margin-top: 10px;">
+                            <input type="checkbox" id="profileVisibilitySwitch" name="private" {{ 'checked' if private_setting else '' }}>
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="switch-caption" id="switchCaption">Private profile</span>
+                    </div>
                 </div>
 
                 <!-- Buttons Row -->
-                <div class="row" style="margin-top: -35px;">
+                <div class="row" style="margin-top: -65px;">
                     <div class="col-md-12">
                         <div class="row justify-content-end">
                             <!-- Change Password Button -->

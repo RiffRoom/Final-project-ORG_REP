@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 
 
 
+
 load_dotenv()
 
 profile_bp = Blueprint('profiles', __name__, template_folder='templates')
@@ -79,18 +80,22 @@ def get_settings():
 # To view another users profile
 @profile_bp.get('/<int:user_id>')
 def view_profile(user_id: int):
+    current_user_id = session.get('id')
     user = UserTable.query.get(user_id)
 
     if not user:
         flash('User not found.', 'error')
         return redirect(url_for('login'))
     
-    if user.private and session.get('id') != user.id:
-        flash('This profile is private.', 'error')
-        return redirect(url_for('index.html'))
-    
     user_posts = Post.query.filter_by(user_id=user.id).all()
-    return render_template('user_prof.html', user=user, user_posts=user_posts, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/')
+    is_private = user.private and current_user_id != user.id  
+    is_own_profile = current_user_id == user.id
+    can_edit = is_own_profile
+
+
+    return render_template('user_prof.html', user=user, user_posts=user_posts, is_private=is_private, is_own_profile=is_own_profile, can_edit=can_edit, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/')
+
+
 
 @profile_bp.route('/update_credentials', methods=['POST'])
 def update_credentials():
@@ -166,8 +171,8 @@ def change_password():
         new_password = request.form.get('newPassword')
 
         if current_password and new_password:
-            if bcrypt.check_password_hash(user.password, current_password):
-                hashed_password = bcrypt.generate_password_hash(new_password, 16).decode('utf-8')
+            if bcrypt.checkpw(current_password.encode('utf-8'), user.password.encode('utf-8')):
+                hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 user.password = hashed_password
                 db.session.commit()
                 flash('Password updated successfully.', 'success')

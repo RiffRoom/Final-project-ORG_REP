@@ -1,4 +1,4 @@
-{% extends '_template.html' %} 
+{% extends '_template.html' %}
 
 {% block body %}
 <nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
@@ -6,8 +6,6 @@
         <a href="/user_prof" class="text-decoration-none text-white" >Profile</a>
     </div>
 </nav>
-
-
 
 <div class="container mt-4">
     <!-- User Profile Section -->
@@ -22,36 +20,43 @@
         </div>
     </div>
 
-    <!-- User Posts Section -->
-    <div class="row mt-4">
-        {% if user_posts %}
-            {% for post in user_posts %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <video class="card-img-top" controls>
-                            <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
-                        </video>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ post.title }}</h5>
-                            <p class="card-text">{{ post.msg }}</p>
-                            <p class="text-muted">{{ post.date_posted }}</p>
+    {% if not is_private or is_own_profile %}
+        <!-- User Posts Section -->
+        <div class="row mt-4">
+            {% if user_posts %}
+                {% for post in user_posts %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <video class="card-img-top" controls>
+                                <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
+                            </video>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.msg }}</p>
+                                <p class="text-muted">{{ post.date_posted }}</p>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if is_own_profile %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 d-flex justify-content-center align-items-center">
+                        <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
+                            <div class="display-1">+</div>
+                        </a>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
-
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 d-flex justify-content-center align-items-center">
-                <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
-                    <div class="display-1">+</div>
-                </a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="row mt-4">
+            <div class="col text-center">
+                <p>This profile is private.</p>
+                <img src="{{ url_for('static', filename='images/privatepfp.png') }}" alt="Private Profile" class="img-fluid" style="max-width: 200px;">
             </div>
         </div>
-        
-    </div>
+    {% endif %}
 </div>
-
-
 {% endblock %}
