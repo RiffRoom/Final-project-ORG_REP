@@ -48,11 +48,12 @@ def get_profile():
     user_id = session.get('id')
     user = UserTable.query.get(user_id)
 
+    user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
+
+
     if not user:
         flash('User not found.', 'error')
         return redirect(url_for('login'))
-
-    user_posts = Post.query.filter_by(user_id = user.id).all()
     
     if current_app.config['FLASK_ENV'] == 'prod':
         return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url=distribution_url) 
@@ -92,7 +93,7 @@ def view_profile(user_id: int):
         flash('User not found.', 'error')
         return redirect(url_for('login'))
     
-    user_posts = Post.query.filter_by(user_id=user.id).all()
+    user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
     is_private = user.private and current_user_id != user.id  
     is_own_profile = current_user_id == user.id
     can_edit = is_own_profile
