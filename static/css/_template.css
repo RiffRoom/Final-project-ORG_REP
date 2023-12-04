@@ -273,6 +273,10 @@
       bottom: 10px;
       right: 10px;
   }
+
+  .card-body-fixed-height {
+    min-height: 200px; /* Adjust this value based on your needs */
+  }
   
 
 
