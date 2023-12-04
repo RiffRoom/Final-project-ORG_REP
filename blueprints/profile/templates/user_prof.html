@@ -23,23 +23,8 @@
     {% if not is_private or is_own_profile %}
         <!-- User Posts Section -->
         <div class="row mt-4">
-            {% if user_posts %}
-                {% for post in user_posts %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <video class="card-img-top" controls>
-                                <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
-                            </video>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ post.title }}</h5>
-                                <p class="card-text">{{ post.msg }}</p>
-                                <p class="text-muted">{{ post.date_posted }}</p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
 
+            <!-- Add Post Icon  -->
             {% if is_own_profile %}
                 {% if can_edit %}
                     <div class="col-md-4 mb-4">
@@ -51,6 +36,35 @@
                     </div>
                 {% endif %}
             {% endif %}
+
+            <!-- User Posts -->
+            {% if user_posts %}
+                {% for post in user_posts %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <video class="card-img-top" controls>
+                                <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
+                            </video> 
+                            
+                            <div class="card-body card-body-fixed-height">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.msg }}</p>
+                                <p class="text-muted">{{ post.date_posted }}</p>
+                            </div>
+                            
+                            <!-- Delete button container -->
+                            {% if is_own_profile %}
+                                <div class="card-delete-btn-container">
+                                    <form action="{{ url_for('profiles.delete_post', post_id=post.id) }}" method="POST" onsubmit="return confirmDelete();">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
         </div>
     {% else %}
         <div class="row mt-4">
@@ -62,3 +76,7 @@
     {% endif %}
 </div>
 {% endblock %}
+
+
+
+

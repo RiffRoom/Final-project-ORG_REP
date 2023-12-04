@@ -8,6 +8,7 @@ from flask import current_app
 from bucket_wrapper import BucketWrapper
 import boto3
 from werkzeug.utils import secure_filename
+from PIL import Image, ImageDraw, ImageFont
 
 
 
@@ -190,14 +191,6 @@ def change_password():
         flash(f'Error changing password: {e}', 'error')
         return redirect(url_for('profiles.get_settings'))
 
-   
-    
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -241,5 +234,16 @@ def upload_profile_photo():
 
     return redirect(url_for('profiles.get_settings'))
 
+@profile_bp.route('/delete_post/<int:post_id>', methods=['POST'])
+def delete_post(post_id):
+    user_id = session.get('id')
+    post = Post.query.get(post_id)
 
-    
+    if not post or post.user_id != user_id:
+        flash('Post not found or access denied', 'error')
+        return redirect(url_for('profiles.get_profile'))
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return redirect(url_for('profiles.get_profile'))

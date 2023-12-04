@@ -16,16 +16,16 @@
             <div class="text-center mb-4">
                 <button class="profile-pic-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
                     {% if user.profile_photo_path %}
-                        <img id="profilePic" src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                     {% else %}
-                        <img id="profilePic" src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                     {% endif %}
                 </button>
             </div>
 
             <!-- Profile Picture Upload Form -->
             <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
-                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event);">
+                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event, user.id);">
             </form>
             
             <!-- User Info -->
@@ -142,6 +142,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     <div>{{ message }}</div>
                 </div>
+
             {% endfor %}
         {% endif %}
     {% endwith %}
@@ -161,10 +162,22 @@
         });
     });
 
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 1000); 
 
+    function updateProfilePic(event, userId) {
+        const fileInput = event.target;
+        const imgElement = document.getElementById(`profilePic_${userId}`);
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const objectURL = URL.createObjectURL(file);
+            imgElement.src = objectURL;
+        }
+    }
 
 </script>
-
 {% endblock %}
 
     

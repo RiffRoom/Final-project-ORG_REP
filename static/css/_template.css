@@ -256,6 +256,7 @@
     margin: 0;
   }
 
+  /*card images*/
   .card-img-top {
     width: 100%;
     height: auto;
@@ -263,6 +264,19 @@
     object-fit: cover;  
   }
 
+  .card {
+      position: relative;
+  }
+    
+  .card-delete-btn-container {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+  }
+
+  .card-body-fixed-height {
+    min-height: 200px; /* Adjust this value based on your needs */
+  }
   
 
 
