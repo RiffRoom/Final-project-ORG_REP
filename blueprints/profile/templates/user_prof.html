@@ -1,0 +1,87 @@
+{% extends '_template.html' %}
+
+{% block body %}
+<nav class="navbar p-4 justify-content-center border-bottom mx-5 border-dark">
+    <div class="navbar-brand">
+        <a href="/user_prof" class="text-decoration-none text-white" >Profile</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- User Profile Section -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4">{{ user.first_name }} {{ user.last_name }}</h1>
+            {% if user.bio %}
+                <h2 class="display-6 mt-3">{{ user.bio }}</h2>
+            {% else %}
+                <p></p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not is_private or is_own_profile %}
+        <!-- User Posts Section -->
+        <div class="row mt-4">
+
+            <!-- Add Post Icon  -->
+            {% if is_own_profile %}
+                {% if can_edit %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 d-flex justify-content-center align-items-center plus-card">
+                            <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
+                                <div class="display-1">+</div>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+
+            <!-- User Posts -->
+            {% if user_posts %}
+                {% for post in user_posts %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none;">
+                            <a href="{{ url_for('get_single_post', post_id=post.id) }}" class="text-decoration-none"> <!-- Add anchor tag -->
+                                <img class="card-img-top" src="\static\uploads\thumbnails\videos\{{post.video_id}}.jpg" alt="thumbnail">
+                            </a>
+                            
+                            <div class="card-body card-body-fixed-height">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.msg }}</p>
+                                <p class="text-muted">{{ post.date_posted }}</p>
+                            </div>
+                            
+                            <!-- Delete button container -->
+                            {% if is_own_profile %}
+                                <div class="card-delete-btn-container">
+                                    <form action="{{ url_for('profiles.delete_post', post_id=post.id) }}" method="POST" onsubmit="return confirmDelete();">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="row mt-4">
+            <div class="col text-center">
+                <p>This profile is private.</p>
+                <img src="{{ url_for('static', filename='images/privatepfp.png') }}" alt="Private Profile" class="img-fluid" style="max-width: 200px;">
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+<script>
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete this post?');
+    }
+</script>
+
+
+

@@ -23,6 +23,8 @@ app.register_blueprint(jam_sessions_bp, url_prefix='/sessions')
 app.register_blueprint(upload_bp, url_prefix='/upload')
 app.register_blueprint(profile_bp, url_prefix='/profile')
 
+
+
 bcrypt = Bcrypt(app)
 
 Session(app)
@@ -64,7 +66,11 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
+    user = UserTable.query.get(session.get("id"))
+    if user is None:
+        print("User not found, redirecting to login")
+        return redirect('/login')
+
     videos = []
     posts = Post.query.order_by(desc(Post.date_posted)).all()
 
@@ -175,7 +181,6 @@ def login():
             flash('Incorrect Username or Password')
             return redirect(url_for('get_login'))
         
-
 @app.post('/logout')
 def logout():
     try:

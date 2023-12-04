@@ -113,15 +113,17 @@ class UserTable(db.Model):
     private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.String(20), nullable=True)
     prof_pic = db.Column(db.String(255), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
     
 
-    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
+    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int, bio: str = None) -> None:
         self.first_name = first_n
         self.last_name = last_n
         self.user_name = user_n
         self.password = pswd
         self.email = email
         self.phone = phone
+        self.bio = bio 
     
     def return_img(BLOB, file):
         with open(f"{file}", 'wb') as file: 
