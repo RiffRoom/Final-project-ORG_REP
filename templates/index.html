@@ -1,15 +1,6 @@
 {% extends '_template.html' %}
+
 {% block body %}
-
-<nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
-    <div class="navbar-brand">
-        <a href="/" class="text-decoration-none text-black">Trending</a>
-    </div>
-    <div class="navbar-brand active">
-        <a href="{{url_for('jam_sessions.get_sessions')}}" class="text-decoration-none text-black">Sessions</a>
-    </div>
-</nav>
-
 
 {% if posts %}
 {% for post in posts %}

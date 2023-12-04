@@ -41,8 +41,7 @@ bucket_wrapper = BucketWrapper(riff_bucket)
 
 @profile_bp.get('/')
 def get_profile():
-    # get profile page
-    pass
+    return render_template('settings.html')
 
 @profile_bp.get('/settings')
 def get_settings():
@@ -70,7 +69,7 @@ def get_settings():
 # To view another users profile
 @profile_bp.get('/<int:user_id>')
 def view_profile(user_id: int):
-    pass
+    return render_template('settings.html')
 
 
 @profile_bp.post('/settings/update_credentials')
