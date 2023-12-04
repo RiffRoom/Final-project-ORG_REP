@@ -67,17 +67,16 @@ def get_settings():
         flash('User not found.', 'error')
         return redirect('/login')
 
-    if current_app.config['FLASK_ENV'] == 'prod':
-        pfp = bucket_wrapper.get_object(s3_client, f'{current_app.config["PFP_PATH"]}testpfp.png')
-    
     current_user = UserTable.query.get(session.get('id'))
-
     private_setting = current_user.private
 
-    pfps = bucket_wrapper.get_objects(s3_client) 
-    print(pfps)
-    print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
-
+    if current_app.config['FLASK_ENV'] == 'prod':
+        pfp = bucket_wrapper.get_object(s3_client, f'{current_app.config["PFP_PATH"]}testpfp.png')
+        pfps = bucket_wrapper.get_objects(s3_client) 
+        print(pfps)
+        print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
+    else:
+        pass
     return render_template('settings.html',user=current_user, private_setting=private_setting)
 
 # To view another users profile
@@ -196,7 +195,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @profile_bp.route('/upload', methods=['POST'])
@@ -222,14 +221,14 @@ def upload_profile_photo():
         # Dev path
         else:
             file_path = os.path.join('static/uploads/pfps/', f'{user_id}.jpg')
-            uploaded_file.save(file_path)
+            filename.save(file_path)
 
             user = UserTable.query.get(user_id)
             user.profile_photo_path = file_path
             db.session.commit()
 
-            print("Uploaded file received:", uploaded_file.filename)
-            print("Is file allowed:", allowed_file(uploaded_file.filename))
+            print("Uploaded file received:", filename)
+            print("Is file allowed:", allowed_file(filename))
             flash('Profile photo uploaded successfully', 'success')
 
     return redirect(url_for('profiles.get_settings'))
