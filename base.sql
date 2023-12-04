@@ -48,14 +48,14 @@ create table post(
 drop table if exists comment_section cascade ;
 create table comment_section(
     id serial primary key,
-    post_id int not null,
+    post_id int not null references post(id) on delete cascade,
     foreign key (post_id) references post(id)
 );
 
 drop table if exists comment cascade ;
 create table comment(
     id serial primary key,
-    comment_section_id int not null,
+    comment_section_id int not null references comment_section(id) on delete cascade ,
     user_id int not null,
     message varchar(255) not null,
     post_time timestamp null,
