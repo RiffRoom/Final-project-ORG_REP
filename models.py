@@ -33,6 +33,12 @@ def return_media(id):
     image = base64.b64encode(BLOB).decode('ascii')
     return image
 
+
+def get_comments_of_post(id):
+    comment_section = CommentSection.query.filter_by(post_id=id).first()
+    comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
+    return comments
+
 db = SQLAlchemy()
 ## USE ONLY FOR TESTS
 # def clear_bd():
@@ -114,7 +120,11 @@ class JamSession(db.Model):
 
     def date_str(date: datetime):
         return date.strftime('%A %b, %d  %I:%M %p')
-
+    
+    def get_num_attendees(id: int):
+        jam_session = JamSession.query.get(id)
+        num_attendees = Party.query.filter_by(session_id=jam_session.id).count()
+        return num_attendees
 
 #class party
 class Party(db.Model):
@@ -156,15 +166,13 @@ class CommentSection(db.Model):
         self.post_id = post_id
 
 class Comment(db.Model):
-    __tablename__ = 'comments'
+    __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     comment_section_id = db.Column(db.Integer, db.ForeignKey('comment_section.id'), nullable=False)
-    commenter_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
-    commenter_name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, cs_id: int, cid: int, msg: str) -> None:
+    def __init__(self, cs_id: int, user_id: int, msg: str) -> None:
         self.comment_section_id = cs_id
-        self.commenter_id = cid
-        self.commenter_name = JamSession.get_user_name_id(cid)
+        self.user_id = user_id
         self.message = msg

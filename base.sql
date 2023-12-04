@@ -45,8 +45,7 @@ create table post(
     msg varchar(255) null,
     ratio int not null,
     date_posted timestamp not null,
-    user_id int not null,
-    user_name varchar(255)    
+    user_id int not null  
 );
 
 drop table if exists comment_section cascade ;
@@ -56,17 +55,13 @@ create table comment_section(
     foreign key (post_id) references post(id)
 );
 
-insert into comment_section(post_id) values (1);
-
-drop table if exists comments cascade ;
-create table comments(
+drop table if exists comment cascade ;
+create table comment(
     id serial primary key,
     comment_section_id int not null,
-    commenter_id int not null,
-    commenter_name varchar(255) not null,
+    user_id int not null,
     message varchar(255) not null,
     post_time timestamp null,
     foreign key (comment_section_id) references  comment_section(id),
-    foreign key (commenter_id) references user_table(id)
+    foreign key (user_id) references user_table(id)
 );
-
