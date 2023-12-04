@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 load_dotenv()
 
-profile_bp = Blueprint('profiles', __name__, template_folder='templates')
+profile_bp = Blueprint('profiles', __name__, template_folder='templates', static_url_path='/static')
 
 
 #Create AWS session
@@ -54,8 +54,11 @@ def get_profile():
 
     user_posts = Post.query.filter_by(user_id = user.id).all()
     
-    return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/') 
-    
+    if current_app.config['FLASK_ENV'] == 'prod':
+        return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url=distribution_url) 
+
+    else:
+        return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url='')
 
 @profile_bp.get('/settings')
 def get_settings():

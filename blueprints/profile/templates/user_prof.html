@@ -42,9 +42,7 @@
                 {% for post in user_posts %}
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <video class="card-img-top" controls>
-                                <source src="{{ distribution_url }}videos/{{ post.video_id }}.mp4" type="video/mp4">
-                            </video> 
+                            <img class="card-img-top" src="\static\uploads\thumbnails\videos\{{post.video_id}}.jpg" alt="thumbnail">
                             
                             <div class="card-body card-body-fixed-height">
                                 <h5 class="card-title">{{ post.title }}</h5>
