@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
@@ -9,7 +9,7 @@ from bucket_wrapper import BucketWrapper
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from werkzeug.security import generate_password_hash
-
+from sqlalchemy import desc
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
 from blueprints.profile.profile import profile_bp
@@ -66,7 +66,7 @@ def homepage():
     
     print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
     videos = []
-    posts = Post.query.all()
+    posts = Post.query.order_by(desc(Post.date_posted)).all()
 
     user_posts = Post.query.filter_by(user_id=session.get('id'))
 
@@ -89,6 +89,9 @@ def homepage():
 def comment_get():
     return dict(get_post_comments=get_comments_of_post)
 
+@app.context_processor
+def since_get():
+    return dict(calc_time=time_since)
 
 @app.get('/<int:post_id>')
 def get_single_post(post_id: int):
