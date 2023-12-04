@@ -69,3 +69,4 @@ create table comments(
     foreign key (comment_section_id) references  comment_section(id),
     foreign key (commenter_id) references user_table(id)
 );
+
