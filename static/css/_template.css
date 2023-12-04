@@ -254,6 +254,12 @@
   .card-body-fixed-height {
     min-height: 200px; /* Adjust this value based on your needs */
   }
+
+  .plus-card:hover {
+    background-color: #e4e4e4; 
+    cursor: pointer; 
+    transition: 300ms background-color ease-in-out;
+  }
   
 
 

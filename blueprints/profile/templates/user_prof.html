@@ -28,7 +28,7 @@
             {% if is_own_profile %}
                 {% if can_edit %}
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100 d-flex justify-content-center align-items-center">
+                        <div class="card h-100 d-flex justify-content-center align-items-center plus-card">
                             <a href="{{ url_for('upload.get_upload_page') }}" class="text-decoration-none">
                                 <div class="display-1">+</div>
                             </a>
@@ -37,12 +37,15 @@
                 {% endif %}
             {% endif %}
 
+
             <!-- User Posts -->
             {% if user_posts %}
                 {% for post in user_posts %}
                     <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img class="card-img-top" src="\static\uploads\thumbnails\videos\{{post.video_id}}.jpg" alt="thumbnail">
+                        <div class="card" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none;">
+                            <a href="{{ url_for('get_single_post', post_id=post.id) }}" class="text-decoration-none"> <!-- Add anchor tag -->
+                                <img class="card-img-top" src="\static\uploads\thumbnails\videos\{{post.video_id}}.jpg" alt="thumbnail">
+                            </a>
                             
                             <div class="card-body card-body-fixed-height">
                                 <h5 class="card-title">{{ post.title }}</h5>
@@ -62,7 +65,6 @@
                     </div>
                 {% endfor %}
             {% endif %}
-
         </div>
     {% else %}
         <div class="row mt-4">
