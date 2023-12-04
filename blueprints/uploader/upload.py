@@ -10,8 +10,6 @@ from bucket_wrapper import BucketWrapper
 from blueprints.uploader.thumbnail_generator import generate_thumbnail
 from uuid import uuid4
 from time import sleep
-from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
-
 
 load_dotenv()
 
