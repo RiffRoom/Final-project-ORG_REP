@@ -2,81 +2,87 @@
 
 {% block body %}
 
-{% if posts %}
-{% for post in posts %}
-<div class="d-flex mx-3 mt-5 ml-5">
-  <div class="row ml-5 justify-self-center" style="width: 100%;">
-      <div class="card col-md-6 float-md-end mb-3 ms-md-3" style="background-color: #e4e4e4; box-shadow: 10px 10px 5px #979797; border-radius: 0px; border: none;">
+<div class="d-flex flex-column w-100 justify-content-center align-items-center">
+  <div class="d-flex flex-column w-75 align-items-center justify-content-end">
+    {% if posts %}
+    {% for post in posts %}
+    <div class="d-flex flex-row mb-3 h-100 red-border" style="max-height: 1fr;">
+      <!-- Video Div -->
+      <div class="card shadow p-2 h-100" style="width: 65%;">
         <a class="text-decoration-none fs-1 text-reset " href="{{url_for('get_single_post', post_id=post.id)}}"><h1>{{post.title}}</h1></a>
-          <div class="flex-row d-inline-flex">
-            
-            <h5><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-            </svg> <a href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}</h5>
-          </div>  
-          
-          
-          <video class="mb-2" width="610" height="300" controls>
-              <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
-          </video>
+        <div class="flex-row d-inline-flex">
+          <h5><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+            </svg> <a href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
+          </h5>
+        </div>  
 
-          <h5>{{calc_time(post.id)}}</h5>
-
+        <video class="mb-2 w-100 h-75" controls>
+            <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
+        </video>
+        <h5>{{calc_time(post.id)}}</h5>
       </div>
-  
-
-      <div class="col-md-3 offset-ml-3 align-self-center" style="width: 5%;">
-        <div class="row align-items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="Green" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
-            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-          </svg>
-          <p class="text-black text-center">{{post.ratio}}</p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="Red" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-          </svg>
-        </div>
-      </div>
-      
-      <div class="container col-md ms-auto text-black scroll-black" style="position: relative; background-color: #e4e4e4; width: 100%; box-shadow: 10px 10px 5px #979797; height: 435px;">
-        <h1 class="text-center" style="position:sticky;">Comments</h1>
-          <div class="scroll-black overflow-y-scroll">  
-                <div class="d-flex flex-column" style="height: 325px;">
-                  {% for comm in get_post_comments(post.id) %}          
-                    <div class="card-text p-1">{{UserTable.query.get(comm.user_id).user_name}}: {{comm.message}}</div>                
-                  {% endfor %}
-                </div>
+        
+      <!-- Ratio Div -->
+      <div class="d-flex flex-column align-items-center" style="width: 5%;">
+        <form action="#" method="">
+          <div class="d-flex flex-column justify-content-between align-content-between h-100">
+            <button class="btn btn-transparent"> 
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Green" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+              </svg>
+            </button>
+            <p class="text-center position-relative font-monospace fs-4" style="top: 5px;">{{post.ratio}}</p>
+            <button class="btn btn-transparent"> 
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Red" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+              </svg>
+            </button>
           </div>
-
-          <form class="d-flex flex-column w-100 justify-content-end" style="position: relative;" method="post" action="{{url_for('post_comment', post_id=post.id )}}">              
+        </form>
+      </div>
+            
+      <!-- Comment Div -->
+      <div class="card d-flex flex-column scroll-black align-self-start justify-content-end" style="width: 30%;">
+        <h2 class="text-center" style="position: sticky;">Comments</h2>
+        <div class="scroll-black overflow-y-scroll">  
+          <div class="d-flex flex-column" style="height: 430px;">
+            {% for comm in get_post_comments(post.id) %}          
+              <div class="card-text p-1">
+                {{UserTable.query.get(comm.user_id).user_name}}: {{comm.message}}
+              </div>                
+            {% endfor %}
+          </div>
+        </div>
+        <div class="d-flex flex-column w-100 justify-content-end">
+          <form method="post" action="{{url_for('post_comment', post_id=post.id )}}">              
             <div class="comment-hide" id="comment-input" style="position: absolute;">
               <textarea cols="30" rows="4" placeholder="Insert comment here" id="comment" name="comment" required></textarea>
             </div>
-          
-              <div class="d-inline-flex w-100 justify-content-center">
-                  <div id="comment-button-toggle" class="button-expand">
-                      <button class="btn btn-primary" style="width: 100%;" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
-                        <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                      </svg></button>
-                  </div> 
-                  <div class="button-hide" id="button-send">
-                        <button class="btn btn-success btn-primary" style="width: 100%;" type="submit">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
-                          </svg>
-                        </button>
-                  </div>
-              </div>         
-          </form>   
+            <div class="d-inline-flex w-100 justify-content-center">
+              <div id="comment-button-toggle" class="button-expand">
+                  <button class="btn btn-primary w-100" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    </svg>
+                  </button>
+              </div> 
+              <div class="button-hide" id="button-send">
+                <button class="btn btn-success w-100" type="submit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>         
+          </form> 
+        </div>
       </div> 
-    </div>
+    </div>  
+    {% endfor %} 
+    {% endif %}
+  </div>  
 </div>
-
-{% endfor %} 
-{% endif %}
-
-
-
 
 
 {% with messages = get_flashed_messages() %}
@@ -89,7 +95,6 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
-
 <script defer>
     
   'use strict';

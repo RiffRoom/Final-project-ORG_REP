@@ -322,6 +322,10 @@
     transition: .5s all ease-in-out;
   }
 
+  .comment-hide > textarea {
+    resize: none;
+  }
+
   .comment-show {
     opacity: 1;
     width: 100%;
