@@ -66,11 +66,14 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
-    
+    user = UserTable.query.get(session.get("id"))
+    if user is None:
+        print("User not found, redirecting to login")
+        return redirect('/login')
+
     videos = []
     posts = Post.query.all()
-
+    
     # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
         return render_template('index.html', posts=posts, distribution_url=distribution_url, user_table=UserTable)    
