@@ -23,9 +23,18 @@
         top: 0;
         z-index: 1;
         color: #444444;
-        border-bottom: 3px solid #444444;
     }
 
+    hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 2px solid #444444;
+        margin-top: 1px;
+        padding: 0;
+        z-index: -1;
+    }
+    
 
     .header {
         position: relative;
@@ -60,7 +69,6 @@
         width: 10%;
         height: 100%;
         border-radius: 50%;
-
     }
 
     .nav-item > p {
@@ -108,6 +116,7 @@
         border-top-right-radius: 100px;
         border-top-left-radius: 100px;
         border-bottom: 0;
+        top: 0;
 
         transform: translateY(25%);
         }
@@ -133,7 +142,7 @@
 </style>
 
 <body>
-    <div class="header-container">
+    <div class="header-container sheet-music"> 
         <a href="/">
             <img class="logo" src="{{ url_for('static', filename='images/LOGO_copy.png') }}" height="79" width="75" class="mt--2">
         </a>
@@ -184,6 +193,12 @@
                 </div>
         </div>
     </div>
+
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+
     <div class="main-offset">
         {% block body %} {% endblock %}
     </div>
