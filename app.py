@@ -90,8 +90,6 @@ def comment_get():
     return dict(get_post_comments=get_comments_of_post)
 
 
-
-
 @app.get('/<int:post_id>')
 def get_single_post(post_id: int):
     post = Post.query.get(post_id)

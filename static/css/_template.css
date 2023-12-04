@@ -233,6 +233,11 @@
 
   /* Comment Input Styling */
 
+  .red-border {
+    z-index: 1;
+    border: 2px solid red;
+  }
+
   #comment-button-toggle {
     height: 50px;
     z-index: 1;
@@ -269,12 +274,14 @@
   .button-show {
     width: 100%;
     opacity: 1;
+    z-index: 1;
     transition: .5s all ease-in-out;
   }
 
   .button-hide {
     width: 0%;
     opacity: 0;
+    z-index: -2;
     transition: .5s all ease-in-out;
   }
 
