@@ -1,7 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
-import contextlib
+from sqlalchemy import MetaData, engine
 import base64
 from datetime import datetime
+
+# USE ONLY FOR TESTS USE ONLY FOR TESTS USE ONLY FOR TESTS
+def clear_data():
+    meta = db.metadata
+    for table in reversed(meta.sorted_tables):
+        db.session.execute(table.delete())
+    db.session.commit()
+# USE ONLY FOR TESTS USE ONLY FOR TESTS USE ONLY FOR TESTS
 
 def convert_To_Binary(filename): 
     with open(filename, 'rb') as file: 
@@ -91,16 +99,7 @@ def time_since(pid):
         
     return None
 
-
 db = SQLAlchemy()
-# USE ONLY FOR TESTS
-def clear_bd():
-    meta = db.metadata( )
-    for table in reversed(meta.sorted_tables):
-        print("Clear table %s" % table) 
-        db.execute(table.delete())
-    db.commit()
-
 
 class UserTable(db.Model):
     __tablename__ = 'user_table'
@@ -113,17 +112,15 @@ class UserTable(db.Model):
     private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.String(20), nullable=True)
     prof_pic = db.Column(db.String(255), nullable=True)
-    bio = db.Column(db.Text, nullable=True)
     
 
-    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int, bio: str = None) -> None:
+    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
         self.first_name = first_n
         self.last_name = last_n
         self.user_name = user_n
         self.password = pswd
         self.email = email
         self.phone = phone
-        self.bio = bio 
     
     def return_img(BLOB, file):
         with open(f"{file}", 'wb') as file: 
