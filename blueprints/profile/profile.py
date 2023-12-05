@@ -155,8 +155,7 @@ def update_credentials():
         else:
             flash('No changes detected', 'error')
 
-        return redirect(url_for('profiles.get_settings', private_setting=user.private))
-
+        return redirect(url_for('profiles.get_profile', username=user.user_name))
 
     except Exception as e:
         flash(f'Unable to update credentials: {e}', 'error')

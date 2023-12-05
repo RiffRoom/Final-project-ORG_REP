@@ -26,8 +26,16 @@
             {% if user.bio %}
                 <p>{{ user.bio }}</p>
             {% endif %}
-            <!-- Button to Settings Page -->
-            <a href="{{ url_for('profiles.get_settings') }}" class="btn btn-primary">Go to Settings</a>
+
+            {% if is_own_profile %}
+                <!-- Edit Profile Button -->
+                <a href="{{ url_for('profiles.get_settings') }}" class="btn btn-primary">Update Profile</a>
+
+                <!-- Logout Button -->
+                <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>
