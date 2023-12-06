@@ -48,6 +48,9 @@ s3_transcoder = aws.client('elastictranscoder', 'us-east-1')
 # Get CloudFront distribution
 distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
 
+#RANDOM COMMMENT 
+
+
 # URL for distribution, append object keys to url to access 
 distribution_url = f'https://{distribution["Distribution"]["DomainName"]}/'
 
