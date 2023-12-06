@@ -25,7 +25,6 @@ def test_sessions_and_party():
                         'ex@gmail.com',
                         '123-456-1230')
     db.session.add(newuser2)
-    Users = list(UserTable.query.all())
     db.session.commit()
 
     #assert 2 users have been created and that they are in
@@ -56,4 +55,10 @@ def test_sessions_and_party():
     assert len(list(Party.query.all())) == 1
     #assert the row sesh exists is in the table
     assert f'{sesh.id}, {newuser2.id}' in str(Party.query.all())
-    
+
+    #the party p has been cancelled and will be removed from the jamsession table
+    db.session.delete(sesh)
+    db.session.commit()
+    #assert there are no sessions or parties in their tables
+    assert len(list(JamSession.query.all())) == 0
+    assert len(list(Party.query.all())) == 0
