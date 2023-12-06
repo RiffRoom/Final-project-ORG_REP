@@ -49,7 +49,7 @@ def get_profile():
     user = UserTable.query.get(user_id)
 
     user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
-
+    
 
     if not user:
         flash('User not found.', 'error')
