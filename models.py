@@ -217,14 +217,22 @@ class Post(db.Model):
         self.date_posted = date
         self.user_id = user_id
 
+    def __repr__(self) -> str:
+        return f'{self.user_id}, {self.title}'
+
 
 class CommentSection(db.Model):
     __tablename__ = 'comment_section'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     comments = db.relationship('Comment', cascade="all, delete")
+    
     def __init__(self, post_id: int) -> None:
         self.post_id = post_id
+
+    def __repr__(self) -> str:
+        return f'{self.id}, {self.post_id}'
+
 
 class Comment(db.Model):
     __tablename__ = 'comment'
@@ -237,3 +245,6 @@ class Comment(db.Model):
         self.comment_section_id = cs_id
         self.user_id = user_id
         self.message = msg
+    
+    def __repr__(self) -> str:
+        return f'{self.comment_section_id}, {self.user_id}, {self.message}'
