@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, engine
+from sqlalchemy import MetaData
 import base64
 from datetime import datetime
 
@@ -175,6 +175,9 @@ class JamSession(db.Model):
     def date_str(date: datetime):
         return date.strftime('%A %b, %d  %I:%M %p')
     
+    def __repr__(self) -> str:
+        return f'{self.host_name} : {self.title}'
+
     def get_num_attendees(id: int):
         jam_session = JamSession.query.get(id)
         num_attendees = Party.query.filter_by(session_id=jam_session.id).count()
@@ -190,6 +193,10 @@ class Party(db.Model):
     def __init__(self, sesh_id: int, user_id: int) -> None:
         self.session_id = sesh_id
         self.user_id = user_id
+
+    def __repr__(self) -> str:
+        return f'{self.session_id}, {self.user_id}'
+
 
 class Post(db.Model):
     __tablename__ = 'post'
