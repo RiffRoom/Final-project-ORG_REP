@@ -103,7 +103,7 @@ def upload_video():
 
             db.session.commit()
             
-            return redirect(url_for('upload.get_upload_page'))
+            return redirect(url_for('profiles.get_profile'))
     # Development Path
         else:
             post = Post(video_id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
@@ -121,7 +121,7 @@ def upload_video():
 
             db.session.commit()
             
-        return redirect(url_for('upload.get_upload_page'))
+        return redirect(url_for('profiles.get_profile'))
 
 
 def remove_file(filename):

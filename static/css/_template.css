@@ -262,7 +262,7 @@
   }
 
   .card-hover-effect:hover {
-    filter: brightness(120%); 
+    filter: brightness(110%); 
     transition: filter 0.3s ease; 
   }
 
