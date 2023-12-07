@@ -13,6 +13,7 @@ from sqlalchemy import desc
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
 from blueprints.profile.profile import profile_bp
+import traceback
 
 app = Flask(__name__)
 app.app_context().push()
@@ -69,10 +70,11 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    user = UserTable.query.get(session.get("id"))
-    if user is None:
-        print("User not found, redirecting to login")
-        return redirect('/login')
+    if session.get('id'):
+        user = UserTable.query.get(session.get("id"))
+        if not user:
+            print("User not found, redirecting to login")
+            return redirect('/login')
 
     videos = []
     posts = Post.query.order_by(desc(Post.date_posted)).all()
@@ -139,21 +141,18 @@ def post_comment_iso(post_id: int):
 @app.get('/login')
 def get_login():
     if session.get('id'):
-        return redirect('/')
-    try:
-        current_user = UserTable.query.get(session.get('id'))
-
-        if session.get('id') == current_user.id:
-            redirect(url_for('homepage'))
-    except Exception as e:
-        print(e)
+        try:
+            current_user = UserTable.query.get(session.get('id'))
+            if session.get('id') == current_user.id:
+                redirect(url_for('homepage'))
+        except Exception as e:
+            print(e)
 
     return render_template('login.html')
 
 @app.post('/login')
 def login():
         try:
-
             username = request.form.get('username')
 
             if not username or username == '':
