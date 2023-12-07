@@ -1,0 +1,177 @@
+{% extends '_template.html'%}
+
+{% block body %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="text-center" style="margin-top: 20px; margin-bottom: 40px;">Settings Page</h1> 
+            
+            <!-- Profile Picture -->
+            <div class="text-center mb-4">
+                <button class="profile-pic-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
+                    {% if user.profile_photo_path %}
+                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                </button>
+            </div>
+
+            <!-- Profile Picture Upload Form -->
+            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event, user.id);">
+            </form>
+            
+            <!-- User Info -->
+            <form action="{{url_for('profiles.update_credentials')}}" method="post" style="margin-top: 40px;">
+                
+                <div class="row">
+                    <!-- First Name -->
+                    <div class="form-group col-md-6">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
+                    </div>
+                
+                    <!-- Last Name -->
+                    <div class="form-group col-md-6">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Phone Number -->
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number" value="{{ user.phone }}">
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="form-group col-md-6">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Change email" value="{{ user.email }}">
+                    </div>
+                </div>
+                
+
+                <!-- Bio -->
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="bio">Bio:</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Visibility Switch -->
+                <div class="row" style="margin-top: 10px;">
+                    <div class="form-group col-md-12 d-flex align-items-center">
+                        <label class="switch" style="margin-top: 10px;">
+                            <input type="checkbox" id="profileVisibilitySwitch" name="private" {{ 'checked' if private_setting else '' }}>
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="switch-caption" id="switchCaption">Private profile</span>
+                    </div>
+                </div>
+
+                <!-- Buttons Row -->
+                <div class="row" style="margin-top: -65px;">
+                    <div class="col-md-12">
+                        <div class="row justify-content-end">
+                            <!-- Change Password Button -->
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    Change Password
+                                </button>
+                            </div>
+
+                            <!-- Save Button -->
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+
+            <!-- Change Password Modal -->
+            <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="changePasswordLabel">Change Password</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="changePasswordForm" method="post" action="{{ url_for('profiles.change_password') }}">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password:</label>
+                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
+                                </div>
+                                <div class="form-group position-relative">
+                                    <label for="newPassword">New Password:</label>
+                                    <input type="password" class="form-control pr-5" id="newPassword" name="newPassword" placeholder="Enter new password" required>
+                                    <i id="toggleNewPassword" class="bi bi-eye-slash position-absolute" style="top: 50%; transform: translateY(20%); right: 10px; cursor: pointer;"></i>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" form="changePasswordForm" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="d-flex flex-row alert alert-{{ 'success' if category == 'success' else 'danger' }} justify-content-center alert-dismissible fade show fixed-top" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        $('#toggleNewPassword').click(function(){
+            $(this).toggleClass('bi-eye bi-eye-slash');
+            var input = $('#newPassword');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+            } else {
+                input.attr('type', 'password');
+            }
+        });
+    });
+
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 1000); 
+
+    function updateProfilePic(event, userId) {
+        const fileInput = event.target;
+        const imgElement = document.getElementById(`profilePic_${userId}`);
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const objectURL = URL.createObjectURL(file);
+            imgElement.src = objectURL;
+        }
+    }
+
+</script>
+{% endblock %}
+
+    

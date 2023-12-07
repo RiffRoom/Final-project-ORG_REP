@@ -2,16 +2,8 @@
 
 {% block body%}
 
-<nav class="navbar p-4 justify-content-evenly border-bottom mx-5 border-dark border-4">
-    <div class="navbar-brand">
-        <a href="/" class="text-decoration-none text-white">Trending</a>
-    </div>
-    <div class="navbar-brand active">
-        <a href="" class="text-decoration-none text-white">Sessions</a>
-    </div>
-</nav>
 
-<div class="d-flex flex-row mt-2">
+<div class="d-flex flex-row mt-5">
     <div class="d-flex w-100 mx-2 scroll-black"> 
         <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
             {% for jam_session in active_jam_sessions %}

@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
@@ -9,9 +9,11 @@ from bucket_wrapper import BucketWrapper
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from werkzeug.security import generate_password_hash
-
+from sqlalchemy import desc
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
+from blueprints.profile.profile import profile_bp
+import traceback
 
 app = Flask(__name__)
 app.app_context().push()
@@ -20,6 +22,9 @@ app.config.from_pyfile('config.py')
 
 app.register_blueprint(jam_sessions_bp, url_prefix='/sessions')
 app.register_blueprint(upload_bp, url_prefix='/upload')
+app.register_blueprint(profile_bp, url_prefix='/profile')
+
+
 
 bcrypt = Bcrypt(app)
 
@@ -62,10 +67,14 @@ def homepage():
     if not session.get('id'):
         return redirect('/login')
     
-    print(f'Logged in as {UserTable.query.get(session.get("id")).user_name}')
-    
+    if session.get('id'):
+        user = UserTable.query.get(session.get("id"))
+        if not user:
+            print("User not found, redirecting to login")
+            return redirect('/login')
+
     videos = []
-    posts = Post.query.all()
+    posts = Post.query.order_by(desc(Post.date_posted)).all()
 
     user_posts = Post.query.filter_by(user_id=session.get('id'))
 
@@ -82,8 +91,15 @@ def homepage():
             except FileNotFoundError as e:
                 print(e)
                 print(f'{post.video_id}.mp4 is not in videos.')
-        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', user_table=UserTable) 
+        return render_template('index.html', posts=posts, distribution_url=f'{app.config["UPLOAD_PATH"]}/', UserTable=UserTable) 
 
+@app.context_processor
+def comment_get():
+    return dict(get_post_comments=get_comments_of_post)
+
+@app.context_processor
+def since_get():
+    return dict(calc_time=time_since)
 
 @app.get('/<int:post_id>')
 def get_single_post(post_id: int):
@@ -106,53 +122,34 @@ def post_comment(post_id: int):
     comment = Comment(cs.id, session.get('id'), message)
     db.session.add(comment)
     db.session.commit()
+    return redirect(url_for('homepage', post_id=post.id))
+
+@app.post('/<int:post_id>/iso')
+def post_comment_iso(post_id: int):
+    post = Post.query.get(post_id)
+    message = request.form.get('comment')
+    cs = CommentSection.query.filter_by(post_id=post.id).first()
+    print(cs)
+    comment = Comment(cs.id, session.get('id'), message)
+    db.session.add(comment)
+    db.session.commit()
     return redirect(url_for('get_single_post', post_id=post.id))
-
-@app.route('/user_prof')
-def user_prof():
-    return None #rendertemplate('user_profile.html')
-
-@app.route('/settings')
-def settings_page():
-        
-    if not session.get('id'):
-        return redirect('/login')
-
-
-    if app.config['FLASK_ENV'] == 'prod':
-        pfp = bucket_wrapper.get_object(s3_client, f'{app.config["PFP_PATH"]}testpfp.png')
-
-    current_user = UserTable.query.get(session.get('id'))
-
-    if session.get('id') == current_user.id:
-        print(current_user)
-        print(current_user.id)
-
-
-    pfps = bucket_wrapper.get_objects(s3_client) 
-    print(pfps)
-    print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
-
-    return render_template('settings.html', profile_pic_url=pfps, distribution_url=distribution_url, private_setting=current_user.private)
 
 @app.get('/login')
 def get_login():
     if session.get('id'):
-        return redirect('/')
-    try:
-        current_user = UserTable.query.get(session.get('id'))
-
-        if session.get('id') == current_user.id:
-            redirect(url_for('homepage'))
-    except Exception as e:
-        print(e)
+        try:
+            current_user = UserTable.query.get(session.get('id'))
+            if session.get('id') == current_user.id:
+                redirect(url_for('homepage'))
+        except Exception as e:
+            print(e)
 
     return render_template('login.html')
 
 @app.post('/login')
 def login():
         try:
-
             username = request.form.get('username')
 
             if not username or username == '':
@@ -183,7 +180,6 @@ def login():
             flash('Incorrect Username or Password')
             return redirect(url_for('get_login'))
         
-
 @app.post('/logout')
 def logout():
     try:
@@ -247,50 +243,3 @@ def sign_up():
         flash('Unable to Sign Up\nTry Again Later.')
         return redirect(url_for('get_login'))
     
-@app.route('/update_credentials', methods=['POST'])
-def update_credentials():
-    user_id = session.get('id')
-
-    # Fetch user from database
-    user = UserTable.query.get(user_id)
-
-    if not user:
-        flash('User not found.', 'error')
-        return redirect(url_for('login_page'))
-
-    try:
-        new_email = request.form.get('email')
-        new_phone = request.form.get('phone')
-        new_password = request.form.get('password')
-        private_setting = request.form.get('private') == 'on'
-        
-        changes_made = False
-
-        if new_email and new_email != '':
-            user.email = new_email
-            changes_made = True
-
-        if new_phone and new_phone != '':
-            user.phone = new_phone
-            changes_made = True
-
-        if new_password and new_password != '':
-            hashed_password = bcrypt.generate_password_hash(new_password, 16).decode()
-            user.password = hashed_password
-            changes_made = True
-
-        if user.private != private_setting:
-            user.private = private_setting
-            changes_made = True
-
-        if changes_made:
-            db.session.commit()
-            flash('Credentials updated successfully', 'success')
-        else:
-            flash('No changes detected', 'error')
-
-        return redirect(url_for('settings_page'))
-
-    except Exception as e:
-        flash(f'Unable to update credentials: {e}', 'error')
-        return redirect(url_for('settings_page'))
