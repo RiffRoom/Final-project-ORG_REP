@@ -13,6 +13,7 @@ from sqlalchemy import desc
 from blueprints.jam_session.jam_sessions import jam_sessions_bp
 from blueprints.uploader.upload import upload_bp
 from blueprints.profile.profile import profile_bp
+import traceback
 
 app = Flask(__name__)
 app.app_context().push()
