@@ -92,6 +92,8 @@ def upload_video():
                     },
                     OutputKeyPrefix='videos/'
                 )
+
+
                 remove_file(filename)
 
                 db.session.add(post)
@@ -131,7 +133,7 @@ def remove_file(filename):
     max_remove_attempts = 5
     attempts = 0
     removed = False
-    while not removed or attempts < max_remove_attempts:
+    while removed == False and attempts < max_remove_attempts:
         try:
             os.remove(filename)
             removed = True
@@ -139,9 +141,10 @@ def remove_file(filename):
         except OSError as error:
             print(error)
             print('Filepath cannot be removed.')
-        else:
-            if attempts == 5:
-                stashed_files.append(filename)
-            print(f'Removal attempt number {attempts}')
-            attempts += 1
-            sleep(3)
+
+        if attempts == 5:
+            stashed_files.append(filename)
+            break
+        print(f'Removal attempt number {attempts}')
+        attempts += 1
+        sleep(3)
