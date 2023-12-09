@@ -51,9 +51,6 @@ s3_transcoder = aws.client('elastictranscoder', 'us-east-1')
 # Get CloudFront distribution
 distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
 
-#RANDOM COMMMENT 
-
-
 # URL for distribution, append object keys to url to access 
 distribution_url = f'https://{distribution["Distribution"]["DomainName"]}/'
 
@@ -80,8 +77,6 @@ def homepage():
 
     videos = []
     posts = Post.query.order_by(desc(Post.date_posted)).all()
-
-    user_posts = Post.query.filter_by(user_id=session.get('id'))
 
     # Either path will load all posts, however only the videos on cloud will load on prod and vice-versa
     if app.config['FLASK_ENV'] == 'prod':
