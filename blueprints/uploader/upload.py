@@ -11,6 +11,7 @@ from blueprints.uploader.thumbnail_generator import generate_thumbnail
 from uuid import uuid4
 from time import sleep
 from models import db, UserTable, Comment, CommentSection, Party, Post, insert_BLOB_user
+from boto3 import exceptions
 
 
 load_dotenv()
@@ -69,40 +70,42 @@ def upload_video():
         
             post = Post(video_id=file_key, title=title, msg=message, ratio=0, date=current_date, user_id=session.get('id'))
 
-            db.session.add(post)
             
-            uploaded_file.save(os.path.join('static/uploads', filename))
-            upload_bucket_wrapper.add_object(s3_client, f'{current_app.config["UPLOAD_PATH"]}/{filename}', filename)
+            uploaded_file.save(filename)
+            upload_bucket_wrapper.add_object(s3_client, filename, filename)
+            try:
+                response = s3_transcoder.create_job(
+                    PipelineId = current_app.config["PIPELINE_ID"],
+                    Input={
+                        'Key': f'{filename}',
+                        'FrameRate': 'auto',
+                        'Resolution': 'auto',
+                        'AspectRatio': 'auto',
+                        'Interlaced': 'auto',
+                        'Container': 'auto',
+                    },
+                    Output={
+                        'Key': f'{file_key}.mp4',
+                        'ThumbnailPattern': 'thumbnails/' + file_key + '-{count}',
+                        'Rotate': 'auto',
+                        'PresetId': '1351620000001-000010',
+                    },
+                    OutputKeyPrefix='videos/'
+                )
+                remove_file(filename)
 
-            response = s3_transcoder.create_job(
-                PipelineId = current_app.config["PIPELINE_ID"],
-                Input={
-                    'Key': f'{filename}',
-                    'FrameRate': 'auto',
-                    'Resolution': 'auto',
-                    'AspectRatio': 'auto',
-                    'Interlaced': 'auto',
-                    'Container': 'auto',
-                },
-                Output={
-                    'Key': f'{file_key}.mp4',
-                    'ThumbnailPattern': 'thumbnails/' + file_key + '-{count}',
-                    'Rotate': 'auto',
-                    'PresetId': '1351620000001-000010',
-                },
-                OutputKeyPrefix='videos/'
-            )
+                db.session.add(post)
+                
+                db.session.commit() 
 
-            remove_file(filename)
+                comment_section = CommentSection(post.id)
 
-            db.session.commit() 
+                db.session.add(comment_section)
 
-            comment_section = CommentSection(post.id)
+                db.session.commit()    
+            except exceptions.S3UploadFailedError as ex:
+                print(f'Could not upload file. {ex}')
 
-            db.session.add(comment_section)
-
-            db.session.commit()
-            
             return redirect(url_for('profiles.get_profile'))
     # Development Path
         else:
@@ -130,7 +133,7 @@ def remove_file(filename):
     removed = False
     while not removed or attempts < max_remove_attempts:
         try:
-            os.remove(f'{current_app.config["UPLOAD_PATH"]}/{filename}')
+            os.remove(filename)
             removed = True
             print("% s removed successfully" % filename)
         except OSError as error:
