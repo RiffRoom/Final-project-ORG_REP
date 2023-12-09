@@ -30,6 +30,8 @@ bcrypt = Bcrypt(app)
 
 Session(app)
 
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
+
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 db.init_app(app)
