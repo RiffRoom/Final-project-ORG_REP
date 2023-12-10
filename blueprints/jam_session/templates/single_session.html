@@ -1,38 +1,47 @@
-{% extends '_template.html'%}
+{% extends '_template.html' %}
 
 {% block body %}
-<div class="d-flex flex-row m-5">
-    <div class="d-flex flex-column m-1">
-        <h1>{{jam_session.title}}</h1>
-        <p>{{jam_session.message}}</p>
-        <form action="{{url_for('jam_sessions.edit_session', session_id=jam_session.id)}}" method="post">
-            <div class="form-group m-1">
-                <label class="label" for="title">Title</label>
-                <input type="text" name="title" id="title" placeholder="{{jam_session.title}}">
-            </div>
-            <div class="form-group m-1">
-                <label class="label" for="message">Description</label>
-                <textarea class="form-control" name="message" id="message" cols="30" rows="10" placeholder="{{jam_session.message}}"></textarea>
-            </div>
-                <button type="submit" class="btn btn-success mx-2">Update</button>
-        </form>
-    
-        <div class="d-flex flex-row justify-content-between">
-            <form action="{{url_for('jam_sessions.delete_session', session_id=jam_session.id)}}" method="post">
-                <button type="submit" class="btn btn-danger mx-2">Delete</button>
-            </form> 
-            <form action="{{url_for('jam_sessions.get_sessions')}}">
-                <button type="submit" class="btn btn-info mx-2">Back</button>
+<div class="container mt-5"> 
+    <div class="row"> 
+        <div class="col-md-8"> 
+            <h1>{{ jam_session.title }}</h1>
+            <p>{{ jam_session.message }}</p>
+            <form action="{{ url_for('jam_sessions.edit_session', session_id=jam_session.id) }}" method="post">
+                <!-- Title -->
+                <div class="form-group m-1">
+                    <label class="label" for="title">Title</label>
+                    <input type="text" name="title" id="title" class="form-control" placeholder="{{ jam_session.title }}">
+                </div>
+                <!-- Description -->
+                <div class="form-group m-1">
+                    <label class="label" for="message">Description</label>
+                    <textarea class="form-control" name="message" id="message" cols="30" rows="10" placeholder="{{ jam_session.message }}"></textarea>
+                </div>
+
+                <!--Buttons-->
+                <div class="d-flex flex-row justify-content-start mt-2">
+                    <button type="submit" class="btn btn-success mx-2">Update</button>
+                    <form action="{{ url_for('jam_sessions.delete_session', session_id=jam_session.id) }}" method="post">
+                        <button type="submit" class="btn btn-danger mx-2">Delete</button>
+                    </form>
+                    <form action="{{ url_for('jam_sessions.get_sessions') }}" class="ml-auto"> 
+                        <button type="submit" class="btn btn-info mx-2">Back</button>
+                    </form>
+                </div>
             </form>
+        </div> 
+
+        <div class="col-md-4"> 
+            <!-- Attendies-->
+            {% for user in Party.query.filter_by(session_id=jam_session.id) %}
+                <p class="card-subtitle">{{ UserTable.query.get(user.user_id).user_name }}</p>
+            {% endfor %}
+
+            <!-- Map -->
+            <div id="map" class="mt-2">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=17&markers=color:blue%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=400x400&&maptype=satellite&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
+            </div>
         </div>
-    </div>
-    <div class="d-flex flex-column m-5">
-        {% for user in Party.query.filter_by(session_id=jam_session.id)%}
-            <p class="card-subtitle">{{ UserTable.query.get(user.user_id).user_name}}</p>
-        {% endfor %}
-    </div>
-    <div id="map">
-        <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=17&markers=color:blue%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=400x400&&maptype=satellite&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
     </div>
 </div>
 {% endblock %}
