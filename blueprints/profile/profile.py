@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, abort, session, flash
+from flask import Blueprint, render_template, redirect, url_for, request, abort, session, flash, current_app
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -49,17 +49,20 @@ def get_profile():
     user = UserTable.query.get(user_id)
 
     user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
-    
+    flask_env = current_app.config['FLASK_ENV']
 
     if not user:
         flash('User not found.', 'error')
         return redirect(url_for('login'))
     
-    if current_app.config['FLASK_ENV'] == 'prod':
-        return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url=distribution_url) 
+    flask_env = current_app.config['FLASK_ENV']
+    user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
+    flask_env = current_app.config['FLASK_ENV']
 
+    if flask_env == 'prod':
+        return render_template('user_prof.html', user=user, user_posts=user_posts, is_own_profile=True, can_edit=True, distribution_url=distribution_url, flask_env=flask_env) 
     else:
-        return render_template('user_prof.html', user=user, user_posts=user_posts,is_own_profile=True, can_edit=True, distribution_url='')
+        return render_template('user_prof.html', user=user, user_posts=user_posts, is_own_profile=True, can_edit=True, distribution_url='', flask_env=flask_env)
 
 @profile_bp.get('/settings')
 def get_settings():
@@ -97,10 +100,14 @@ def view_profile(user_id: int):
     is_private = user.private and current_user_id != user.id  
     is_own_profile = current_user_id == user.id
     can_edit = is_own_profile
+    flask_env = current_app.config['FLASK_ENV']
 
+    if current_app.config['FLASK_ENV'] == 'prod':
+        return render_template('user_prof.html', user=user, user_posts=user_posts,  is_private=is_private, is_own_profile=is_own_profile, can_edit=can_edit, distribution_url=distribution_url, flask_env=flask_env) 
+    else:
+        return render_template('user_prof.html', user=user, user_posts=user_posts,  is_private=is_private, is_own_profile=is_own_profile, can_edit=can_edit, distribution_url='', flask_env=flask_env)
 
-    return render_template('user_prof.html', user=user, user_posts=user_posts, is_private=is_private, is_own_profile=is_own_profile, can_edit=can_edit, distribution_url=f'{current_app.config["UPLOAD_PATH"]}/')
-
+    
 
 
 @profile_bp.route('/update_credentials', methods=['POST'])
