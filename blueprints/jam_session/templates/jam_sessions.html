@@ -7,7 +7,7 @@
     <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
         <div class="px-3 w-100 overflow-y-scroll mx-1 " style="height: 500px;">
             {% for jam_session in active_jam_sessions %}
-                <div class="card bg-light-subtle mb-2 test shadow">
+                <div class="card mb-2 test shadow" style="background-color: #e4e4e4";>
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <a class="text-decoration-none fs-5 fw-medium text-reset mb-2 monospace" href="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}"> {{ jam_session.title}} </a>
@@ -45,7 +45,7 @@
         </div>
         <div id="map" name="map" class="shadow"></div>
 
-        <div class="d-flex flex-column shadow-lg px-1 pb-1" style="border-radius: 5px;">
+        <div class="d-flex flex-column" style="border-radius: 5px;">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
                     <div>
                         <label for="session_title" class="small" style="height:10px;">Session Title</label>
