@@ -43,13 +43,13 @@
         <div class="d-flex flex-row justify-content-end">
             <small class="text-muted">Click the map to place a pin!</small>
         </div>
-        <div id="map" name="map"></div>
+        <div id="map" name="map" class="shadow"></div>
 
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column shadow-lg px-1 pb-1" style="border-radius: 5px;">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
                     <div>
                         <label for="session_title" class="small" style="height:10px;">Session Title</label>
-                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="height: 25px; ::placeholder{ color: red;}">
+                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="height: 25px;">
                     </div>
                     <div class="d-flex flex-column">
                         <label for="session_message" class="small" style="height:10px;">Description</label>
@@ -57,7 +57,7 @@
                     </div>
                     <div class="d-flex flex-row justify-content-between align-items-start" style="margin-top: -5px;">
                         <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
-                        <button type="submit" class="btn btn-success w-50" id="create_session_button" style="border-radius: 0;">Create Session</button>
+                        <button type="submit" class="btn btn-success w-50" id="create_session_button">Create Session</button>
                     </div>
             </form>
         </div>
