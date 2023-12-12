@@ -5,6 +5,7 @@
 
 <div class="d-flex flex-row" style="margin-top: -10px;">
     <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
+        <h3 class="mx-4 font-monospace">Join a Session!</h3>
         <div class="px-3 w-100 overflow-y-scroll mx-1 " style="height: 500px;">
             {% for jam_session in active_jam_sessions %}
                 <div class="card mb-2 test shadow" style="background-color: #e4e4e4";>
@@ -16,7 +17,7 @@
                         <h6> {{JamSession.date_str(jam_session.date)}} </h6>
                         <p class="card-text lh-1">{{ jam_session.message }}</p>
                         <div class="d-flex flex-row justify-content-between"> 
-                            <p class="card-subtitle text-muted align-self-end"><small>{{jam_session.date_posted}}</small></p>
+                            <p class="card-subtitle text-muted align-self-end"><small>{{calc_time_jam_session(jam_session.id)}}</small></p>
                                 {% if jam_session.host_id == session.get('id') %}
                                 <form action="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}" method="get">
                                     <button type="submit" class="btn btn-secondary mx-2">Edit</button>
@@ -43,7 +44,7 @@
         <div class="d-flex flex-row justify-content-end">
             <small class="text-muted">Click the map to place a pin!</small>
         </div>
-        <div id="map" name="map" class="shadow"></div>
+        <div id="map" name="map"></div>
 
         <div class="d-flex flex-column" style="border-radius: 5px;">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
