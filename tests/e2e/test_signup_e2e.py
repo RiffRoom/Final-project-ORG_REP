@@ -21,6 +21,7 @@ def test_live_signup(test_app):
         'raw_password':'123'
     }, follow_redirects=True)
     assert response.status_code == 200
+    
 
 def test_live_login(test_app):
     response = test_app.post('/login', data={
@@ -28,6 +29,7 @@ def test_live_login(test_app):
         'raw_password':'123'
     }, follow_redirects=True)
     assert response.status_code == 200
+    
 
 def test_bad_signup(test_app):
     response = test_app.post('/signup', data={
@@ -37,18 +39,26 @@ def test_bad_signup(test_app):
         'phone':'123-123-1230',
         'username':None,
         'raw_password':''
-    }, follow_redirects=False)
-    assert response.status_code == 302
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    data = response.data.decode('utf-8')
+    assert 'TRENDING' not in data
+    assert 'Login' in data
 
 def test_bad_login(test_app):
     response = test_app.post('/login', data={
         'username':'JackySnip',
         'raw_password':'12'
-    }, follow_redirects=False)
-    assert response.status_code == 302
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    data = response.data.decode('utf-8')
+    assert 'TRENDING' not in data
+    assert 'Login' in data
 
     response = test_app.post('/login', data={
         'username':'asdasdasdasd',
         'raw_password':'asdasdasdasd'
-    }, follow_redirects=False)
-    assert response.status_code == 302
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    data = response.data.decode('utf-8')
+    assert 'TRENDING' not in data
