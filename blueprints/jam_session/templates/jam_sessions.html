@@ -3,11 +3,11 @@
 {% block body%}
 
 
-<div class="d-flex flex-row mt-5">
-    <div class="d-flex w-100 mx-2 scroll-black"> 
-        <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
+<div class="d-flex flex-row" style="margin-top: -10px;">
+    <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
+        <div class="px-3 w-100 overflow-y-scroll mx-1 " style="height: 500px;">
             {% for jam_session in active_jam_sessions %}
-                <div class="card bg-light-subtle mb-2 test" style="border-radius: 0px;">
+                <div class="card bg-light-subtle mb-2 test shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <a class="text-decoration-none fs-5 fw-medium text-reset mb-2 monospace" href="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}"> {{ jam_session.title}} </a>
@@ -15,7 +15,6 @@
                         </div>
                         <h6> {{JamSession.date_str(jam_session.date)}} </h6>
                         <p class="card-text lh-1">{{ jam_session.message }}</p>
-                        <p class="card-subtitle"> Attendee Count: {{ JamSession.get_num_attendees(jam_session.id) }} </p>
                         <div class="d-flex flex-row justify-content-between"> 
                             <p class="card-subtitle text-muted align-self-end"><small>{{jam_session.date_posted}}</small></p>
                                 {% if jam_session.host_id == session.get('id') %}
@@ -40,41 +39,41 @@
         </div>
     </div>
 
-    <div class="d-flex flex-column mx-4 justify-content-center h-auto">
-        <div class="" id="map" name="map"></div>
+    <div class="d-flex flex-column mx-4 justify-content-center">
+        <div class="d-flex flex-row justify-content-end">
+            <small class="text-muted">Click the map to place a pin!</small>
+        </div>
+        <div id="map" name="map"></div>
 
         <div class="d-flex flex-column">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
-                <div class="d-flex flex-column">
-                    <div class="form-group">
-                        <label for="session_title">Session Title</label>
-                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="border-radius: 0;">
+                    <div>
+                        <label for="session_title" class="small" style="height:10px;">Session Title</label>
+                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="height: 25px; ::placeholder{ color: red;}">
                     </div>
-                    <div class="form-group d-flex flex-column">
-                        <label for="session_message">Description</label>
-                        <textarea class="form-group was-validated" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session." style="resize: none; border-radius: 0;"></textarea>  
+                    <div class="d-flex flex-column">
+                        <label for="session_message" class="small" style="height:10px;">Description</label>
+                        <textarea class="form-group was-validated" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session." style="resize: none;"></textarea>  
                     </div>
-                    <div class="form-group d-flex flex-row justify-content-between align-items-center mt-2">
+                    <div class="d-flex flex-row justify-content-between align-items-start" style="margin-top: -5px;">
                         <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
                         <button type="submit" class="btn btn-success w-50" id="create_session_button" style="border-radius: 0;">Create Session</button>
                     </div>
-                </div>
             </form>
         </div>
     </div>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <div> {{message}} </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 </div>
 
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div> {{message}} </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <script>
 (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
@@ -121,6 +120,7 @@ async function initMap() {
         zoom: 16,
         center: position,
         mapId: "DEMO_MAP_ID",
+        mapTypeId: google.maps.MapTypeId.HYBRID
     });
 
     const unccBoundsCoords = [
