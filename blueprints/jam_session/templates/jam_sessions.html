@@ -15,7 +15,7 @@
                             <p class="card-subtitle text-muted">{{ UserTable.query.get(jam_session.host_id).user_name }}</p>
                         </div>
                         <h6> {{JamSession.date_str(jam_session.date)}} </h6>
-                        <p class="card-text lh-1">{{ jam_session.message }}</p>
+                        <p class="card-text lh-1 text-nowrap overflow-x-hidden" style="max-width: 300px; text-overflow: ellipsis;">{{ jam_session.message }}</p>
                         <div class="d-flex flex-row justify-content-between"> 
                             <p class="card-subtitle text-muted align-self-end"><small>{{calc_time_jam_session(jam_session.id)}}</small></p>
                                 {% if jam_session.host_id == session.get('id') %}
@@ -41,24 +41,25 @@
     </div>
 
     <div class="d-flex flex-column mx-4 justify-content-center">
-        <div class="d-flex flex-row justify-content-end">
+        <div class="d-flex flex-row justify-content-start">
             <small class="text-muted">Click the map to place a pin!</small>
         </div>
         <div id="map" name="map"></div>
 
         <div class="d-flex flex-column" style="border-radius: 5px;">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
-                    <div>
-                        <label for="session_title" class="small" style="height:10px;">Session Title</label>
-                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="height: 25px;">
+                    <div class="d-flex flex-column mt-1 form-group">
+                        <input type="text" class="form-control mt-1 w-50" id="session_title"  maxlength="255" placeholder="Name Your Session!" required>
+                        <textarea class="form-control was-validated mt-1" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe Your Session!" style="resize: none;"></textarea>  
                     </div>
-                    <div class="d-flex flex-column">
-                        <label for="session_message" class="small" style="height:10px;">Description</label>
-                        <textarea class="form-group was-validated" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session." style="resize: none;"></textarea>  
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-start" style="margin-top: -5px;">
-                        <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
-                        <button type="submit" class="btn btn-success w-50" id="create_session_button">Create Session</button>
+                    <div class="d-flex flex-row justify-content-center" style="margin-top: -5px;">
+                        <div class="d-flex flex-row justify-content-start mx-5"> 
+                            <label for="session_date_time" class="card-subtitle text-muted px-3">Pick a Date:</label>
+                            <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center">
+                            <button type="submit" class="btn btn-success w-50 px-3" id="create_session_button">Create Session</button>
+                        </div>
                     </div>
             </form>
         </div>
