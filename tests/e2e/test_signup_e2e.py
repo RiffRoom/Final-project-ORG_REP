@@ -25,10 +25,12 @@ def test_live_signup(test_app):
 
 def test_live_login(test_app):
     response = test_app.post('/login', data={
-        'username':'JackySnips',
-        'raw_password':'123'
+        'username':'123',
+        'password':'123'
     }, follow_redirects=True)
+    data = response.data.decode('utf-8')
     assert response.status_code == 200
+    assert 'TRENDING' in data
     
 
 def test_bad_signup(test_app):
