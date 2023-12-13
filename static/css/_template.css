@@ -157,6 +157,12 @@ hr {
     border-radius: 5px; 
   }
 
+  #static-map {
+    height: 350px;
+    width: 350px;
+    border-radius: 5px;
+  }
+
   
   /* Profile Pic Styles  */
   .profile-pic-label {
