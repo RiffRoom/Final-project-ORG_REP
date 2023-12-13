@@ -73,9 +73,13 @@ def add_new_session():
 
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
+    if not session.get('id'):
+        return redirect('/login')
+
     jam_session = JamSession.query.get(session_id)
     JamSession.get_num_attendees(session_id)
-    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable)
+    is_own_session = jam_session.host_id == session.get('id')
+    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable, is_own_session=is_own_session)
 
 @jam_sessions_bp.post('/<int:session_id>/delete')
 def delete_session(session_id: int):

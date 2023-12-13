@@ -25,7 +25,9 @@
         </a>
         <div class="header">
                 <div class="nav-item">
-                    <p>TRENDING</p>
+                    <p {% if request.endpoint.startswith('homepage') %} class="nav-header-active" 
+                    {% else %} class="nav-header"
+                    {% endif %}>TRENDING</p>
                     <div {% if request.endpoint.startswith('homepage') %}class="nav-item-icon nav-item-active"
                     {% else %} class="nav-item-icon"
                     {% endif %}>
@@ -39,7 +41,9 @@
                     </div>
                 </div>
                 <div class="nav-item">
-                    <p>SESSIONS</p>
+                    <p {% if request.endpoint.startswith('jam_sessions') %} class="nav-header-active" 
+                    {% else %} class="nav-header"
+                    {% endif %}>SESSIONS</p>
                     <div {% if request.endpoint.startswith('jam_sessions') %}class="nav-item-icon nav-item-active"
                     {% else %} class="nav-item-icon"
                     {% endif %}>
@@ -55,7 +59,9 @@
                     </div>
                 </div>
                 <div class="nav-item">
-                    <p>PROFILE</p>
+                    <p {% if request.endpoint.startswith('profiles') %} class="nav-header-active" 
+                    {% else %} class="nav-header"
+                    {% endif %}>PROFILE</p>
                     <div {% if request.endpoint.startswith('profiles') %}class="nav-item-icon nav-item-active"
                     {% else %} class="nav-item-icon"
                     {% endif %}>
@@ -95,7 +101,7 @@
     });
 
     function setActiveTab(element) {
-        element.classList.add('nav-item-active');
+        element.classList.add('nav-item-active');        
     }
 
     function clearActiveTabs(){
@@ -103,8 +109,6 @@
             element.classList.remove('nav-item-active');
         })
     }
-
-
 
 </script>
 

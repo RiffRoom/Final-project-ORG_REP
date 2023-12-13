@@ -26,7 +26,6 @@ hr {
   margin-top: -5px;
   margin-bottom: 12px;
   padding: 0;
-  z-index: -1;
 }
 
 
@@ -65,12 +64,24 @@ hr {
   border-radius: 50%;
 }
 
-.nav-item > p {
+.nav-header {
   position: relative;
   top: 5%;
   z-index: 1;
   font-size: 12px;
   font-weight: bolder;
+}
+
+.nav-header-active {
+  position: relative;
+  top: 5%;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: bolder;
+
+  background: -webkit-linear-gradient(#846DCF, #39254D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav-item-icon {
