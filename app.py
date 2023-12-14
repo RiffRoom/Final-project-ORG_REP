@@ -259,16 +259,9 @@ def sign_up():
 
     try:
         first_name = request.form.get('first_name')
-
-        if not first_name or first_name == '':
-            flash('Enter a first name')
-            return redirect(url_for('get_login'))
             
         last_name = request.form.get('last_name')
 
-        if not last_name or last_name == '':
-            flash('Enter a last name')
-            return redirect(url_for('get_login'))
 
         email = request.form.get('email')
 
@@ -278,10 +271,6 @@ def sign_up():
             
         phone = request.form.get('phone')
 
-        if not phone or phone == '':
-            flash('Enter a phone number')
-            return redirect(url_for('get_login'))
-        
         username = request.form.get('username')
 
         if not username or username == '':
