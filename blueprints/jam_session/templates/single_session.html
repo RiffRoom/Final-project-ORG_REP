@@ -12,7 +12,7 @@
 
     .form-control:hover {
         border-color: #fff; 
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
 
     /* border-bottom: solid 2px black; */
 
@@ -21,19 +21,14 @@
 
     .form-control:focus {
     border-color: #fff; 
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-
-    /* border-bottom: solid 2px black; */
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: solid 2px black;
 
     transition: 300ms all ease-in-out;
     }
 
     .input-header {
         font-size: 2em;
-    }
-
-    .session-message {
-        
     }
 
     .list-group-item {
@@ -84,7 +79,6 @@
                             </form>
                         </div>
                     <div class="col-sm"> 
-                        <h3 class="text-center font-monospace">Who's Going?</h3>
                         <hr>
                         <ul class="list-group list-group-flush align-self-center">
                             {% for user in Party.query.filter_by(session_id=jam_session.id) %}
@@ -125,7 +119,9 @@
                 <div class="row">
                     <div class="d-block h-auto">
                         <h3 class="">{{ jam_session.title }}</h3>
-                        <p> {{ jam_session.message }}</p>
+                        <div style="overflow-wrap: break-word; width: 550px;">
+                            <p> {{ jam_session.message }}</p>
+                        </div>
                         {% if Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first() %}
                             <form action="{{url_for('jam_sessions.leave_session', session_id=jam_session.id)}}" method="post">
                                 <button type="submit" class="btn btn-danger mx-2">Leave</button>
@@ -137,8 +133,7 @@
                         {% endif %}
                     </div>
                     <div class="col-sm"> 
-                        <h3 class="text-center font-monospace">Who's Going?</h3>
-                        <hr>
+                        <hr class="mt-2">
                         <ul class="list-group list-group-flush align-self-center">
                             {% for user in Party.query.filter_by(session_id=jam_session.id) %}
                             <li class="list-group-item">

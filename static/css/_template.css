@@ -2,6 +2,72 @@
   --delay-time: .25s;
 }
 
+/* Logo Animation from https://samuelkraft.com/blog/animated-music-bars */
+
+.anim-icon {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 26px;
+  height: 22px;
+  top: 16px;
+  right: 52px;
+}
+
+@keyframes bounce {
+  10% {
+    transform: scaleY(0.3);
+  }
+
+  30% {
+    transform: scaleY(1);
+  }
+
+  60% {
+    transform: scaleY(0.5);
+  }
+
+  80% {
+    transform: scaleY(0.75);
+  }
+
+  100% {
+    transform: scaleY(0.6);
+  }
+}
+
+span {
+  width: 3px;
+  height: 100%;
+
+  border-radius: 3px;
+  transform-origin: bottom;
+  animation: bounce 2.2s ease infinite alternate;
+  content: '';
+
+  background: -webkit-linear-gradient(#846DCF, #5327e5);
+  
+  -webkit-text-fill-color: transparent;
+}
+
+span {
+  &:nth-of-type(2) {
+    animation-delay: -2.2s; 
+  }
+
+  &:nth-of-type(3) {
+    animation-delay: -3.7s; 
+  }
+
+  &:nth-of-type(4) {
+    animation-delay: -2.2s; 
+  }
+
+  &:nth-of-type(5) {
+    animation-delay: -3.7s; 
+  }
+}
+
 
 /* Template Page Styling */
 
@@ -40,15 +106,17 @@ hr {
   align-items: center;
   border-bottom-left-radius: 50px;
   border-bottom-right-radius: 50px;
-  background-color: #e2e2e2;
+  background-color: #efefef;
   padding-top: 5px;
   margin-bottom: 15px;
 }
 
-.logo {
+.logo-container {
   position: absolute;
   display: flex;
   flex-direction: row;
+  justify-content: end;
+  align-items: end;
   top: 0;
   left: 0;
 }
@@ -68,7 +136,7 @@ hr {
   position: relative;
   top: 5%;
   z-index: 1;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: bolder;
 }
 
@@ -76,7 +144,7 @@ hr {
   position: relative;
   top: 5%;
   z-index: 1;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: bolder;
 
   background: -webkit-linear-gradient(#846DCF, #39254D);
@@ -123,7 +191,7 @@ hr {
   border-bottom: 0;
   top: 0;
 
-  transform: translateY(25%);
+  transform: translateY(8%);
   }
 
   

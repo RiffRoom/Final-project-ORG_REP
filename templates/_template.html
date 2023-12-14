@@ -20,9 +20,19 @@
 
 <body>
     <div class="header-container sheet-music"> 
-        <a href="/">
-            <img class="logo" src="{{ url_for('static', filename='images/LOGO_copy.png') }}" height="79" width="75" class="mt--2">
-        </a>
+        <div class="logo-container">
+            <a href="/">
+                <img class="logo" src="{{ url_for('static', filename='images/LOGO_copy.png') }}" height="79" width="75" class="mt--2">
+            </a>
+            <div class="anim-icon">
+                <span></span>
+                <span></span> 
+                <span></span>
+                <span></span>
+                <span></span> 
+                <span></span>
+            </div>
+        </div>
         <div class="header">
                 <div class="nav-item">
                     <p {% if request.endpoint.startswith('homepage') %} class="nav-header-active" 

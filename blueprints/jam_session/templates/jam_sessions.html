@@ -2,12 +2,47 @@
 
 {% block body%}
 
+<style>
+
+    .form-control {
+        border: none;
+        border-bottom: solid 1px black;
+        border-radius: 0px;
+    }
+
+    .form-control:hover {
+        border-color: #fff; 
+        box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+
+        border-bottom: solid 2px black;
+
+        transition: 300ms all ease-in-out;
+    }
+
+    
+    .form-control:focus {
+        border-color: #fff; 
+        box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+
+        border-bottom: solid 2px black;
+
+        transition: 300ms all ease-in-out;
+    }
+
+    .enable-create-button {
+        opacity: 1;
+
+        transition: 1000ms all ease-in-out;
+    }
+
+</style>
+
 <div class="d-flex flex-row" style="margin-top: -10px;">
     <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
-        <h3 class="mx-4 font-monospace text-center">Join a Session!</h3>
+        <h3 class="mx-4 text-center fs-5">Join a Session!</h3>
         <div class="px-3 w-100 overflow-y-scroll mx-1 " style="height: 500px;">
             {% for jam_session in active_jam_sessions %}
-                <div class="card mb-2 test shadow" style="background-color: #e4e4e4";>
+                <div class="card mb-3 test shadow border-0" style="background-color: #e4e4e4";>
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <a class="text-decoration-none fs-5 fw-medium text-reset mb-2 monospace" href="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}"> {{ jam_session.title}} </a>
@@ -49,9 +84,6 @@
             <form action="{{url_for('jam_sessions.add_new_session')}}">
                     <div class="d-flex flex-column mt-1 form-group">
                         <input type="text" class="form-control mt-1 w-50" id="session_title"  maxlength="50" placeholder="Name Your Session!" required>
-                        <div class="invalid-feedback">
-                            Please choose a title.
-                        </div>
                         <textarea class="form-control was-validated mt-1" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe Your Session!" style="resize: none;"></textarea>  
                     </div>
                     <div class="d-flex flex-row justify-content-center" style="margin-top: -5px;">
@@ -109,6 +141,7 @@ let sessionMessageInput = document.getElementById("session_message");
 let sessionDateInput = document.getElementById("session_date_time");
 
 createSessionButton.classList.add('disabled');
+createSessionButton.classList.remove('enable-create-button');
 
 const intersectionObserver = new IntersectionObserver((entries) => {
     for (const entry of entries) {
@@ -170,9 +203,9 @@ async function initMap() {
         
         let defaultPin = new PinElement({
             background: "#cc5e71", 
-            borderColor: "#cc5371",
+            borderColor: "#a04050",
             glyph: icon,
-            glyphColor: "black",
+            glyphColor: "#eee",
             scale: .9
 
         });
@@ -235,6 +268,7 @@ async function initMap() {
         let longitude = e.latLng.lng();
 
         createSessionButton.classList.remove('disabled');
+        createSessionButton.classList.add('enable-create-button');
 
         if(!sessionMarkerPlaced){
 
@@ -246,7 +280,7 @@ async function initMap() {
                 background: "#0e97e3",
                 borderColor: "#0e97e3",
                 glyph: icon,
-                glyphColor: "black",
+                glyphColor: "#eee",
                 scale: 1
             });
 
