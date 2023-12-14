@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, abort, session, flash
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from models import UserTable, db, JamSession, Party
 
 load_dotenv()
@@ -17,6 +17,14 @@ def get_sessions():
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_jam_sessions = JamSession.query.all()
+
+    if active_jam_sessions:
+        for seshs in active_jam_sessions:
+            delta = datetime.now() - seshs.date
+            secs = delta.total_seconds()
+            if secs > 300:
+                db.session.delete(seshs)
+                db.session.commit()
 
     # Used for Google Map pins
     jam_session_data = []
