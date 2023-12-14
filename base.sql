@@ -8,11 +8,9 @@ create table user_table (
     email varchar(255) not null,
     private boolean null default FALSE,
     phone varchar(20) null,
-    prof_pic varchar(255)
+    prof_pic varchar(255),
+    bio varchar(255)
 );
-
-ALTER TABLE user_table
-ADD COLUMN bio TEXT;
 
 drop table if exists sessions cascade ;
 create table sessions (

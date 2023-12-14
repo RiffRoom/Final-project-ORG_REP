@@ -30,13 +30,13 @@
                     <!-- First Name -->
                     <div class="form-group col-md-6">
                         <label for="first_name">First Name:</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
+                        <input type="text" class="form-control" id="first_name" maxlength="255" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
                     </div>
                 
                     <!-- Last Name -->
                     <div class="form-group col-md-6">
                         <label for="last_name">Last Name:</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
+                        <input type="text" class="form-control" id="last_name" maxlength="255" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
                     </div>
                 </div>
 
@@ -44,7 +44,7 @@
                     <!-- Phone Number -->
                     <div class="form-group col-md-6">
                         <label for="phone">Phone Number:</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number" value="{{ user.phone }}">
+                        <input type="tel" class="form-control" id="phone" name="phone" maxlength="50" placeholder="Change phone number" value="{{ user.phone }}">
                     </div>
 
 
@@ -60,7 +60,8 @@
                 <div class="row">
                     <div class="form-group col-md-12">
                         <label for="bio">Bio:</label>
-                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
+                        <textarea class="form-control" id="bio" name="bio" rows="3"  maxlength="500" placeholder="Enter bio">{{ user.bio }}</textarea>
+                        <span id="bioCharCount" style="font-size: 0.8em; color: grey;">(0/500)</span>
                     </div>
                 </div>
 
@@ -158,7 +159,7 @@
 
     setTimeout(function() {
         $('.alert').alert('close');
-    }, 1000); 
+    }, 3000); 
 
     function updateProfilePic(event, userId) {
         const fileInput = event.target;
@@ -170,6 +171,19 @@
             imgElement.src = objectURL;
         }
     }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const bioTextArea = document.getElementById('bio');
+        const bioCharCountElement = document.getElementById('bioCharCount');
+
+        bioCharCountElement.textContent = `(${bioTextArea.value.length}/500)`;
+
+        bioTextArea.addEventListener('input', function () {
+            const currentLength = bioTextArea.value.length;
+            bioCharCountElement.textContent = `(${currentLength}/500)`;
+        });
+    });
 
 </script>
 {% endblock %}
