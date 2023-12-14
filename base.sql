@@ -9,7 +9,7 @@ create table user_table (
     private boolean null default FALSE,
     phone varchar(20) null,
     prof_pic varchar(255),
-    bio varchar(255)
+    bio varchar(500)
 );
 
 drop table if exists sessions cascade ;

@@ -201,48 +201,6 @@ def change_password():
         return redirect(url_for('profiles.get_settings'))
 
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@profile_bp.route('/upload', methods=['POST'])
-def upload_profile_photo():
-    if not session.get('id'):
-        return redirect('/login')
-
-    uploaded_file = request.files['file']
-    if uploaded_file.filename == '' or not allowed_file(uploaded_file.filename):
-        flash('Invalid file type or no file selected', 'error')
-        return redirect(url_for('profiles.get_settings'))
-
-
-    if uploaded_file:
-        filename = secure_filename(uploaded_file.filename)
-        user_id = session.get('id')
-
-        # Prod path
-        if current_app.config['FLASK_ENV'] == 'prod':
-            # idk how to do this lol
-            pass  
-
-        # Dev path
-        else:
-            file_path = os.path.join('static/uploads/pfps/', f'{user_id}.jpg')
-            filename.save(file_path)
-
-            user = UserTable.query.get(user_id)
-            user.profile_photo_path = file_path
-            db.session.commit()
-
-            print("Uploaded file received:", filename)
-            print("Is file allowed:", allowed_file(filename))
-            flash('Profile photo uploaded successfully', 'success')
-
-    return redirect(url_for('profiles.get_settings'))
-
 @profile_bp.route('/delete_post/<int:post_id>', methods=['POST'])
 def delete_post(post_id):
     user_id = session.get('id')
