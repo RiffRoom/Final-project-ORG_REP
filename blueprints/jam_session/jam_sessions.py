@@ -109,14 +109,24 @@ def join_session(session_id: int):
 
 @jam_sessions_bp.post('<int:session_id>/leave')
 def leave_session(session_id: int):
-    jam_session = JamSession.query.get(session_id)
-    party = Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first()
+    party = Party.query.filter_by(session_id=session_id, user_id=session.get('id')).first()
     if party:
         db.session.delete(party)
         db.session.commit()
         return redirect(url_for('jam_sessions.get_sessions'))
     else:
         return redirect(url_for('jam_sessions.get_sessions'))
+    
+@jam_sessions_bp.post('<int:session_id>/edit/<int:user_id>')
+def kick_user_from_session(session_id: int, user_id: int):
+    party = Party.query.filter_by(session_id=session_id, user_id=user_id).first()
+    if not party:
+        return redirect(url_for('jam_sessions.get_single_session', session_id=session_id))
+    else:
+        db.session.delete(party)
+        db.session.commit()
+        return redirect(url_for('jam_sessions.get_single_session', session_id=session_id))
+
     
 @jam_sessions_bp.post('<int:session_id>/edit')
 def edit_session(session_id: int):
