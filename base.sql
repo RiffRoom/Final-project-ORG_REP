@@ -50,9 +50,10 @@ create table post(
 
 drop table if exists ratio_table cascade;
 create table ratio_table(
-    post_id int primary key references post(id) on delete cascade,
+    post_id int references post(id) on delete cascade,
     user_id int not null references user_table(id) on delete cascade,
     value int not null,
+    primary key (post_id, user_id),
     foreign key (post_id) references post(id),
     foreign key (user_id) references user_table(id)
 );

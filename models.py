@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, ForeignKeyConstraint, PrimaryKeyConstraint
 import base64
 from datetime import datetime
 
@@ -248,3 +248,30 @@ class Comment(db.Model):
     
     def __repr__(self) -> str:
         return f'{self.comment_section_id}, {self.user_id}, {self.message}'
+
+
+def count_likes(post_id):
+    ex_post = ratio_table.query.filter_by(post_id=post_id).all()
+    total = 0
+    for post in ex_post:
+        if post.value == 0:
+            total += -1
+        else:
+            total += post.value
+    return total
+
+class ratio_table(db.Model):
+    __tablename__ = 'ratio_table'
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
+    value = db.Column(db.Integer, nullable=False)
+
+    __table_agrs__ = (PrimaryKeyConstraint(post_id, user_id), {})
+
+    def __init__(self, post_id: int, user_id:int, value:int) -> None:
+        self.post_id = post_id
+        self.user_id = user_id
+        self.value = value
+
+    def __repr__(self) -> str:
+        return f'{self.post_id}, {self.user_id}, {self.value}'

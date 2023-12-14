@@ -7,9 +7,43 @@
                     <source src="{{distribution_url}}videos/{{post.video_id}}.mp4">
                 </video>
 
-                <h1 class="d-flex">{{post.title}}</h1>
-                <p class="d-flex">posted on {{post.date_posted}}</p>
-                <h3>{{post.msg}}</h3>
+                <div class="">
+                    <div class="row">
+                        <div class="col-10">
+                            <h1 class="">{{post.title}}</h1>
+                            <p class="d-flex">posted on {{post.date_posted}}</p>
+                            <h3>{{post.msg}}</h3>
+                        </div>
+                        <div class="col-2">
+                            <div class="d-flex flex-column align-items-center" style="width: 5%;">
+                                <div class="d-flex flex-column justify-content-between align-content-between h-100">
+                                    
+                                  <form action="{{ url_for('edit_ratio_iso', post_id=post.id) }}" method="post">
+                                      <button class="btn btn-transparent" type="submit" name="user_rev" id="user_rev" value="1"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Green" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                                          </svg>
+                                      </button>
+                                  </form>
+                      
+                                  <p class="text-center position-relative font-monospace fs-4" style="top: 5px;">{{counter(post.id)}}</p>
+                                  
+                                  <form action="{{ url_for('edit_ratio_iso', post_id=post.id) }}" method="post">
+                                    <button class="btn btn-transparent" type="submit" name="user_rev" id="user_rev" value="0"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Red" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                        </svg>
+                                      </button>
+                                  </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                
             </div>
         </div>
 
