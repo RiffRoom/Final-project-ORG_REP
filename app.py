@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since_post, time_since_jam_session, time_since, ratio_table, count_likes
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since_post, time_since_jam_session, ratio_table, count_likes
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
