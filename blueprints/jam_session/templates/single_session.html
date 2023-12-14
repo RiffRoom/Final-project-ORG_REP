@@ -87,7 +87,7 @@
                                             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                                             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
                                         </svg>
-                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none">{{ UserTable.query.get(user.user_id).user_name }}</a>
+                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none" style="color: #846DCF">{{ UserTable.query.get(user.user_id).user_name }}</a>
                                     </div>
                                     {% if user.user_id != Party.query.filter_by(session_id=jam_session.id).first().user_id %}
                                     <div class="d-flex flex-row justify-content-end hide-button" id="kick-button">
@@ -143,7 +143,7 @@
                                             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                                             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
                                         </svg>
-                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none stretched-link">{{ UserTable.query.get(user.user_id).user_name }}</a>
+                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none stretched-link" style="color: #846DCF">{{ UserTable.query.get(user.user_id).user_name }}</a>
                                     </div>
                                 </div>
                             </li>
