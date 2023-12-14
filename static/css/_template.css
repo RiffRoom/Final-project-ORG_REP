@@ -36,7 +36,7 @@
   }
 }
 
-span {
+.anim-icon span {
   width: 3px;
   height: 100%;
 
@@ -46,11 +46,10 @@ span {
   content: '';
 
   background: -webkit-linear-gradient(#846DCF, #5327e5);
-  
   -webkit-text-fill-color: transparent;
 }
 
-span {
+.anim-icon span {
   &:nth-of-type(2) {
     animation-delay: -2.2s; 
   }
