@@ -230,7 +230,7 @@ def sign_up():
             return redirect(url_for('get_login'))
         
         if UserTable.query.filter_by(user_name=username).first():
-            flash('Username already taken. Please choose a different one.')
+            flash('Username already taken.')
             return redirect(url_for('get_login'))
 
         hashed_password = bcrypt.generate_password_hash(raw_password, 16).decode()
