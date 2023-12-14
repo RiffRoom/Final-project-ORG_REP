@@ -81,11 +81,16 @@ def get_single_session(session_id: int):
     is_own_session = jam_session.host_id == session.get('id')
     return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable, is_own_session=is_own_session)
 
-@jam_sessions_bp.post('/<int:session_id>/delete')
+@jam_sessions_bp.post('/<int:session_id>/edit/delete')
 def delete_session(session_id: int):
-    session = JamSession.query.get(session_id)
-    db.session.delete(session)
-    db.session.commit()
+    jam_session = JamSession.query.get(session_id)
+
+    if jam_session.host_id != session.get('id'):
+        abort(503)
+    else:
+        db.session.delete(jam_session)
+        db.session.commit()
+    
     return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.post('<int:session_id>/join')
