@@ -2,7 +2,6 @@
 
 {% block body%}
 
-
 <div class="d-flex flex-row" style="margin-top: -10px;">
     <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
         <h3 class="mx-4 font-monospace text-center">Join a Session!</h3>
@@ -93,6 +92,13 @@ let infoWindowOpen = false;
 
 let currentInfoWindow;
 
+const icons = [
+    '<i class="bi bi-vinyl-fill"></i>',
+    '<i class="bi bi-cassette-fill"></i>',
+    '<i class="bi bi-boombox-fill"></i>',
+    '<i class="bi bi-music-note-beamed"></i>'
+];
+
 // Dictionary of Session Markers
 const activeSessions = {{ jam_session_data|tojson }};
 
@@ -118,6 +124,7 @@ async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
     const { InfoWindow } = await google.maps.importLibrary("maps");
+    const {PinElement} = await google.maps.importLibrary("marker")
 
     const position = { lat: 35.30882205337362, lng: -80.73374243196827 };
     
@@ -146,19 +153,35 @@ async function initMap() {
     const unccBoundsPath = new google.maps.Polyline({
         path: unccBoundsCoords,
         geodesic: true,
-        strokeColor: "#FF0000",
+        strokeColor: "#cc5e71",
         strokeOpacity: 1.0,
         strokeWeight: 2,
         map: map
     });
 
-    for (const [key, value] of Object.entries(activeSessions)) {
+    
+    for (const [key, value] of Object.entries(activeSessions)) {     
+        
+        const icon = document.createElement("div");
+
+        let iconIndex = Math.floor(Math.random() * icons.length);
+    
+        icon.innerHTML = icons[iconIndex];
+        
+        let defaultPin = new PinElement({
+            background: "#cc5e71", 
+            borderColor: "#cc5371",
+            glyph: icon,
+            glyphColor: "black",
+            scale: .9
+
+        });
         let marker = new AdvancedMarkerElement({
             map: map,
             position: { lat: value.lat, lng: value.lng },
             title: value.title,
-        });
-
+            content: defaultPin.element
+        }); 
         
         const content = marker.content;
 
@@ -214,10 +237,24 @@ async function initMap() {
         createSessionButton.classList.remove('disabled');
 
         if(!sessionMarkerPlaced){
+
+            const icon = document.createElement("div");
+    
+            icon.innerHTML = '<i class="bi bi-cassette-fill"></i>';
+
+            pin = new PinElement({
+                background: "#0e97e3",
+                borderColor: "#0e97e3",
+                glyph: icon,
+                glyphColor: "black",
+                scale: 1
+            });
+
             sessionMarker = new AdvancedMarkerElement({
                 map: map,
                 position: { lat: latitude, lng: longitude },
-                title: "New Session"
+                title: "New Session",
+                content: pin.element,
             });
             sessionMarkerPlaced = true;
         }
