@@ -1,7 +1,8 @@
 import pytest
 from app import app
-from models import UserTable, clear_data, db, Post, CommentSection, Comment
+from models import UserTable, clear_data, db, Post, CommentSection, Comment, ratio_table, count_likes
 from datetime import datetime
+
 
 def test_posts():
     #start with clearing the database
@@ -65,6 +66,31 @@ def test_posts():
     assert len(list(Comment.query.all())) == 1
     assert f'{p_comsec.id}, {newuser2.id}, Cool' in str(Comment.query.all())
 
+    #verify ratio_table list is empty
+    likes = list(ratio_table.query.all())
+    assert len(likes) == 0
+    assert count_likes(p.id) == 0
+
+    #newuser 2 likes the post
+    liked = ratio_table(p.id, newuser2.id, 1)
+    db.session.add(liked)
+    db.session.commit()
+    #assert the entry is in the table
+    likes = list(ratio_table.query.all())
+    assert len(likes) == 1
+    assert f'{p.id}, {newuser2.id}, 1' in str(likes)
+    #assert the total likes is 1
+    assert count_likes(p.id) == 1
+    #newuser 2 wants to dislike instead, so he updates it
+    user_check = ratio_table.query.filter_by(post_id=p.id, user_id=newuser2.id).first()
+    user_check.value = 0
+    db.session.commit()
+    #assert it has changed and that length of ratio_table is still the same
+    assert len(likes) == 1
+    assert f'{p.id}, {newuser2.id}, 0' in str(likes)
+    #assert the total likes returns a negative 1
+    assert count_likes(p.id) == -1
+
     #newuser2 regrets his comment and removes it
     db.session.delete(comment)
     db.session.commit
@@ -79,3 +105,8 @@ def test_posts():
     #assert the post and comment section table are empty
     assert len(list(Post.query.all())) == 0
     assert len(list(CommentSection.query.all())) == 0
+
+    db.session.delete(newuser2)
+    db.session.commit()
+    db.session.delete(newuser1)
+    db.session.commit()
