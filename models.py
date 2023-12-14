@@ -48,7 +48,7 @@ def get_comments_of_post(id):
     comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
     return comments
 
-def time_since(pid):
+def time_since_post(pid):
     postex = Post.query.get(pid)
     delta = datetime.now() - postex.date_posted
     secs = delta.total_seconds()
@@ -79,23 +79,74 @@ def time_since(pid):
     if secs >= (60*60*24*7) and secs < (60*60*24*7*4):
         secs = (secs / (60*60*24*7))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f week ago' % secs
+            return f'uploaded %.0f week ago' % secs
         else:
-             return f'uploaded %.0f weeks ago' % secs
+            return f'uploaded %.0f weeks ago' % secs
 
     if secs >= (60*60*24*7*4) and secs < (60*60*24*7*4*12):
         secs = (secs / (60*60*24*7*4))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f month ago' % secs
+            return f'uploaded %.0f month ago' % secs
         else:
-             return f'uploaded %.0f months ago' % secs
+            return f'uploaded %.0f months ago' % secs
         
     if secs >= (60*60*24*7*4*12):
         secs = (secs / (60*60*24*7*4*12))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f year ago' % secs
+            return f'uploaded %.0f year ago' % secs
         else:
-             return f'uploaded %.0f years ago' % secs
+            return f'uploaded %.0f years ago' % secs
+        
+    return None
+
+def time_since_jam_session(jam_session_id):
+    jam_session = JamSession.query.get(jam_session_id)
+    delta = datetime.now() - jam_session.date_posted
+    secs = delta.total_seconds()
+    if secs < 60.00:
+        return f'%.0f seconds ago' % secs
+    
+    if secs >= 60.00 and secs < (60*60):
+        secs = (secs / (60))
+        if f'%.0f'%secs == '1':
+            return f'%.0f minute ago' % secs
+        else:
+            return f'%.0f minutes ago' % secs
+        
+    if secs >= (60*60) and secs <= (60*60*24):
+        secs = (secs / (60*60))
+        if f'%.0f'%secs == '1':
+            return f'%.0f hour ago' % secs
+        else:
+            return f'%.0f hours ago' % secs
+        
+    if secs >= (60*60*24) and secs <= (60*60*24*7):
+        secs = (secs / (60*60*24))
+        if f'%.0f'%secs == '1':
+            return f'%.0f day ago' % secs
+        else:
+            return f'%.0f days ago' % secs
+
+    if secs >= (60*60*24*7) and secs < (60*60*24*7*4):
+        secs = (secs / (60*60*24*7))
+        if f'%.0f'%secs == '1':
+            return f'%.0f week ago' % secs
+        else:
+            return f'%.0f weeks ago' % secs
+
+    if secs >= (60*60*24*7*4) and secs < (60*60*24*7*4*12):
+        secs = (secs / (60*60*24*7*4))
+        if f'%.0f'%secs == '1':
+            return f'%.0f month ago' % secs
+        else:
+            return f'%.0f months ago' % secs
+        
+    if secs >= (60*60*24*7*4*12):
+        secs = (secs / (60*60*24*7*4*12))
+        if f'%.0f'%secs == '1':
+            return f'%.0f year ago' % secs
+        else:
+            return f'%.0f years ago' % secs
         
     return None
 
