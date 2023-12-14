@@ -3,7 +3,7 @@ create table user_table (
     id serial primary key,
     first_name varchar(255) null,
     last_name varchar(255) null,
-    user_name varchar(255) not null,
+    user_name varchar(255) not null unique,
     password varchar(255) not null,
     email varchar(255) not null,
     private boolean null default FALSE,
