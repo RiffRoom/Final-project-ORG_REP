@@ -262,6 +262,7 @@ def sign_up():
             
         last_name = request.form.get('last_name')
 
+
         email = request.form.get('email')
 
         if not email or email == '':
