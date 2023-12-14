@@ -38,3 +38,6 @@ def test_new_signup():
     assert len(list(UserTable.query.all())) == 1
     #and assert no user exsists as crazy guy
     assert 'Crazy guy' not in str(UserTable.query.all())
+
+    db.session.delete(newuser1)
+    db.session.commit()

@@ -62,3 +62,8 @@ def test_sessions_and_party():
     #assert there are no sessions or parties in their tables
     assert len(list(JamSession.query.all())) == 0
     assert len(list(Party.query.all())) == 0
+
+    db.session.delete(newuser2)
+    db.session.commit()
+    db.session.delete(newuser1)
+    db.session.commit()
