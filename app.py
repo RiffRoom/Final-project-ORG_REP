@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
-from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since_post, time_since_jam_session
+from models import db, UserTable, Comment, CommentSection, Party, Post, get_comments_of_post, insert_BLOB_user, time_since_post, time_since_jam_session, time_since, ratio_table, count_likes
 import os
 from datetime import datetime, timedelta
 from time import time, sleep 
@@ -116,6 +116,67 @@ def get_single_post(post_id: int):
         return render_template('single_post.html', post=post, distribution_url=distribution_url, comment_section=comment_section, comments=comments, UserTable=UserTable)
     else:
         return render_template('single_post.html', post=post, distribution_url=f'{app.config["UPLOAD_PATH"]}/', comment_section=comment_section, comments=comments, UserTable=UserTable)
+
+@app.context_processor
+def ratio_counter():
+    return dict(counter=count_likes)
+
+@app.post('/<int:post_id>/ratio')
+def edit_ratio(post_id: int):
+    value = request.form.get("user_rev")
+    print(value)
+    post_id = post_id
+    print(post_id)
+    print('SASSAASASSA IT WORK')
+    user_check = ratio_table.query.filter_by(post_id=post_id, user_id=session.get('id')).first()
+    if user_check is None:
+        if value == '1':
+            user_like = ratio_table(int(post_id), session.get('id'), 1)
+            db.session.add(user_like)
+            db.session.commit()
+            print('USER ADDED')
+        elif value == '0':
+            user_like = ratio_table(int(post_id), session.get('id'), -1)
+            db.session.add(user_like)
+            db.session.commit()
+        else:
+            None
+    else:
+        if value != str(user_check.value):
+            user_check.value = value
+            db.session.commit()
+        else:
+            db.session.delete(user_check)
+            db.session.commit()
+ 
+    return redirect(url_for('homepage'))
+
+@app.post('/<int:post_id>/ratioiso')
+def edit_ratio_iso(post_id: int):
+    value = request.form.get("user_rev")
+    post_id = post_id
+    user_check = ratio_table.query.filter_by(post_id=post_id, user_id=session.get('id')).first()
+    if user_check is None:
+        if value == '1':
+            user_like = ratio_table(int(post_id), session.get('id'), 1)
+            db.session.add(user_like)
+            db.session.commit()
+        elif value == '0':
+            user_like = ratio_table(int(post_id), session.get('id'), -1)
+            db.session.add(user_like)
+            db.session.commit()
+        else:
+            None #do nothing if neither of the 2 things are done
+    else:
+        if value != str(user_check.value):
+            user_check.value = value #update the values if they click a different button
+            db.session.commit()
+        else:
+            db.session.delete(user_check)
+            db.session.commit()
+ 
+    return redirect(url_for('get_single_post', post_id=post_id))
+
 
 @app.post('/<int:post_id>')
 def post_comment(post_id: int):

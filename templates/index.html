@@ -28,21 +28,29 @@
         
       <!-- Ratio Div -->
       <div class="d-flex flex-column align-items-center" style="width: 5%;">
-        <form action="#" method="">
+
           <div class="d-flex flex-column justify-content-between align-content-between h-100">
-            <button class="btn btn-transparent"> 
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Green" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
-                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-              </svg>
-            </button>
-            <p class="text-center position-relative font-monospace fs-4" style="top: 5px;">{{post.ratio}}</p>
-            <button class="btn btn-transparent"> 
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Red" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-              </svg>
-            </button>
+              
+            <form action="{{ url_for('edit_ratio', post_id=post.id) }}" method="post">
+                <button class="btn btn-transparent" type="submit" name="user_rev" id="user_rev" value="1"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Green" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                    </svg>
+                </button>
+            </form>
+
+            
+            <p class="text-center position-relative font-monospace fs-4" style="top: 5px;">{{counter(post.id)}}</p>
+            
+            <form action="{{ url_for('edit_ratio', post_id=post.id) }}" method="post">
+              <button class="btn btn-transparent" type="submit" name="user_rev" id="user_rev" value="0"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="Red" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                  </svg>
+                </button>
+            </form>
           </div>
-        </form>
+
       </div>
             
       <!-- Comment Div -->

@@ -151,7 +151,7 @@ def update_credentials():
             user.bio = new_bio
         else:
             user.bio = ''
-
+            
         if user.private != private_setting:
             user.private = private_setting
             changes_made = True
