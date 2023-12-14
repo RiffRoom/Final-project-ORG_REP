@@ -148,7 +148,7 @@ def edit_ratio(post_id: int):
         else:
             db.session.delete(user_check)
             db.session.commit()
- 
+
     return redirect(url_for('homepage'))
 
 @app.post('/<int:post_id>/ratioiso')
@@ -174,7 +174,7 @@ def edit_ratio_iso(post_id: int):
         else:
             db.session.delete(user_check)
             db.session.commit()
- 
+
     return redirect(url_for('get_single_post', post_id=post_id))
 
 
@@ -259,16 +259,8 @@ def sign_up():
 
     try:
         first_name = request.form.get('first_name')
-
-        if not first_name or first_name == '':
-            flash('Enter a first name')
-            return redirect(url_for('get_login'))
             
         last_name = request.form.get('last_name')
-
-        if not last_name or last_name == '':
-            flash('Enter a last name')
-            return redirect(url_for('get_login'))
 
         email = request.form.get('email')
 
@@ -277,10 +269,6 @@ def sign_up():
             return redirect(url_for('get_login'))
             
         phone = request.form.get('phone')
-
-        if not phone or phone == '':
-            flash('Enter a phone number')
-            return redirect(url_for('get_login'))
         
         username = request.form.get('username')
 
@@ -294,7 +282,7 @@ def sign_up():
             flash('Enter a password')
             return redirect(url_for('get_login'))
 
-        hashed_password = bcrypt.generate_password_hash(raw_password, 16).decode()
+        hashed_password = bcrypt.generate_password_hash(raw_password, 12).decode()
 
         new_user = UserTable(first_name, last_name, username, hashed_password, email, phone)
         db.session.add(new_user)
