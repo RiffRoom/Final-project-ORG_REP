@@ -131,8 +131,8 @@ def update_credentials():
         
         changes_made = False
 
-        if new_first_name != user.first_name:
-            user.first_name = new_first_name if new_first_name is not None else ''
+        if new_first_name and new_first_name != user.first_name:
+            user.first_name = new_first_name
             changes_made = True
 
         if new_last_name and new_last_name != user.last_name:
@@ -149,9 +149,8 @@ def update_credentials():
 
         if new_bio is not None:
             user.bio = new_bio
-            changes_made = True
-        
-        print("Bio received:", new_bio)  # Debugging line
+        else:
+            user.bio = ''
 
         if user.private != private_setting:
             user.private = private_setting
