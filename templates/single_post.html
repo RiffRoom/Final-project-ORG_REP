@@ -78,7 +78,7 @@
                             {% for comment in comments %}
                             <div class="d-flex flex-row justify-content-start align-items-center">
                                 <div class="d-flex flex-column align-self-center">
-                                    <img src="{{ distribution_url}}/images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
+                                    <img src="{{distribution_url}}/images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
 
                                 </div>
                                 <div class="d-flex flex-row mb-2 mt-2 mx-2 justify-content-between" style="text-overflow: clip; text-wrap: wrap; word-break: break-all;">
