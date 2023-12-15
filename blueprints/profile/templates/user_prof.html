@@ -8,8 +8,8 @@
         <!-- Profile Picture Column -->
         <div class="col-md-4">
             <div class="profile-pic-container text-center mb-4">
-                {% if user.profile_photo_path %}
-                    <img src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                {% if true %}
+                <img src="{{ distribution_url}}/images/pfps/{{user.id}}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% else %}
                     <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% endif %}

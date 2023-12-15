@@ -3,10 +3,26 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 from models import UserTable, db, JamSession, Party
+import boto3
 
 load_dotenv()
 
 jam_sessions_bp = Blueprint('jam_sessions', __name__, template_folder='templates')
+
+#Create AWS session
+aws = boto3.Session(
+                aws_access_key_id= os.getenv('AWS_ACCESS_KEY_ID'),
+                aws_secret_access_key= os.getenv('AWS_SECRET_ACCESS_KEY'),
+            )
+
+# Create clients from session
+s3_distr = aws.client('cloudfront')
+
+# Get CloudFront distribution
+distribution = s3_distr.get_distribution(Id="E2CLJ3WM17V7LF")
+
+# URL for distribution, append object keys to url to access 
+distribution_url = f'https://{distribution["Distribution"]["DomainName"]}/'
 
 @jam_sessions_bp.get('/')
 def get_sessions():
@@ -75,7 +91,7 @@ def add_new_session():
 def get_single_session(session_id: int):
     jam_session = JamSession.query.get(session_id)
     JamSession.get_num_attendees(session_id)
-    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable)
+    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable,distribution_url=distribution_url)
 
 @jam_sessions_bp.post('/<int:session_id>/delete')
 def delete_session(session_id: int):

@@ -9,6 +9,7 @@ from bucket_wrapper import BucketWrapper
 import boto3
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageDraw, ImageFont
+from boto3 import exceptions
 
 
 
@@ -42,6 +43,9 @@ riff_bucket = s3_resource.Bucket('riffbucket-itsc3155')
 # Wrap bucket to access specific funcionality
 bucket_wrapper = BucketWrapper(riff_bucket)
 
+upload_bucket = s3_resource.Bucket('riffbucket-itsc3155-upload')
+upload_wrapper = BucketWrapper(upload_bucket)
+
 
 @profile_bp.get('/')
 def get_profile():
@@ -59,11 +63,7 @@ def get_profile():
     user_posts = Post.query.filter_by(user_id=user.id).order_by(Post.date_posted.desc()).all()
     flask_env = current_app.config['FLASK_ENV']
 
-    if flask_env == 'prod':
-        return render_template('user_prof.html', user=user, user_posts=user_posts, is_own_profile=True, can_edit=True, distribution_url=distribution_url, flask_env=flask_env) 
-    else:
-        return render_template('user_prof.html', user=user, user_posts=user_posts, is_own_profile=True, can_edit=True, distribution_url='', flask_env=flask_env)
-
+    return render_template('user_prof.html', user=user, user_posts=user_posts, is_own_profile=True, can_edit=True, distribution_url=distribution_url if current_app.config['FLASK_ENV'] == 'prod' else '', flask_env=current_app.config['FLASK_ENV'])
 @profile_bp.get('/settings')
 def get_settings():
     if not session.get('id'):
@@ -77,14 +77,9 @@ def get_settings():
     current_user = UserTable.query.get(session.get('id'))
     private_setting = current_user.private
 
-    if current_app.config['FLASK_ENV'] == 'prod':
-        pfp = bucket_wrapper.get_object(s3_client, f'{current_app.config["PFP_PATH"]}testpfp.png')
-        pfps = bucket_wrapper.get_objects(s3_client) 
-        print(pfps)
-        print(f'{distribution_url}{pfps[0]}/images/pfp/testpfp.png')
-    else:
-        pass
-    return render_template('settings.html',user=current_user, private_setting=private_setting)
+    print(f'{distribution_url}/images/pfps{current_user.id}.png')
+
+    return render_template('settings.html', user=current_user, private_setting=private_setting, distribution_url= distribution_url)
 
 # To view another users profile
 @profile_bp.get('/<int:user_id>')
@@ -200,6 +195,67 @@ def change_password():
         flash(f'Error changing password: {e}', 'error')
         return redirect(url_for('profiles.get_settings'))
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@profile_bp.route('/upload', methods=['POST'])
+def upload_profile_photo():
+    if not session.get('id'):
+        return redirect('/login')
+
+    uploaded_file = request.files['file']
+    if uploaded_file.filename == '' or not allowed_file(uploaded_file.filename):
+        flash('Invalid file type or no file selected', 'error')
+        return redirect(url_for('profiles.get_settings'))
+
+
+    if uploaded_file:
+        filename = secure_filename(uploaded_file.filename)
+        user_id = session.get('id')
+
+        # Prod path
+        if current_app.config['FLASK_ENV'] == 'prod':
+            
+            
+            file_extension = filename.rsplit('.', 1)[1].lower()
+            unique_filename = f"{user_id}.{file_extension}"
+            uploaded_file.save(f"{unique_filename}")
+
+            try:
+                upload_wrapper.add_object(s3_client, unique_filename, f"pfps/{unique_filename}")
+
+                user = UserTable.query.get(user_id)
+                db.session.commit()
+
+                flash('Profile photo uploaded successfully', 'success')
+            except exceptions.S3UploadFailedError as e:
+                print(e)
+                flash('Failed to upload the profile photo', 'error')
+
+            copy_sources = {
+                'Bucket': 'riffbucket-itsc3155-upload',
+                'Key': f'pfps/{unique_filename}'
+            }
+
+            riff_bucket.copy(copy_sources, f'/images/pfps/{unique_filename}')
+        # Dev path
+        else:
+            file_path = os.path.join('static/uploads/pfps/', f'{user_id}.jpg')
+            filename.save(file_path)
+
+            user = UserTable.query.get(user_id)
+            user.profile_photo_path = file_path
+            db.session.commit()
+
+            print("Uploaded file received:", filename)
+            print("Is file allowed:", allowed_file(filename))
+            flash('Profile photo uploaded successfully', 'success')
+
+    return redirect(url_for('profiles.get_settings'))
 
 @profile_bp.route('/delete_post/<int:post_id>', methods=['POST'])
 def delete_post(post_id):
