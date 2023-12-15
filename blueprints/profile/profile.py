@@ -244,7 +244,7 @@ def upload_profile_photo():
                 'Key': f'pfps/{unique_filename}'
             }
 
-            riff_bucket.copy(copy_sources, f'/images/pfps/{unique_filename}')
+            riff_bucket.copy(copy_sources, f'images/pfps/{unique_filename}')
 
             remove_file(unique_filename)
         # Dev path
