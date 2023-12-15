@@ -46,6 +46,16 @@ create table post(
     user_id int not null  
 );
 
+drop table if exists ratio_table cascade;
+create table ratio_table(
+    post_id int references post(id) on delete cascade,
+    user_id int not null references user_table(id) on delete cascade,
+    value int not null,
+    primary key (post_id, user_id),
+    foreign key (post_id) references post(id),
+    foreign key (user_id) references user_table(id)
+);
+
 drop table if exists comment_section cascade ;
 create table comment_section(
     id serial primary key,

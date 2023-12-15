@@ -107,7 +107,6 @@ def upload_video():
                 db.session.commit()    
             except exceptions.S3UploadFailedError as ex:
                 print(f'Could not upload file. {ex}')
-
             return redirect(url_for('profiles.get_profile'))
     # Development Path
         else:

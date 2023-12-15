@@ -1,47 +1,198 @@
 {% extends '_template.html' %}
 
 {% block body %}
-<div class="container mt-5"> 
-    <div class="row"> 
-        <div class="col-md-8"> 
-            <h1>{{ jam_session.title }}</h1>
-            <p>{{ jam_session.message }}</p>
-            <form action="{{ url_for('jam_sessions.edit_session', session_id=jam_session.id) }}" method="post">
-                <!-- Title -->
-                <div class="form-group m-1">
-                    <label class="label" for="title">Title</label>
-                    <input type="text" name="title" id="title" class="form-control" placeholder="{{ jam_session.title }}">
-                </div>
-                <!-- Description -->
-                <div class="form-group m-1">
-                    <label class="label" for="message">Description</label>
-                    <textarea class="form-control" name="message" id="message" style="resize: none;" cols="30" rows="10" placeholder="{{ jam_session.message }}"></textarea>
-                </div>
 
-                <!--Buttons-->
-                <div class="d-flex flex-row justify-content-start mt-2">
-                    <button type="submit" class="btn btn-success mx-2">Update</button>
-                    <form action="{{ url_for('jam_sessions.delete_session', session_id=jam_session.id) }}" method="post">
-                        <button type="submit" class="btn btn-danger mx-2">Delete</button>
-                    </form>
-                    <form action="{{ url_for('jam_sessions.get_sessions') }}" class="ml-auto"> 
-                        <button type="submit" class="btn btn-info mx-2">Back</button>
-                    </form>
-                </div>
-            </form>
-        </div> 
 
-        <div class="col-md-4"> 
-            <!-- Attendies-->
-            {% for user in Party.query.filter_by(session_id=jam_session.id) %}
-                <p class="card-subtitle">{{ UserTable.query.get(user.user_id).user_name }}</p>
-            {% endfor %}
+<style>
+    
+    .form-control{
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+    }
 
-            <!-- Map -->
-            <div id="map" class="mt-2">
-                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=17&markers=color:blue%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=400x400&&maptype=satellite&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
+    .form-control:hover {
+        border-color: #fff; 
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+
+    transition: 300ms all ease-in-out;
+    }
+
+    .form-control:focus {
+    border-color: #fff; 
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: solid 2px black;
+
+    transition: 300ms all ease-in-out;
+    }
+
+    .input-header {
+        font-size: 2em;
+    }
+
+    .list-group-item {
+        height: 35px;
+        font-size: small;
+    }
+
+    .list-group-item:hover {
+        height: 50px;
+        cursor: pointer;
+        transition:100ms all ease-in-out;
+    }
+
+    .hide-button {
+        opacity: 0;
+
+        transition: 100ms all ease-in-out;
+    }
+
+    .show-button {
+        opacity: 1;
+
+        transition: 100ms all ease-in-out;
+    }
+
+    .show-button:hover {
+        background-color: #fff;
+    }
+
+</style>
+
+<div class="d-flex flex-row">
+    <div class="container-xxl justify-content-between mt-3">
+        {% if is_own_session %}
+        <div class="row">
+            <div class="col-md">
+                <div class="row">
+                        <div class="d-block h-auto">
+                            <form action="{{ url_for('jam_sessions.edit_session', session_id=jam_session.id) }}" method="post">
+                                <input type="text" name="title" id="title" class="form-control input-header mt-1" maxlength="45" value="{{ jam_session.title }}">
+                                <textarea class="form-control session-message mt-1" name="message" id="message" cols="30" rows="4" maxlength="255" placeholder="{{ jam_session.message }}" style="resize: none;"></textarea>
+                                <div class="d-flex flex-row mt-2">
+                                    <button type="submit" class="btn btn-success mx-2">Save</button>
+                                </div>
+                            </form>
+                            <form action="{{ url_for('jam_sessions.delete_session', session_id=jam_session.id) }}" method="post">
+                                <button type="submit" class="btn btn-danger float-right" style="position: relative; bottom: 38px;">Delete</button>
+                            </form>
+                        </div>
+                    <div class="col-sm"> 
+                        <hr>
+                        <ul class="list-group list-group-flush align-self-center">
+                            {% for user in Party.query.filter_by(session_id=jam_session.id) %}
+                            <li class="list-group-item">
+                                <div class="d-flex flex-row justify-content-between align-items-center">
+                                    <div class="d-flex flex-row justify-content-start align-items-center w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle mx-3" viewBox="0 0 16 16">
+                                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                                        </svg>
+                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none" style="color: #846DCF">{{ UserTable.query.get(user.user_id).user_name }}</a>
+                                    </div>
+                                    {% if user.user_id != Party.query.filter_by(session_id=jam_session.id).first().user_id %}
+                                    <div class="d-flex flex-row justify-content-end hide-button" id="kick-button">
+                                        <form action="{{url_for('jam_sessions.kick_user_from_session', session_id=jam_session.id, user_id=user.user_id)}}" method="POST">
+                                            <button class="btn btn-secondary">Kick</button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
             </div>
         </div>
+        <!-- Map -->
+        <div class="col-sm justify-content-center">
+            <div id="static-map">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=18&markers=color:red%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=600x500&&maptype=hybrid&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
+                <div class="d-flex">
+                    <a href="https://maps.google.com/?q={{jam_session.lat}},{{jam_session.long}}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Open on Google Maps!</a>
+                </div>
+            </div>
+        </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md">
+                <div class="row">
+                    <div class="d-block h-auto">
+                        <h3 class="">{{ jam_session.title }}</h3>
+                        <div style="overflow-wrap: break-word; width: 550px;">
+                            <p> {{ jam_session.message }}</p>
+                        </div>
+                        {% if Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first() %}
+                            <form action="{{url_for('jam_sessions.leave_session', session_id=jam_session.id)}}" method="post">
+                                <button type="submit" class="btn btn-danger mx-2">Leave</button>
+                            </form>
+                        {% else %}
+                            <form action="{{url_for('jam_sessions.join_session', session_id=jam_session.id)}}" method="post">
+                                <button type="submit" class="btn btn-success mx-2">Join</button>
+                            </form> 
+                        {% endif %}
+                    </div>
+                    <div class="col-sm"> 
+                        <hr class="mt-2">
+                        <ul class="list-group list-group-flush align-self-center">
+                            {% for user in Party.query.filter_by(session_id=jam_session.id) %}
+                            <li class="list-group-item">
+                                <div class="d-flex flex-row justify-content-between align-items-center">
+                                    <div class="d-flex flex-row justify-content-start align-items-center w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle mx-3" viewBox="0 0 16 16">
+                                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                                        </svg>
+                                        <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none stretched-link" style="color: #846DCF">{{ UserTable.query.get(user.user_id).user_name }}</a>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+            </div>
+        </div>
+        <!-- Map -->
+        <div class="col-sm justify-content-center">
+            <div id="static-map">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{jam_session.lat}},{{jam_session.long}}&zoom=18&markers=color:red%7Clabel:S%7C{{jam_session.lat}},{{jam_session.long}}&size=600x500&&maptype=hybrid&key=AIzaSyBB9K1RjPnWTNAvCWp5xkrCjT5o5xpx2Bo" alt="map">
+                <div class="d-flex">
+                    <a href="https://maps.google.com/?q={{jam_session.lat}},{{jam_session.long}}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Open on Google Maps!</a>
+                </div>
+            </div>
+        </div>
+        </div>
+        {% endif %}
+        
     </div>
 </div>
+
+<script defert>
+    
+    'use strict';
+    
+    const listItems = document.querySelectorAll(".list-group-item");
+    
+    for (let i = 0; i < listItems.length; i++) {
+        let item = listItems[i];
+        let button = item.lastElementChild.lastElementChild;
+        
+        item.addEventListener('mouseover', ()=>{
+            if (button.classList.contains("hide-button")){            
+            button.classList.add("show-button");
+            button.classList.remove("hide-button");
+        }
+        }); 
+        
+        item.addEventListener('mouseout', ()=>{
+            if(button.classList.contains("show-button")){
+                button.classList.remove("show-button");
+                button.classList.add("hide-button");
+            }
+        });
+    }
+    
+    
+</script>
 {% endblock %}

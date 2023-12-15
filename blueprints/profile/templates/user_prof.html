@@ -72,7 +72,7 @@
             {% if user_posts %}
                 {% for post in user_posts %}
                     <div class="col-md-4 mb-4">
-                        <div class="card card-hover-effect" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none;">
+                        <div class="card card-hover-effect" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none; cursor: pointer;">
                             <a href="{{ url_for('get_single_post', post_id=post.id) }}" class="text-decoration-none"> 
                                 {% if flask_env == 'prod' %}
                                     <img class="card-img-top" src="{{ distribution_url }}videos/thumbnails/{{ post.video_id }}-00001.png" alt="thumbnail">

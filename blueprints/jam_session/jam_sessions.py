@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, abort, session, flash
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from models import UserTable, db, JamSession, Party
 import boto3
 
@@ -33,6 +33,14 @@ def get_sessions():
     current_date = datetime.now().strftime('%Y-%m-%dT%H:%M')
     max_date = datetime(2024, 12, 31,23)
     active_jam_sessions = JamSession.query.all()
+
+    if active_jam_sessions:
+        for seshs in active_jam_sessions:
+            delta = datetime.now() - seshs.date
+            secs = delta.total_seconds()
+            if secs > 300:
+                db.session.delete(seshs)
+                db.session.commit()
 
     # Used for Google Map pins
     jam_session_data = []
@@ -89,15 +97,26 @@ def add_new_session():
 
 @jam_sessions_bp.get('/<int:session_id>')
 def get_single_session(session_id: int):
+    if not session.get('id'):
+        return redirect('/login')
+
     jam_session = JamSession.query.get(session_id)
     JamSession.get_num_attendees(session_id)
-    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable,distribution_url=distribution_url)
 
-@jam_sessions_bp.post('/<int:session_id>/delete')
+    is_own_session = jam_session.host_id == session.get('id')
+    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable, is_own_session=is_own_session)
+
+
+@jam_sessions_bp.post('/<int:session_id>/edit/delete')
 def delete_session(session_id: int):
-    session = JamSession.query.get(session_id)
-    db.session.delete(session)
-    db.session.commit()
+    jam_session = JamSession.query.get(session_id)
+
+    if jam_session.host_id != session.get('id'):
+        abort(503)
+    else:
+        db.session.delete(jam_session)
+        db.session.commit()
+    
     return redirect(url_for('jam_sessions.get_sessions'))
 
 @jam_sessions_bp.post('<int:session_id>/join')
@@ -116,14 +135,24 @@ def join_session(session_id: int):
 
 @jam_sessions_bp.post('<int:session_id>/leave')
 def leave_session(session_id: int):
-    jam_session = JamSession.query.get(session_id)
-    party = Party.query.filter_by(session_id=jam_session.id, user_id=session.get('id')).first()
+    party = Party.query.filter_by(session_id=session_id, user_id=session.get('id')).first()
     if party:
         db.session.delete(party)
         db.session.commit()
         return redirect(url_for('jam_sessions.get_sessions'))
     else:
         return redirect(url_for('jam_sessions.get_sessions'))
+    
+@jam_sessions_bp.post('<int:session_id>/edit/<int:user_id>')
+def kick_user_from_session(session_id: int, user_id: int):
+    party = Party.query.filter_by(session_id=session_id, user_id=user_id).first()
+    if not party:
+        return redirect(url_for('jam_sessions.get_single_session', session_id=session_id))
+    else:
+        db.session.delete(party)
+        db.session.commit()
+        return redirect(url_for('jam_sessions.get_single_session', session_id=session_id))
+
     
 @jam_sessions_bp.post('<int:session_id>/edit')
 def edit_session(session_id: int):

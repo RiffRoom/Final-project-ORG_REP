@@ -1,7 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
-import contextlib
+from sqlalchemy import MetaData, ForeignKeyConstraint, PrimaryKeyConstraint
 import base64
 from datetime import datetime
+
+# USE ONLY FOR TESTS USE ONLY FOR TESTS USE ONLY FOR TESTS
+def clear_data():
+    meta = db.metadata
+    for table in reversed(meta.sorted_tables):
+        db.session.execute(table.delete())
+    db.session.commit()
+# USE ONLY FOR TESTS USE ONLY FOR TESTS USE ONLY FOR TESTS
 
 def convert_To_Binary(filename): 
     with open(filename, 'rb') as file: 
@@ -40,7 +48,7 @@ def get_comments_of_post(id):
     comments = list(Comment.query.filter_by(comment_section_id=comment_section.id).all())
     return comments
 
-def time_since(pid):
+def time_since_post(pid):
     postex = Post.query.get(pid)
     delta = datetime.now() - postex.date_posted
     secs = delta.total_seconds()
@@ -71,36 +79,79 @@ def time_since(pid):
     if secs >= (60*60*24*7) and secs < (60*60*24*7*4):
         secs = (secs / (60*60*24*7))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f week ago' % secs
+            return f'uploaded %.0f week ago' % secs
         else:
-             return f'uploaded %.0f weeks ago' % secs
+            return f'uploaded %.0f weeks ago' % secs
 
     if secs >= (60*60*24*7*4) and secs < (60*60*24*7*4*12):
         secs = (secs / (60*60*24*7*4))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f month ago' % secs
+            return f'uploaded %.0f month ago' % secs
         else:
-             return f'uploaded %.0f months ago' % secs
+            return f'uploaded %.0f months ago' % secs
         
     if secs >= (60*60*24*7*4*12):
         secs = (secs / (60*60*24*7*4*12))
         if f'%.0f'%secs == '1':
-             return f'uploaded %.0f year ago' % secs
+            return f'uploaded %.0f year ago' % secs
         else:
-             return f'uploaded %.0f years ago' % secs
+            return f'uploaded %.0f years ago' % secs
         
     return None
 
+def time_since_jam_session(jam_session_id):
+    if JamSession.query.get(jam_session_id):
+        jam_session = JamSession.query.get(jam_session_id)
+        delta = datetime.now() - jam_session.date_posted
+        secs = delta.total_seconds()
+        if secs < 60.00:
+            return f'%.0f seconds ago' % secs
+        
+        if secs >= 60.00 and secs < (60*60):
+            secs = (secs / (60))
+            if f'%.0f'%secs == '1':
+                return f'%.0f minute ago' % secs
+            else:
+                return f'%.0f minutes ago' % secs
+            
+        if secs >= (60*60) and secs <= (60*60*24):
+            secs = (secs / (60*60))
+            if f'%.0f'%secs == '1':
+                return f'%.0f hour ago' % secs
+            else:
+                return f'%.0f hours ago' % secs
+            
+        if secs >= (60*60*24) and secs <= (60*60*24*7):
+            secs = (secs / (60*60*24))
+            if f'%.0f'%secs == '1':
+                return f'%.0f day ago' % secs
+            else:
+                return f'%.0f days ago' % secs
+
+        if secs >= (60*60*24*7) and secs < (60*60*24*7*4):
+            secs = (secs / (60*60*24*7))
+            if f'%.0f'%secs == '1':
+                return f'%.0f week ago' % secs
+            else:
+                return f'%.0f weeks ago' % secs
+
+        if secs >= (60*60*24*7*4) and secs < (60*60*24*7*4*12):
+            secs = (secs / (60*60*24*7*4))
+            if f'%.0f'%secs == '1':
+                return f'%.0f month ago' % secs
+            else:
+                return f'%.0f months ago' % secs
+            
+        if secs >= (60*60*24*7*4*12):
+            secs = (secs / (60*60*24*7*4*12))
+            if f'%.0f'%secs == '1':
+                return f'%.0f year ago' % secs
+            else:
+                return f'%.0f years ago' % secs
+        
+    return None
 
 db = SQLAlchemy()
-# USE ONLY FOR TESTS
-def clear_bd():
-    meta = db.metadata( )
-    for table in reversed(meta.sorted_tables):
-        print("Clear table %s" % table) 
-        db.execute(table.delete())
-    db.commit()
-
 
 class UserTable(db.Model):
     __tablename__ = 'user_table'
@@ -113,17 +164,15 @@ class UserTable(db.Model):
     private = db.Column(db.Boolean, nullable=True, default=False)
     phone = db.Column(db.String(20), nullable=True)
     prof_pic = db.Column(db.String(255), nullable=True)
-    bio = db.Column(db.Text, nullable=True)
     
 
-    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int, bio: str = None) -> None:
+    def __init__(self, first_n: str, last_n: str, user_n: str, pswd: str, email: str, phone: int) -> None:
         self.first_name = first_n
         self.last_name = last_n
         self.user_name = user_n
         self.password = pswd
         self.email = email
         self.phone = phone
-        self.bio = bio 
     
     def return_img(BLOB, file):
         with open(f"{file}", 'wb') as file: 
@@ -178,6 +227,9 @@ class JamSession(db.Model):
     def date_str(date: datetime):
         return date.strftime('%A %b, %d  %I:%M %p')
     
+    def __repr__(self) -> str:
+        return f'{self.host_name} : {self.title}'
+
     def get_num_attendees(id: int):
         jam_session = JamSession.query.get(id)
         num_attendees = Party.query.filter_by(session_id=jam_session.id).count()
@@ -193,6 +245,10 @@ class Party(db.Model):
     def __init__(self, sesh_id: int, user_id: int) -> None:
         self.session_id = sesh_id
         self.user_id = user_id
+
+    def __repr__(self) -> str:
+        return f'{self.session_id}, {self.user_id}'
+
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -213,14 +269,22 @@ class Post(db.Model):
         self.date_posted = date
         self.user_id = user_id
 
+    def __repr__(self) -> str:
+        return f'{self.user_id}, {self.title}'
+
 
 class CommentSection(db.Model):
     __tablename__ = 'comment_section'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     comments = db.relationship('Comment', cascade="all, delete")
+    
     def __init__(self, post_id: int) -> None:
         self.post_id = post_id
+
+    def __repr__(self) -> str:
+        return f'{self.id}, {self.post_id}'
+
 
 class Comment(db.Model):
     __tablename__ = 'comment'
@@ -233,3 +297,33 @@ class Comment(db.Model):
         self.comment_section_id = cs_id
         self.user_id = user_id
         self.message = msg
+    
+    def __repr__(self) -> str:
+        return f'{self.comment_section_id}, {self.user_id}, {self.message}'
+
+
+def count_likes(post_id):
+    ex_post = ratio_table.query.filter_by(post_id=post_id).all()
+    total = 0
+    for post in ex_post:
+        if post.value == 0:
+            total += -1
+        else:
+            total += post.value
+    return total
+
+class ratio_table(db.Model):
+    __tablename__ = 'ratio_table'
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
+    value = db.Column(db.Integer, nullable=False)
+
+    __table_agrs__ = (PrimaryKeyConstraint(post_id, user_id), {})
+
+    def __init__(self, post_id: int, user_id:int, value:int) -> None:
+        self.post_id = post_id
+        self.user_id = user_id
+        self.value = value
+
+    def __repr__(self) -> str:
+        return f'{self.post_id}, {self.user_id}, {self.value}'
