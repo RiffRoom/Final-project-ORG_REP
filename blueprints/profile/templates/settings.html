@@ -7,24 +7,22 @@
         <div class="col-lg-6">
             <h1 class="text-center" style="margin-top: 20px; margin-bottom: 40px;">Settings Page</h1> 
             
-            
-
-
-            <!-- Profile Picture Upload Form -->
-            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" >
-                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event, user.id);">
-                <button type="submit" class="btn">submit</button>
-            </form>
-            
             <!-- Profile Picture -->
             <div class="text-center mb-4">
                 <button class="profile-pic-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
 
-                        <!-- For Production: Full URL -->
-                        <img src="{{ distribution_url}}/images/pfps/{{user.id}}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    <!-- For Production: Full URL -->
+                    <img src="{{ distribution_url }}/images/pfps/{{ user.id }}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
 
                 </button>
             </div>
+
+            <!-- Profile Picture Upload Form -->
+            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="text-align: center;">
+                <input type="file" id="profile-pic-input" name="file" style="display: none;" onchange="updateProfilePic(event, user.id);">
+                <button type="submit" class="btn">Submit</button>
+            </form>
+
             <!-- User Info -->
             <form action="{{url_for('profiles.update_credentials')}}" method="post" style="margin-top: 40px;">
                 
