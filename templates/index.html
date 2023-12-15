@@ -15,7 +15,7 @@
 
 
           <h5 style="width: 600px; text-wrap: nowrap; overflow-x: hidden; text-overflow: ellipsis;">
-            <img src="{{ distribution_url}}/images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
+            <img src="{{ distribution_url}}images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
           </h5>
         </div>  
 

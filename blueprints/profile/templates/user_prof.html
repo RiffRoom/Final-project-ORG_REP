@@ -9,7 +9,7 @@
         <div class="col-md-4">
             <div class="profile-pic-container text-center mb-4">
                 {% if true %}
-                <img src="{{ distribution_url}}/images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
+                <img src="{{ distribution_url}}images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
                 {% else %}
                     <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% endif %}

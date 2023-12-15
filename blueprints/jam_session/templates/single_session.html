@@ -137,7 +137,7 @@
                             <li class="list-group-item">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                     <div class="d-flex flex-row justify-content-start align-items-center w-100">
-                                        <img src="{{ distribution_url}}/images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
+                                        <img src="{{ distribution_url}}images/pfps/{{post.user_id}}.png" alt="{{ UserTable.query.get(post.user_id).user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"> <a class="text-decoration-none" style="color: #846DCF" href="{{ url_for('profiles.view_profile', user_id=post.user_id) }}">{{ UserTable.query.get(post.user_id).user_name }}</a> - {{ post.msg }}
                                         <a href="{{url_for('profiles.view_profile', user_id=user.user_id)}}" class="fs-6 text-decoration-none stretched-link" style="color: #846DCF">{{ UserTable.query.get(user.user_id).user_name }}</a>
                                     </div>
                                 </div>
