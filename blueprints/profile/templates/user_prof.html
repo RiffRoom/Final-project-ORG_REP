@@ -9,7 +9,7 @@
         <div class="col-md-4">
             <div class="profile-pic-container text-center mb-4">
                 {% if true %}
-                <img src="{{ distribution_url}}/images/pfps/{{user.id}}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    <img src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                 {% else %}
                     <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% endif %}
@@ -72,7 +72,7 @@
             {% if user_posts %}
                 {% for post in user_posts %}
                     <div class="col-md-4 mb-4">
-                        <div class="card card-hover-effect" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none; cursor: pointer;">
+                        <div class="card card-hover-effect" style="background-color: #e4e4e4; box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2); border-radius: 10px; border: none;">
                             <a href="{{ url_for('get_single_post', post_id=post.id) }}" class="text-decoration-none"> 
                                 {% if flask_env == 'prod' %}
                                     <img class="card-img-top" src="{{ distribution_url }}videos/thumbnails/{{ post.video_id }}-00001.png" alt="thumbnail">

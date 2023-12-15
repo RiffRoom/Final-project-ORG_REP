@@ -230,10 +230,6 @@ class JamSession(db.Model):
     def __repr__(self) -> str:
         return f'{self.host_name} : {self.title}'
 
-    def get_num_attendees(id: int):
-        jam_session = JamSession.query.get(id)
-        num_attendees = Party.query.filter_by(session_id=jam_session.id).count()
-        return num_attendees
 
 #class party
 class Party(db.Model):

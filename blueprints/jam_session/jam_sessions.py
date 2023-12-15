@@ -58,7 +58,9 @@ def get_sessions():
                         MAPS_API_KEY=MAPS_API_KEY,
                         JamSession=JamSession,
                         Party=Party,
-                        UserTable=UserTable)
+                        UserTable=UserTable,
+                        distribution_url=distribution_url
+                        )
 
 @jam_sessions_bp.post('/')
 def add_new_session():
@@ -101,10 +103,9 @@ def get_single_session(session_id: int):
         return redirect('/login')
 
     jam_session = JamSession.query.get(session_id)
-    JamSession.get_num_attendees(session_id)
 
     is_own_session = jam_session.host_id == session.get('id')
-    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable, is_own_session=is_own_session)
+    return render_template('single_session.html', jam_session=jam_session, Party=Party, UserTable=UserTable, is_own_session=is_own_session, distribution_url=distribution_url)
 
 
 @jam_sessions_bp.post('/<int:session_id>/edit/delete')
