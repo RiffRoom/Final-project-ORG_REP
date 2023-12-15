@@ -36,7 +36,10 @@
   }
 }
 
-
+.required:after {
+  content:" *";
+  color: red;
+}
 
 .anim-icon span {
   width: 3px;
