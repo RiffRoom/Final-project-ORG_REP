@@ -18,13 +18,14 @@
                         <div class="form-group row">
                             <label for="title" class="col-sm-3 col-form-label required">Title</label>
                             <div class="col-sm-9">
-                                <input class="form-control" type="text" id="title" name="title" required>
+                                <input class="form-control" type="text" id="title" name="title" maxlength="255" required>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="description" class="col-sm-3 col-form-label">Description</label>
                             <div class="col-sm-9">
-                                <textarea class="form-control" name="description" id="description" rows="4"></textarea>
+                                <textarea class="form-control" name="description" id="description" rows="4" style="resize: none;" maxlength="255"></textarea>
+                                <span id="charCount" style="font-size: 0.8em; color: grey;">(0/255)</span>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -41,5 +42,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var descriptionTextArea = document.getElementById('description');
+        var charCountElement = document.getElementById('charCount');
+
+        descriptionTextArea.addEventListener('input', function () {
+            var currentLength = descriptionTextArea.value.length;
+            charCountElement.textContent = `(${currentLength}/255)`;
+        });
+    });
+</script>
+
 
 {% endblock %}

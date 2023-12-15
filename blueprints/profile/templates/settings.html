@@ -7,22 +7,24 @@
         <div class="col-lg-6">
             <h1 class="text-center" style="margin-top: 20px; margin-bottom: 40px;">Settings Page</h1> 
             
+            
+
+
+            <!-- Profile Picture Upload Form -->
+            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" >
+                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event, user.id);">
+                <button type="submit" class="btn">submit</button>
+            </form>
+            
             <!-- Profile Picture -->
             <div class="text-center mb-4">
                 <button class="profile-pic-label btn" type="button" onclick="document.getElementById('profile-pic-input').click()">
-                    {% if user.profile_photo_path %}
-                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% else %}
-                        <img id="profilePic_{{ user.id }}" src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% endif %}
+
+                        <!-- For Production: Full URL -->
+                        <img src="{{ distribution_url}}/images/pfps/{{user.id}}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+
                 </button>
             </div>
-
-            <!-- Profile Picture Upload Form -->
-            <form id="upload-form" action="{{ url_for('profiles.upload_profile_photo') }}" method="post" enctype="multipart/form-data" style="display: none;">
-                <input type="file" id="profile-pic-input" name="file" onchange="updateProfilePic(event, user.id);">
-            </form>
-            
             <!-- User Info -->
             <form action="{{url_for('profiles.update_credentials')}}" method="post" style="margin-top: 40px;">
                 
@@ -30,13 +32,13 @@
                     <!-- First Name -->
                     <div class="form-group col-md-6">
                         <label for="first_name">First Name:</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
+                        <input type="text" class="form-control" id="first_name" maxlength="20" name="first_name" placeholder="Enter first name" value="{{ user.first_name }}">
                     </div>
                 
                     <!-- Last Name -->
                     <div class="form-group col-md-6">
                         <label for="last_name">Last Name:</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
+                        <input type="text" class="form-control" id="last_name" maxlength="20" name="last_name" placeholder="Enter last name" value="{{ user.last_name }}">
                     </div>
                 </div>
 
@@ -44,14 +46,14 @@
                     <!-- Phone Number -->
                     <div class="form-group col-md-6">
                         <label for="phone">Phone Number:</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Change phone number" value="{{ user.phone }}">
+                        <input type="tel" class="form-control" id="phone" name="phone" maxlength="10" placeholder="Change phone number" value="{{ user.phone }}">
                     </div>
 
 
                     <!-- Email -->
                     <div class="form-group col-md-6">
                         <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Change email" value="{{ user.email }}">
+                        <input type="email" class="form-control" id="email" name="email" maxlength="50" placeholder="Change email" value="{{ user.email }}">
                     </div>
                 </div>
                 
@@ -60,7 +62,8 @@
                 <div class="row">
                     <div class="form-group col-md-12">
                         <label for="bio">Bio:</label>
-                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio">{{ user.bio }}</textarea>
+                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Enter bio" maxlength="500" >{{ user.bio }} </textarea>
+                        <span id="bioCharCount" style="font-size: 0.8em; color: grey;">(0/500)</span>
                     </div>
                 </div>
 
@@ -158,7 +161,7 @@
 
     setTimeout(function() {
         $('.alert').alert('close');
-    }, 1000); 
+    }, 3000); 
 
     function updateProfilePic(event, userId) {
         const fileInput = event.target;
@@ -170,6 +173,19 @@
             imgElement.src = objectURL;
         }
     }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const bioTextArea = document.getElementById('bio');
+        const bioCharCountElement = document.getElementById('bioCharCount');
+
+        bioCharCountElement.textContent = `(${bioTextArea.value.length}/500)`;
+
+        bioTextArea.addEventListener('input', function () {
+            const currentLength = bioTextArea.value.length;
+            bioCharCountElement.textContent = `(${currentLength}/500)`;
+        });
+    });
 
 </script>
 {% endblock %}

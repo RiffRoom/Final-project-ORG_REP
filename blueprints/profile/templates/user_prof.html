@@ -8,8 +8,8 @@
         <!-- Profile Picture Column -->
         <div class="col-md-4">
             <div class="profile-pic-container text-center mb-4">
-                {% if user.profile_photo_path %}
-                    <img src="{{ url_for('static', filename=user.profile_photo_path) }}" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                {% if true %}
+                <img src="{{ distribution_url}}/images/pfps/{{user.id}}.png" alt="{{ user.user_name }}'s Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% else %}
                     <img src="{{ url_for('static', filename='images/pfp.png') }}" alt="Default Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                 {% endif %}
@@ -24,7 +24,7 @@
             <h4 class="text-muted">{{ user.first_name }} {{ user.last_name }}</h4>
             <!-- Bio -->
             {% if user.bio %}
-                <p class="bio-text">{{ user.bio }}</p>
+                <p class="bio-text" style="font-size: 75%;">{{ user.bio }}</p>
             {% endif %}
         </div>
 

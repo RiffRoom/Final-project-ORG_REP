@@ -282,6 +282,10 @@ def sign_up():
         if not raw_password or raw_password == '':
             flash('Enter a password')
             return redirect(url_for('get_login'))
+        
+        if UserTable.query.filter_by(user_name=username).first():
+            flash('Username already taken.')
+            return redirect(url_for('get_login'))
 
         hashed_password = bcrypt.generate_password_hash(raw_password, 12).decode()
 
