@@ -2,22 +2,56 @@
 
 {% block body%}
 
+<style>
 
-<div class="d-flex flex-row mt-5">
-    <div class="d-flex w-100 mx-2 scroll-black"> 
-        <div class="row-cols-1 px-3 overflow-y-scroll mx-1" style="height: 550px; width: 525px;">
+    .form-control {
+        border: none;
+        border-bottom: solid 1px black;
+        border-radius: 0px;
+    }
+
+    .form-control:hover {
+        border-color: #fff; 
+        box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+
+        border-bottom: solid 2px black;
+
+        transition: 300ms all ease-in-out;
+    }
+
+    
+    .form-control:focus {
+        border-color: #fff; 
+        box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+
+        border-bottom: solid 2px black;
+
+        transition: 300ms all ease-in-out;
+    }
+
+    .enable-create-button {
+        opacity: 1;
+
+        transition: 1000ms all ease-in-out;
+    }
+
+</style>
+
+<div class="d-flex flex-row" style="margin-top: -10px;">
+    <div class="d-flex flex-column w-100 mx-2 scroll-black" style="margin-top: -20px;"> 
+        <h3 class="mx-4 text-center fs-5">Join a Session!</h3>
+        <div class="px-3 w-100 overflow-y-scroll mx-1 " style="height: 500px;">
             {% for jam_session in active_jam_sessions %}
-                <div class="card bg-light-subtle mb-2 test" style="border-radius: 0px;">
+                <div class="card mb-3 test shadow border-0" style="background-color: #e4e4e4";>
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <a class="text-decoration-none fs-5 fw-medium text-reset mb-2 monospace" href="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}"> {{ jam_session.title}} </a>
                             <p class="card-subtitle text-muted">{{ UserTable.query.get(jam_session.host_id).user_name }}</p>
                         </div>
                         <h6> {{JamSession.date_str(jam_session.date)}} </h6>
-                        <p class="card-text lh-1">{{ jam_session.message }}</p>
-                        <p class="card-subtitle"> Attendee Count: {{ JamSession.get_num_attendees(jam_session.id) }} </p>
+                        <p class="card-text lh-1 text-nowrap overflow-x-hidden" style="max-width: 300px; text-overflow: ellipsis;">{{ jam_session.message }}</p>
                         <div class="d-flex flex-row justify-content-between"> 
-                            <p class="card-subtitle text-muted align-self-end"><small>{{jam_session.date_posted}}</small></p>
+                            <p class="card-subtitle text-muted align-self-end"><small>{{calc_time_jam_session(jam_session.id)}}</small></p>
                                 {% if jam_session.host_id == session.get('id') %}
                                 <form action="{{url_for('jam_sessions.get_single_session', session_id=jam_session.id)}}" method="get">
                                     <button type="submit" class="btn btn-secondary mx-2">Edit</button>
@@ -40,41 +74,42 @@
         </div>
     </div>
 
-    <div class="d-flex flex-column mx-4 justify-content-center h-auto">
-        <div class="" id="map" name="map"></div>
+    <div class="d-flex flex-column mx-4 justify-content-center">
+        <div class="d-flex flex-row justify-content-start">
+            <small class="text-muted">Click the map to place a pin!</small>
+        </div>
+        <div id="map" name="map"></div>
 
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" style="border-radius: 5px;">
             <form action="{{url_for('jam_sessions.add_new_session')}}">
-                <div class="d-flex flex-column">
-                    <div class="form-group">
-                        <label for="session_title">Session Title</label>
-                        <input type="text" class="form-control" id="session_title"  maxlength="255" placeholder="Denny's Grand Slam" required style="border-radius: 0;">
+                    <div class="d-flex flex-column mt-1 form-group">
+                        <input type="text" class="form-control mt-1 w-50" id="session_title"  maxlength="50" placeholder="Name Your Session!" required>
+                        <textarea class="form-control was-validated mt-1" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe Your Session!" style="resize: none;"></textarea>  
                     </div>
-                    <div class="form-group d-flex flex-column">
-                        <label for="session_message">Description</label>
-                        <textarea class="form-group was-validated" id="session_message" cols="100" rows="3" maxlength="255" placeholder="Describe your session." style="resize: none; border-radius: 0;"></textarea>  
+                    <div class="d-flex flex-row justify-content-center" style="margin-top: -5px;">
+                        <div class="d-flex flex-row justify-content-start mx-5"> 
+                            <label for="session_date_time" class="card-subtitle text-muted px-3">Pick a Date:</label>
+                            <input class="was-validated" type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center">
+                            <button type="submit" class="btn btn-success w-50 px-3" id="create_session_button">Create Session</button>
+                        </div>
                     </div>
-                    <div class="form-group d-flex flex-row justify-content-between align-items-center mt-2">
-                        <input type="datetime-local" id="session_date_time" min="{{current_date}}" max="{{max_date}}" required>
-                        <button type="submit" class="btn btn-success w-50" id="create_session_button" style="border-radius: 0;">Create Session</button>
-                    </div>
-                </div>
             </form>
         </div>
     </div>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <div> {{message}} </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 </div>
 
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="d-flex flex-row alert alert-success alert-dismissible fade show w-100 justify-content-center fixed-top" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div> {{message}} </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <script>
 (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
@@ -89,6 +124,13 @@ let infoWindowOpen = false;
 
 let currentInfoWindow;
 
+const icons = [
+    '<i class="bi bi-vinyl-fill"></i>',
+    '<i class="bi bi-cassette-fill"></i>',
+    '<i class="bi bi-boombox-fill"></i>',
+    '<i class="bi bi-music-note-beamed"></i>'
+];
+
 // Dictionary of Session Markers
 const activeSessions = {{ jam_session_data|tojson }};
 
@@ -99,6 +141,7 @@ let sessionMessageInput = document.getElementById("session_message");
 let sessionDateInput = document.getElementById("session_date_time");
 
 createSessionButton.classList.add('disabled');
+createSessionButton.classList.remove('enable-create-button');
 
 const intersectionObserver = new IntersectionObserver((entries) => {
     for (const entry of entries) {
@@ -114,6 +157,7 @@ async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
     const { InfoWindow } = await google.maps.importLibrary("maps");
+    const {PinElement} = await google.maps.importLibrary("marker")
 
     const position = { lat: 35.30882205337362, lng: -80.73374243196827 };
     
@@ -121,6 +165,7 @@ async function initMap() {
         zoom: 16,
         center: position,
         mapId: "DEMO_MAP_ID",
+        mapTypeId: google.maps.MapTypeId.HYBRID
     });
 
     const unccBoundsCoords = [
@@ -141,19 +186,35 @@ async function initMap() {
     const unccBoundsPath = new google.maps.Polyline({
         path: unccBoundsCoords,
         geodesic: true,
-        strokeColor: "#FF0000",
+        strokeColor: "#cc5e71",
         strokeOpacity: 1.0,
         strokeWeight: 2,
         map: map
     });
 
-    for (const [key, value] of Object.entries(activeSessions)) {
+    
+    for (const [key, value] of Object.entries(activeSessions)) {     
+        
+        const icon = document.createElement("div");
+
+        let iconIndex = Math.floor(Math.random() * icons.length);
+    
+        icon.innerHTML = icons[iconIndex];
+        
+        let defaultPin = new PinElement({
+            background: "#cc5e71", 
+            borderColor: "#a04050",
+            glyph: icon,
+            glyphColor: "#eee",
+            scale: .9
+
+        });
         let marker = new AdvancedMarkerElement({
             map: map,
             position: { lat: value.lat, lng: value.lng },
             title: value.title,
-        });
-
+            content: defaultPin.element
+        }); 
         
         const content = marker.content;
 
@@ -207,12 +268,27 @@ async function initMap() {
         let longitude = e.latLng.lng();
 
         createSessionButton.classList.remove('disabled');
+        createSessionButton.classList.add('enable-create-button');
 
         if(!sessionMarkerPlaced){
+
+            const icon = document.createElement("div");
+    
+            icon.innerHTML = '<i class="bi bi-cassette-fill"></i>';
+
+            pin = new PinElement({
+                background: "#0e97e3",
+                borderColor: "#0e97e3",
+                glyph: icon,
+                glyphColor: "#eee",
+                scale: 1
+            });
+
             sessionMarker = new AdvancedMarkerElement({
                 map: map,
                 position: { lat: latitude, lng: longitude },
-                title: "New Session"
+                title: "New Session",
+                content: pin.element,
             });
             sessionMarkerPlaced = true;
         }

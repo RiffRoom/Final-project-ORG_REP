@@ -10,6 +10,7 @@ import boto3
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageDraw, ImageFont
 from boto3 import exceptions
+import time
 
 
 
@@ -45,6 +46,8 @@ bucket_wrapper = BucketWrapper(riff_bucket)
 
 upload_bucket = s3_resource.Bucket('riffbucket-itsc3155-upload')
 upload_wrapper = BucketWrapper(upload_bucket)
+
+stashed_files = []
 
 
 @profile_bp.get('/')
@@ -146,7 +149,7 @@ def update_credentials():
             user.bio = new_bio
         else:
             user.bio = ''
-
+            
         if user.private != private_setting:
             user.private = private_setting
             changes_made = True
@@ -242,6 +245,8 @@ def upload_profile_photo():
             }
 
             riff_bucket.copy(copy_sources, f'/images/pfps/{unique_filename}')
+
+            remove_file(unique_filename)
         # Dev path
         else:
             file_path = os.path.join('static/uploads/pfps/', f'{user_id}.jpg')
@@ -270,3 +275,24 @@ def delete_post(post_id):
     db.session.commit()
 
     return redirect(url_for('profiles.get_profile'))
+
+
+def remove_file(filename):
+    max_remove_attempts = 5
+    attempts = 0
+    removed = False
+    while removed == False and attempts < max_remove_attempts:
+        try:
+            os.remove(filename)
+            removed = True
+            print("% s removed successfully" % filename)
+        except OSError as error:
+            print(error)
+            print('Filepath cannot be removed.')
+
+        if attempts == 5:
+            stashed_files.append(filename)
+            break
+        print(f'Removal attempt number {attempts}')
+        attempts += 1
+        time.sleep(3)
